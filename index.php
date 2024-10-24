@@ -1,5 +1,9 @@
 <?php
+<<<<<<< HEAD
 include('config/Database.php');
+=======
+include('includes/Database.php');
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,18 +12,32 @@ include('config/Database.php');
     <title>SHOP THỜI TRANG - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <!-- Favicon -->
+<<<<<<< HEAD
     <link href=" " rel="icon">
+=======
+    <link href="img/favicon.ico" rel="icon">
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+<<<<<<< HEAD
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+=======
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <!-- Customized Bootstrap Stylesheet -->
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
     <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
     <!-- Phần Header -->
+<<<<<<< HEAD
     <?php include 'includes/header.php'; ?>
+=======
+    <?php include 'shared/header.php'; ?>
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
     <!-- Featured Start -->
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
@@ -75,7 +93,11 @@ include('config/Database.php');
         </div>
     </div>
     <!-- Footer-->
+<<<<<<< HEAD
     <?php include 'includes/footer.php'; ?>
+=======
+    <?php include 'shared/footer.php'; ?>
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
     <!-- Quay Lại Đầu Trang -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
     <!-- Thư Viện JavaScript -->

@@ -1,5 +1,9 @@
 <?php
+<<<<<<< HEAD
 include('../config/Database.php');
+=======
+include('../includes/Database.php');
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +12,11 @@ include('../config/Database.php');
     <title>SHOP THỜI TRANG - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <!-- Favicon -->
+<<<<<<< HEAD
     <link href="" rel="icon">
+=======
+    <link href="img/favicon.ico" rel="icon">
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
@@ -19,7 +27,11 @@ include('../config/Database.php');
 </head>
 
 <body>
+<<<<<<< HEAD
     <?php include '../includes/header-2.php'; ?>
+=======
+    <?php include '../shared/header-2.php'; ?>
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
     <!-- Page Header -->
     <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
@@ -128,7 +140,11 @@ include('../config/Database.php');
         </div>  
     </div>
     <!-- Footer-->
+<<<<<<< HEAD
     <?php include '../includes/footer.php'; ?>
+=======
+    <?php include '../shared/footer.php'; ?>
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
     <!-- Quay Lại Đầu Trang -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
     <!-- Thư Viện JavaScript -->
@@ -136,8 +152,15 @@ include('../config/Database.php');
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+<<<<<<< HEAD
     <script src="mail/jqBootstrapValidation.min.js"></script>
     <script src="mail/contact.js"></script>
+=======
+    <!-- Tệp JavaScript Liên Hệ -->
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
+    <!-- JavaScript Mẫu -->
+>>>>>>> b2eb819d60faeb0e49a5f9ce9202dc46aa14864e
     <script src="js/main.js"></script>
 </body>
 </html>
