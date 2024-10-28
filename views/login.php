@@ -92,6 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </div>
+    <!-- nút trở về trang chủ -->
+    <a href="../index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
+        <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
+    </a>
     <script src="../js/custom.js"></script>
 </body>
 </html>
