@@ -1,8 +1,7 @@
 <?php
+session_start(); 
 include('../config/Database.php'); 
-
 $errors = []; // Mảng lưu lỗi
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $login = $_POST['login'] ?? ''; 
     $password = $_POST['password'] ?? '';
@@ -13,11 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sql = "SELECT * FROM users 
             WHERE (email = '$login' OR username = '$login') 
               AND password = '$hashedPassword'";
-
     $result = mysqli_query($conn, $sql);
-
     if (mysqli_num_rows($result) > 0) {
         // Đăng nhập thành công
+        $user = mysqli_fetch_assoc($result);
+        $_SESSION['user'] = $user['username']; // Lưu tên người dùng vào session
+        $_SESSION['name'] = $user['name']; // Nếu có trường 'name' trong bảng users
         header("Location: ../index.php");
         exit();
     } else {
@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

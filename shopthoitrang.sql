@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Oct 24, 2024 at 02:52 PM
+-- Generation Time: Oct 29, 2024 at 01:36 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -20,6 +20,28 @@ SET time_zone = "+00:00";
 --
 -- Database: `shopthoitrang`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `brands`
+--
+
+CREATE TABLE `brands` (
+  `brand_id` int NOT NULL,
+  `brand_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `brands`
+--
+
+INSERT INTO `brands` (`brand_id`, `brand_name`) VALUES
+(1, 'Louis Vuitton'),
+(2, 'Gucci'),
+(3, 'Chanel'),
+(4, 'Coach'),
+(5, 'Dior');
 
 -- --------------------------------------------------------
 
@@ -126,8 +148,34 @@ CREATE TABLE `products` (
   `image2` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `image3` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `quantity` int DEFAULT NULL
+  `quantity` int DEFAULT NULL,
+  `size` enum('XS','S','M','L','XL') COLLATE utf8mb4_general_ci DEFAULT 'M'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`product_id`, `product_name`, `price`, `category_id`, `image`, `image2`, `image3`, `description`, `quantity`, `size`) VALUES
+(1, 'Áo Polo Nam', 2999, 1, 'image1_1.png', 'image1_2.png', 'image1_3.png', '0', 100, 'M'),
+(2, 'Quần Jeans Nam', 3999, 2, 'image2_1.jpg', 'image2_2.png', 'image2_3.png', 'Quần Jeans Nam có kiểu dáng hiện đại, chất liệu thoáng khí và thoải mái, là sự lựa chọn hoàn hảo cho phong cách cá nhân.', 80, 'M'),
+(3, 'Giày Sneakers nike', 4999, 3, 'image3_1.jpg', 'image3_2.jpg', 'image3_3.jpg', 'Giày Sneakers với thiết kế đẹp mắt, êm ái và bền bỉ, là sự kết hợp hoàn hảo giữa thời trang và thoải mái.', 120, 'M'),
+(4, 'Áo Khoác Đông', 5999, 4, 'image4_1.png', 'image4_2.png', 'image4_3.png', 'Áo Khoác Đông chống nước và giữ ấm tốt, là sự lựa chọn tuyệt vời cho những ngày lạnh giá.', 60, 'M'),
+(5, 'Áo Polo GolfBaudi Nam', 4599, 1, 'image5_1.png', 'image5_2.png', 'image5_3.png', 'Áo Polo Golf Nam với chất liệu chống nắng, phù hợp cho mọi sân golf.', 90, 'M'),
+(6, 'Quần ba tư Nike Nam', 3599, 2, 'image6_1.jpg', 'image6_2.jpg', 'image6_3.png', 'Quần Linen Nam với chất liệu nhẹ và thoáng khí, là lựa chọn tuyệt vời cho mùa hè.', 100, 'M'),
+(7, 'Giày Mules Nike 2 dây', 4999, 3, 'image7_1.jpg', 'image7_2.jpg', 'image7_3.jpg', 'Dép Mules với thiết kế đơn giản, thoải mái cho những bước đi dạo phố.', 120, 'M'),
+(8, 'Áo Khoác Puffer blue water', 5999, 4, 'image8_1.png', 'image8_2.png', 'image8_3.png', 'Áo Khoác Puffer với lớp đệm ấm áp, giữ ấm hiệu quả trong mùa đông.', 80, 'M'),
+(9, 'Áo Hoodie Nữ', 2599, 5, 'image9_1.png', 'image9_2.png', 'image9_3.png', 'Áo Hoodie Nữ với thiết kế thoải mái và ấm áp, phù hợp cho mùa đông.', 80, 'M'),
+(10, 'Quần Legging Nữ', 1799, 6, 'image10_1.jpg', 'image10_2.jpg', 'image10_3.jpg', 'Quần Legging Nữ với chất liệu co giãn, ôm sát cơ thể và thoải mái cho hoạt động thể thao.', 120, 'M'),
+(11, 'Giày thắp Gót', 5999, 3, 'image11_1.jpg', 'image11_2.jpg', 'image11_3.jpg', 'Giày Cao Gót với kiểu dáng sang trọng, phù hợp cho những dịp đặc biệt.', 50, 'M'),
+(12, 'Áo Thun Nam', 1899, 1, 'image12_1.png', 'image12_2.png', 'image12_3.png', 'Áo Thun Nam kiểu dáng đơn giản, phù hợp cho mọi hoạt động hàng ngày.', 150, 'M'),
+(13, 'Quần Jogger Nam', 2499, 2, 'image13_1.jpg', 'image13_2.jpg', 'image13_3.jpg', 'Quần Jogger Nam với phong cách thể thao và thoải mái, là sự lựa chọn tuyệt vời cho mọi dịp.', 100, 'M'),
+(14, 'Giày Bốt Đinh Tán', 6999, 3, 'image14_1.jpg', 'image14_2.jpg', 'image14_3.jpg', 'Giày Bốt Đinh Tán với kiểu dáng cá tính, phù hợp cho những ngày lạnh.', 70, 'M'),
+(15, 'Áo Sơ Mi Nữ', 3299, 5, 'image15_1.png', 'image15_2.png', 'image15_3.png', 'Áo Sơ Mi Nữ với thiết kế thanh lịch, phù hợp cho công việc và các sự kiện quan trọng.', 90, 'M'),
+(16, 'Quần Charlotes Nữ', 2199, 6, 'image16_1.jpg', 'image16_2.jpg', 'image16_3.jpg', 'Quần Charlotes Nữ với kiểu dáng rộng rãi và thoải mái, là sự lựa chọn thời trang cho mùa hè.', 110, 'M'),
+(17, 'Quần Linen Nam', 3599, 2, 'image17_1.jpg', 'image17_2.jpg', 'image17_3.jpg', 'Quần Linen Nam với chất liệu nhẹ và thoáng khí, là lựa chọn tuyệt vời cho mùa hè.', 100, 'M'),
+(18, 'Giày Mules', 4999, 3, 'image18_1.jpg', 'image18_2.jpg', 'image18_3.jpg', 'Dép Mules với thiết kế đơn giản, thoải mái cho những bước đi dạo phố.', 120, 'M'),
+(19, 'Áo Khoác Puffer', 5999, 4, 'image19_1.png', 'image19_2.png', 'image19_3.png', 'Áo Khoác Puffer với lớp đệm ấm áp, giữ ấm hiệu quả trong mùa đông.', 80, 'M');
 
 -- --------------------------------------------------------
 
@@ -173,11 +221,18 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`user_id`, `username`, `password`, `phonenumber`, `name`, `email`, `roles`) VALUES
 (29, 'hoanghai', '202cb962ac59075b964b07152d234b70', '0793897147', 'Hoàng Hải', '123@gmail.com', 'user'),
 (30, 'hoang1', '202cb962ac59075b964b07152d234b70', '0793897147', 'vua trò chơi ', 'hoanghaii1710@gmail.com', 'user'),
-(31, 'hoàng', '202cb962ac59075b964b07152d234b70', '123', 'Hoàng Hải', 'hoanghaimcpe@gmail.comg', 'user');
+(31, 'hoàng', '202cb962ac59075b964b07152d234b70', '123', 'Hoàng Hải', 'hoanghaimcpe@gmail.comg', 'user'),
+(32, 'hoang12', '202cb962ac59075b964b07152d234b70', '0330330333', 'hai', 'khongbiet@gmail.deptrai', 'user');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `brands`
+--
+ALTER TABLE `brands`
+  ADD PRIMARY KEY (`brand_id`);
 
 --
 -- Indexes for table `cart`
@@ -248,6 +303,12 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `brands`
+--
+ALTER TABLE `brands`
+  MODIFY `brand_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
@@ -293,7 +354,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- Constraints for dumped tables

@@ -21,13 +21,13 @@ include('../config/Database.php');
 </head>
 
 <body>
-    <?php include '../includes/header-2.php'; ?>
+    <?php include '../includes/header.php'; ?>
     <!-- Page Header -->
     <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">Liên Hệ Chúng Tôi</h1>
             <div class="d-inline-flex">
-                <p class="m-0"><a href="">Trang Chủ</a></p>
+                <p class="m-0"><a href="../index.php">Trang Chủ</a></p>
                 <p class="m-0 px-2">-</p>
                 <p class="m-0">Liên Hệ</p>
             </div>
@@ -91,7 +91,7 @@ include('../config/Database.php');
     <!-- Footer Start -->
     <?php include '../includes/footer.php'; ?>
     <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    <!-- <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a> -->
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>

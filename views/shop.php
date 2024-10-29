@@ -1,6 +1,19 @@
 <?php
 include('../config/Database.php');
+$limit = 20;
+// Lấy trang hiện tại từ URL, nếu không có thì mặc định là 1
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+$offset = ($page - 1) * $limit;
+// Truy vấn để lấy sản phẩm
+$sql = "SELECT * FROM products LIMIT $limit OFFSET $offset";
+$result = Database::query($sql);
+// Truy vấn để đếm tổng số sản phẩm
+$countSql = "SELECT COUNT(*) as total FROM products";
+$countResult = Database::query($countSql);
+$totalProducts = $countResult->fetch_assoc()['total'];
+$totalPages = ceil($totalProducts / $limit);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,15 +32,15 @@ include('../config/Database.php');
 </head>
 
 <body>
-    <?php include '../includes/header-2.php'; ?>
+    <?php include '../includes/header.php'; ?>
     <!-- Page Header -->
     <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
-            <h1 class="font-weight-semi-bold text-uppercase mb-3">Shop</h1>
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Sản Phẩm</h1>
             <div class="d-inline-flex">
-                <p class="m-0"><a href="index.php">Home</a></p>
+                <p class="m-0"><a href="../index.php">Trang Chủ</a></p>
                 <p class="m-0 px-2">-</p>
-                <p class="m-0">Shop</p>
+                <p class="m-0">Sản Phẩm</p>
             </div>
         </div>
     </div>
@@ -36,7 +49,7 @@ include('../config/Database.php');
         <div class="row px-xl-5">
             <!-- Shop Sidebar -->
             <div class="col-lg-3 col-md-12">
-                <!-- Price -->
+                <!-- Price Filter -->
                 <div class="border-bottom mb-4 pb-4">
                     <h5 class="font-weight-semi-bold mb-4">Lọc theo giá</h5>
                     <form>
@@ -63,7 +76,7 @@ include('../config/Database.php');
                     </form>
                 </div>
 
-                <!-- Company -->
+                <!-- Brand Filter -->
                 <div class="border-bottom mb-4 pb-4">
                     <h5 class="font-weight-semi-bold mb-4">Lọc theo thương hiệu</h5>
                     <form>
@@ -94,7 +107,7 @@ include('../config/Database.php');
                     </form>
                 </div>
 
-                <!-- Size -->
+                <!-- Size Filter -->
                 <div class="border-bottom mb-4 pb-4">
                     <h5 class="font-weight-semi-bold mb-4">Lọc theo Size</h5>
                     <form>
@@ -125,9 +138,54 @@ include('../config/Database.php');
                     </form>
                 </div>
             </div>
+
+            <!-- Sản phẩm -->
+            <div class="col-lg-9 col-md-12">
+                <div class="row">
+                    <?php while ($product = $result->fetch_assoc()): ?>
+                        <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                            <div class="card product-item border-0 mb-4">
+                                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                    <img class="img-fluid w-100" src="<?= $product['image'] ?>" alt="<?= $product['product_name'] ?>">
+                                </div>
+                                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                    <h6 class="text-truncate mb-3"><?= $product['product_name'] ?></h6>
+                                    <div class="d-flex justify-content-center">
+                                        <h6><?= number_format($product['price']) ?> VNĐ</h6>
+                                        <?php if (isset($product['old_price']) && $product['old_price'] !== null): ?>
+                                            <h6 class="text-muted ml-2"><del><?= number_format($product['old_price']) ?> VNĐ</del></h6>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                <div class="card-footer d-flex justify-content-between bg-light border">
+                                    <!-- Thêm product_id vào URL -->
+                                    <a href="detail.php?id=<?= $product['product_id'] ?>" class="btn btn-sm text-dark p-0">
+                                        <i class="fas fa-eye text-primary mr-1"></i>Xem Chi Tiết
+                                    </a>
+                                    <a href="#" class="btn btn-sm text-dark p-0">
+                                        <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ Hàng
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+            </div>
         </div>  
+
+        <!-- Thanh chuyển trang -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                    <li class="page-item <?= $i === $page ? 'active' : '' ?>">
+                        <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                    </li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
     </div>
-    <!-- Footer-->
+
+    <!-- Footer -->
     <?php include '../includes/footer.php'; ?>
     <!-- Quay Lại Đầu Trang -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>

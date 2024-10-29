@@ -76,18 +76,68 @@ include('config/Database.php');
             </div>
         </div>
     </div>
+
+    <!-- Products -->
+    <div class="container-fluid pt-5">
+        <div class="text-center mb-4">
+            <h2 class="section-title px-5"><span class="px-2">Sản phẩm mới</span></h2>
+        </div>
+        <div class="row px-xl-5 pb-3">
+            <?php
+            // Kết nối đến cơ sở dữ liệu
+            $conn = Database::getConnection(); 
+            // Lấy 8 sản phẩm mới nhất
+            $sql = "SELECT * FROM products LIMIT 8"; 
+            $result = $conn->query($sql);
+
+            if ($result->num_rows > 0) {
+                // Hiển thị từng sản phẩm
+                while ($row = $result->fetch_assoc()) {
+                    ?>
+                        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                            <div class="card product-item border-0 mb-4">
+                                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                    <img class="img-fluid w-100" src="<?= $row['image']; ?>" alt="">
+                                </div>
+                                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                    <h6 class="text-truncate mb-3"><?= htmlspecialchars($row['product_name']); ?></h6>
+                                    <div class="d-flex justify-content-center">
+                                        <h6><?= number_format($row['price'], 0, ',', '.'); ?> VND</h6>
+                                    </div>
+                                </div>
+                                <div class="card-footer d-flex justify-content-between bg-light border">
+                                    <a href="views/detail.php?id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
+                                        <i class="fas fa-eye text-primary mr-1"></i>XEM CHI TIẾT
+                                    </a>
+                                    <a href="cart.php?action=add&id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
+                                        <i class="fas fa-shopping-cart text-primary mr-1"></i>THÊM VÀO GIỎ
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php
+                    }
+            } else {
+                echo '<p class="text-center">Không có sản phẩm nào.</p>';
+            }
+            $conn->close(); 
+            ?>
+        </div>
+        <div class="text-center mb-4">
+            <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
+        </div>
+    </div>
     <!-- Footer-->
     <?php include 'includes/footer.php'; ?>
     <!-- Quay Lại Đầu Trang -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+    <!-- <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a> -->
     <!-- Thư Viện JavaScript -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <!-- Tệp JavaScript Liên Hệ -->
     <script src="mail/jqBootstrapValidation.min.js"></script>
     <script src="mail/contact.js"></script>
-    <!-- JavaScript Mẫu -->
     <script src="js/main.js"></script>
 </body>
+</html>
