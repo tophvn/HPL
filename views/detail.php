@@ -1,33 +1,69 @@
 <?php
+session_start();
 include('../config/Database.php');
-// Kiểm tra trạng thái session và khởi động nếu chưa có
-if (session_status() === PHP_SESSION_NONE) {
-    session_start(); // Bắt đầu phiên
-}
-
 // Lấy ID sản phẩm từ URL
 $product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
 // Truy vấn để lấy thông tin sản phẩm
-$query = "SELECT * FROM products WHERE product_id = $product_id"; // Chèn trực tiếp giá trị vào câu truy vấn
-$result = Database::getConnection()->query($query); // Sử dụng phương thức query
+$query = "SELECT * FROM products WHERE product_id = $product_id";
+$result = Database::getConnection()->query($query);
 if ($result->num_rows > 0) {
     $product = $result->fetch_assoc();
 } else {
-    echo "<h2>Product not found</h2>";
+    echo "<h2>Sản phẩm không tìm thấy</h2>";
+    exit;
+}
+// Kiểm tra và lấy ID người dùng từ session
+$id = 0; // Mặc định là không có người dùng
+if (isset($_SESSION['user']) && isset($_SESSION['user']['user_id'])) {
+    $id = $_SESSION['user']['user_id']; // Lấy user_id từ session nếu có
+} else {
+    echo "<script>alert('Vui lòng đăng nhập để tiếp tục.');</script>";
     exit;
 }
 
-// Kiểm tra và lấy ID người dùng từ session
-if (isset($_SESSION['user'])) {
-    // Nếu session có key 'user', lấy ra
-    $user = $_SESSION['user'];
-    $id = isset($user['user_id']) ? $user['user_id'] : 0; // Kiểm tra user_id
-} else {
-    $id = 0; // Không có user đăng nhập
+// add sản phẩm vào giỏ hàng
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
+    $size = isset($_POST['size']) ? htmlspecialchars($_POST['size']) : '';
+    $color = isset($_POST['color']) ? htmlspecialchars($_POST['color']) : '';
+    // Kiểm tra xem người dùng đã có giỏ hàng chưa
+    $conn = Database::getConnection();
+    $stmt = $conn->prepare("SELECT * FROM cart WHERE user_id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    // Nếu chưa có giỏ hàng, tạo giỏ hàng mới
+    if ($result->num_rows == 0) {
+        $stmt = $conn->prepare("INSERT INTO cart (user_id) VALUES (?)");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $cart_id = $conn->insert_id; // Lấy cart_id của giỏ hàng vừa tạo
+    } else {
+        $cart = $result->fetch_assoc();
+        $cart_id = $cart['cart_id']; // Lấy cart_id của giỏ hàng đã có
+    }
+
+    // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+    $stmt = $conn->prepare("SELECT * FROM cart_item WHERE cart_id = ? AND product_id = ? AND size = ? AND color = ?");
+    $stmt->bind_param("iiss", $cart_id, $product_id, $size, $color);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
+        $stmt = $conn->prepare("UPDATE cart_item SET quantity = quantity + ? WHERE cart_id = ? AND product_id = ? AND size = ? AND color = ?");
+        $stmt->bind_param("iiiss", $quantity, $cart_id, $product_id, $size, $color);
+        $stmt->execute();
+    } else {
+        // Nếu sản phẩm chưa có, thêm vào giỏ hàng
+        $stmt = $conn->prepare("INSERT INTO cart_item (cart_id, product_id, quantity, size, color) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("iiiss", $cart_id, $product_id, $quantity, $size, $color);
+        $stmt->execute();
+    }
+
+    echo "<script>window.onload = function() { alert('Sản phẩm đã được thêm vào giỏ hàng!'); }</script>";
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -96,11 +132,11 @@ if (isset($_SESSION['user'])) {
                 <h3 class="font-weight-semi-bold mb-4"><?= number_format($product['price']) ?> VNĐ</h3>
                 <p class="mb-4"><?= htmlspecialchars($product['description']) ?></p>
 
-                <div class="d-flex mb-3">
-                    <p class="text-dark font-weight-medium mb-0 mr-3">Sizes:</p>
-                    <form>
+                <form method="POST" id="addToCartForm">
+                    <div class="d-flex mb-3">
+                        <p class="text-dark font-weight-medium mb-0 mr-3">Kích thước:</p>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-1" name="size" value="XS">
+                            <input type="radio" class="custom-control-input" id="size-1" name="size" value="XS" required>
                             <label class="custom-control-label" for="size-1">XS</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
@@ -119,14 +155,12 @@ if (isset($_SESSION['user'])) {
                             <input type="radio" class="custom-control-input" id="size-5" name="size" value="XL">
                             <label class="custom-control-label" for="size-5">XL</label>
                         </div>
-                    </form>
-                </div>
+                    </div>
 
-                <div class="d-flex mb-4">
-                    <p class="text-dark font-weight-medium mb-0 mr-3">Colors:</p>
-                    <form>
+                    <div class="d-flex mb-4">
+                        <p class="text-dark font-weight-medium mb-0 mr-3">Màu sắc:</p>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-1" name="color" value="Black">
+                            <input type="radio" class="custom-control-input" id="color-1" name="color" value="Black" required>
                             <label class="custom-control-label" for="color-1">Black</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
@@ -145,18 +179,16 @@ if (isset($_SESSION['user'])) {
                             <input type="radio" class="custom-control-input" id="color-5" name="color" value="Green">
                             <label class="custom-control-label" for="color-5">Green</label>
                         </div>
-                    </form>
-                </div>
+                    </div>
 
-                <div class="d-flex align-items-center mb-4 pt-2">
-                    <form id="addToCartForm" action="addtocart.php" method="get">
+                    <div class="d-flex align-items-center mb-4 pt-2">
                         <div class="input-group quantity mr-3" style="width: 130px;">
                             <div class="input-group-btn">
                                 <button class="btn btn-primary btn-minus" type="button" onclick="decrementQuantity()">
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </div>
-                            <input type="text" class="form-control bg-secondary text-center" name="quantity" id="quantity" value="1">
+                            <input type="text" class="form-control bg-secondary text-center" name="quantity" id="quantity" value="1" required>
                             <div class="input-group-btn">
                                 <button class="btn btn-primary btn-plus" type="button" onclick="incrementQuantity()">
                                     <i class="fa fa-plus"></i>
@@ -167,10 +199,8 @@ if (isset($_SESSION['user'])) {
                         <button class="btn btn-primary px-3" type="submit">
                             <i class="fa fa-shopping-cart mr-1"></i> THÊM VÀO GIỎ HÀNG
                         </button>
-                        <input type="hidden" name="productId" value="<?= $product_id ?>">
-                        <input type="hidden" name="userId" value="<?= $id ?>">
-                    </form>
-                </div>
+                    </div>
+                </form>
 
                 <div class="d-flex pt-2">
                     <p class="text-dark font-weight-medium mb-0 mr-2">Chia sẻ:</p>
@@ -207,7 +237,7 @@ if (isset($_SESSION['user'])) {
                     </div>
                     <div class="tab-pane fade" id="tab-pane-2">
                         <h4 class="mb-3">Thông tin bổ sung</h4>
-                        <p> comming soon :v</p>
+                        <p>Coming soon...</p>
                     </div>
                     <div class="tab-pane fade" id="tab-pane-3">
                         <h4 class="mb-3">Đánh giá</h4>
@@ -240,7 +270,7 @@ if (isset($_SESSION['user'])) {
         </div>
         <div class="row px-xl-5">
             <?php
-            // Truy vấn để lấy 7 sản phẩm ngẫu nhiên
+            // Truy vấn để lấy 4 sản phẩm ngẫu nhiên
             $q1 = Database::query("SELECT products.*, categories.category_name 
                                     FROM products 
                                     JOIN categories ON products.category_id = categories.category_id 
@@ -264,9 +294,13 @@ if (isset($_SESSION['user'])) {
                             <a href="detail.php?id=' . $r1['product_id'] . '" class="btn btn-sm text-dark p-0">
                                 <i class="fas fa-eye text-primary mr-1"></i>Xem Chi Tiết
                             </a>
-                            <a href="addtocart.php?quantity=1&productId=' . $r1['product_id'] . '&userId=' . $id . '" class="btn btn-sm text-dark p-0">
-                                <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ
-                            </a>
+                            <form action="" method="POST">
+                                <input type="hidden" name="productId" value="' . $r1['product_id'] . '">
+                                <input type="hidden" name="userId" value="' . $id . '">
+                                <button class="btn btn-sm text-dark p-0" type="submit">
+                                    <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>';

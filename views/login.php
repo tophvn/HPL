@@ -1,24 +1,30 @@
 <?php
-session_start(); 
-include('../config/Database.php'); 
+session_start();
+include('../config/Database.php');
 $errors = []; // Mảng lưu lỗi
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $login = $_POST['login'] ?? ''; 
+    $login = $_POST['login'] ?? '';
     $password = $_POST['password'] ?? '';
     $conn = Database::getConnection();
-    // mã hóa MD5
+    // Mã hóa pass
     $hashedPassword = md5($password);
-    // kiểm tra username hoặc email và mật khẩu
-    $sql = "SELECT * FROM users 
-            WHERE (email = '$login' OR username = '$login') 
-              AND password = '$hashedPassword'";
-    $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) > 0) {
+    // Sử dụng Prepared Statement để tránh SQL Injection
+    $stmt = $conn->prepare("SELECT * FROM users WHERE (email = ? OR username = ?) AND password = ?");
+    $stmt->bind_param("sss", $login, $login, $hashedPassword);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result->num_rows > 0) {
         // Đăng nhập thành công
-        $user = mysqli_fetch_assoc($result);
-        $_SESSION['user'] = $user['username']; // Lưu tên người dùng vào session
-        $_SESSION['name'] = $user['name']; // Nếu có trường 'name' trong bảng users
-        header("Location: ../index.php");
+        $user = $result->fetch_assoc();
+        // Lưu thông tin người dùng vào session
+        $_SESSION['user'] = [
+            'user_id' => $user['user_id'],
+            'username' => $user['username'],
+            'name' => $user['name'] 
+        ];
+        
+        header("Location: ../index.php"); 
         exit();
     } else {
         $errors[] = 'Tên đăng nhập hoặc mật khẩu không đúng!';

@@ -13,7 +13,38 @@ $q1 = $conn->query("SELECT * FROM categories");
 $isIndexPage = basename($_SERVER['PHP_SELF']) === 'index.php';
 ?>
 
-
+    <div class="container-fluid">
+        <div class="row bg-secondary py-2 px-xl-5">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark" href="">FAQs</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Help</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="">Support</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a class="text-dark pl-2" href="">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 <div class="container-fluid">
     <div class="row align-items-center py-3 px-xl-5">
         <div class="col-lg-3 d-none d-lg-block">
@@ -75,17 +106,17 @@ $isIndexPage = basename($_SERVER['PHP_SELF']) === 'index.php';
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Danh Mục</a>
                             <div class="dropdown-menu rounded-0 m-0">
-                                <a href="cart.php" class="dropdown-item">Giỏ Hàng</a>
-                                <a href="checkout.php" class="dropdown-item">Thanh Toán</a>
+                                <a href="/ShopThoiTrang/views/cart.php" class="dropdown-item">Giỏ Hàng</a>
+                                <a href="/ShopThoiTrang/views/checkout.php" class="dropdown-item">Thanh Toán</a>
                             </div>
                         </div>
                         <a href="/ShopThoiTrang/views/contact.php" class="nav-item nav-link">Liên Hệ</a>
-                        <a href="/ShopThoiTrang/order_history.php" class="nav-item nav-link">Lịch Sử Mua Hàng</a>
+                        <a href="/ShopThoiTrang/views/order_history.php" class="nav-item nav-link">Lịch Sử Mua Hàng</a>
                     </div>
                     <div class="navbar-nav">
                         <?php if (isset($_SESSION['user'])): ?>
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Xin chào, <?php echo $_SESSION['name']; ?>!</a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Xin chào, <?php echo $_SESSION['user']['name']; ?>!</a>
                                 <div class="dropdown-menu rounded-0 m-0">
                                     <a href="#" class="dropdown-item">Tài Khoản</a>
                                     <a href="/ShopThoiTrang/views/logout.php" class="dropdown-item">Đăng Xuất</a>

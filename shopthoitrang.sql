@@ -48,23 +48,23 @@ INSERT INTO `brands` (`brand_id`, `brand_name`) VALUES
 --
 -- Table structure for table `cart`
 --
-
 CREATE TABLE `cart` (
-  `cart_id` int NOT NULL,
-  `user_id` int DEFAULT NULL
+  `cart_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  PRIMARY KEY (`cart_id`),
+  FOREIGN KEY (`user_id`) REFERENCES users(`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- --------------------------------------------------------
-
---
--- Table structure for table `cart_item`
---
-
 CREATE TABLE `cart_item` (
-  `cart_item_id` int NOT NULL,
-  `cart_id` int DEFAULT NULL,
-  `product_id` int DEFAULT NULL,
-  `quantity` int DEFAULT NULL
+  `cart_item_id` INT NOT NULL AUTO_INCREMENT,
+  `cart_id` INT DEFAULT NULL,
+  `product_id` INT DEFAULT NULL,
+  `quantity` INT DEFAULT NULL,
+  `color` VARCHAR(50),
+  PRIMARY KEY (`cart_item_id`),
+  FOREIGN KEY (`cart_id`) REFERENCES cart(`cart_id`) ON DELETE CASCADE,
+  FOREIGN KEY (`product_id`) REFERENCES products(`product_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------

@@ -6,6 +6,7 @@ class Database
     private static $password = "";
     private static $dbname = "shopthoitrang";
     private static $conn;
+
     // Hàm tạo kết nối
     public static function getConnection()
     {
@@ -34,4 +35,5 @@ class Database
             return false;
         }
     }
+    
 }
