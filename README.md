@@ -7,7 +7,9 @@
 3. add database vào phpmyadmin
    
    laragon: root (ko mật khẩu)
-
+   
+   Download Laragon: https://laragon.org/download/
+   
 commit(còn thiếu các hành động search, lọc, order, history, checkout,...)
 
 ### Cách push code lên repo: 
