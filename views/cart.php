@@ -131,13 +131,13 @@ $result = $stmt->get_result();
                         </div>
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Phí giao hàng</h6>
-                            <h6 class="font-weight-medium">10,000 VNĐ</h6>
+                            <h6 class="font-weight-medium">0 VNĐ</h6>
                         </div>
                     </div>
                     <div class="card-footer border-primary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Tổng cộng</h5>
-                            <h5 class="font-weight-bold"><?= number_format($tong_tien + 10000) ?> VNĐ</h5> <!-- Tổng cộng với phí giao hàng -->
+                            <h5 class="font-weight-bold"><?= number_format($tong_tien + 0) ?> VNĐ</h5> <!-- tính tổng cộng tiền -->
                         </div>
                         <button class="btn btn-block btn-primary my-3 py-3">Tiến Hành Thanh Toán</button>
                     </div>

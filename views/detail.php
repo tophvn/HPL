@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <?php include '../includes/header.php'; ?>
     <!-- Page Header Start -->
-    <div class="container-fluid bg-secondary mb-5">
+    <!-- <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">Chi Tiết Sản Phẩm</h1>
             <div class="d-inline-flex">
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="m-0">Chi Tiết Sản Phẩm</p>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Shop Detail Start -->
     <div class="container-fluid py-5">
@@ -99,13 +99,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div id="product-carousel" class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner border">
                         <div class="carousel-item active">
-                            <img class="w-100 h-100" src="assets/images/<?= $product['image'] ?>" alt="Image">
+                            <img class="w-100 h-100" src="../assets/img_product/<?= $product['image'] ?>" alt="Image">
                         </div>
                         <div class="carousel-item">
-                            <img class="w-100 h-100" src="assets/images/<?= $product['image2'] ?>" alt="Image">
+                            <img class="w-100 h-100" src="../assets/img_product/<?= $product['image2'] ?>" alt="Image">
                         </div>
                         <div class="carousel-item">
-                            <img class="w-100 h-100" src="assets/images/<?= $product['image3'] ?>" alt="Image">
+                            <img class="w-100 h-100" src="../assets/img_product/<?= $product['image3'] ?>" alt="Image">
                         </div>
                     </div>
                     <a class="carousel-control-prev" href="#product-carousel" data-slide="prev">
@@ -182,15 +182,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="d-flex align-items-center mb-4 pt-2">
-                        <div class="input-group quantity mr-3" style="width: 130px;">
-                            <div class="input-group-btn">
-                                <button class="btn btn-primary btn-minus" type="button" onclick="decrementQuantity()">
+                        <div class="input-group" style="width: 130px;">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity()">
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </div>
-                            <input type="text" class="form-control bg-secondary text-center" name="quantity" id="quantity" value="1" required>
-                            <div class="input-group-btn">
-                                <button class="btn btn-primary btn-plus" type="button" onclick="incrementQuantity()">
+                            <input type="number" class="form-control text-center" name="quantity" id="quantity" value="1" min="1" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity()">
                                     <i class="fa fa-plus"></i>
                                 </button>
                             </div>
@@ -237,7 +237,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="tab-pane fade" id="tab-pane-2">
                         <h4 class="mb-3">Thông tin bổ sung</h4>
-                        <p>Coming soon...</p>
+                        <p>Xin lưu ý, tất cả các mặt hàng giảm giá được mua từ ngày 8 tháng 11 đến ngày 1 tháng 1 chỉ được ĐỔI TRẢ.</p>
                     </div>
                     <div class="tab-pane fade" id="tab-pane-3">
                         <h4 class="mb-3">Đánh giá</h4>
@@ -262,50 +262,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </div>
-    
-    <!-- Products Start -->
+
+    <!-- Products you like -->
     <div class="container-fluid py-5">
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">BẠN CÓ THỂ THÍCH</span></h2>
         </div>
         <div class="row px-xl-5">
             <?php
-            // Truy vấn để lấy 4 sản phẩm ngẫu nhiên
+            // truy vấn lấy 4 sản phẩm ngẫu nhiên
             $q1 = Database::query("SELECT products.*, categories.category_name 
                                     FROM products 
                                     JOIN categories ON products.category_id = categories.category_id 
-                                    ORDER BY RAND() LIMIT 4");                    
+                                    ORDER BY RAND() LIMIT 4");
             // Hiển thị sản phẩm
             while ($r1 = $q1->fetch_array()) {
-                echo '
+                $imagePath = (substr($r1['image'], 0, 4) == 'http') ? $r1['image'] : '../assets/img_product/' . $r1['image'];
+            ?>
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                     <div class="card product-item border-0">
                         <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <img class="img-fluid w-100" src="assets/images/' . htmlspecialchars($r1['image']) . '" alt="">
+                            <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $r1['product_name'] ?>">
                         </div>
                         <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h6 class="text-truncate mb-3">' . htmlspecialchars($r1['product_name']) . '</h6>
+                            <h6 class="text-truncate mb-3"><?= $r1['product_name'] ?></h6>
                             <div class="d-flex justify-content-center">
-                                <h6>' . number_format($r1['price']) . ' VNĐ</h6>
-                                <h6 class="text-muted ml-2"><del>' . number_format($r1['price']) . ' VNĐ</del></h6>
+                                <h6><?= number_format($r1['price']) ?> VNĐ</h6>
+                                <h6 class="text-muted ml-2"><del><?= number_format($r1['price']) ?> VNĐ</del></h6>
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="detail.php?id=' . $r1['product_id'] . '" class="btn btn-sm text-dark p-0">
+                            <a href="detail.php?id=<?= $r1['product_id'] ?>" class="btn btn-sm text-dark p-0">
                                 <i class="fas fa-eye text-primary mr-1"></i>Xem Chi Tiết
                             </a>
                             <form action="" method="POST">
-                                <input type="hidden" name="productId" value="' . $r1['product_id'] . '">
-                                <input type="hidden" name="userId" value="' . $id . '">
+                                <input type="hidden" name="productId" value="<?= $r1['product_id'] ?>">
+                                <input type="hidden" name="userId" value="<?= $id ?>">
                                 <button class="btn btn-sm text-dark p-0" type="submit">
                                     <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ
                                 </button>
                             </form>
                         </div>
                     </div>
-                </div>';
-            }
-            ?>
+                </div>
+            <?php } ?>
         </div>
     </div>
 
@@ -315,5 +315,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="../js/main.js"></script>
+    
+    <!-- scipt cho nút tăng giảm sl -->
+    <script>
+        function incrementQuantity() {
+            var quantity = document.getElementById("quantity");
+            quantity.value = parseInt(quantity.value) + 1;
+        }
+
+        function decrementQuantity() {
+            var quantity = document.getElementById("quantity");
+            if (parseInt(quantity.value) > 1) {
+                quantity.value = parseInt(quantity.value) - 1;
+            }
+        }
+    </script>
 </body>
 </html>

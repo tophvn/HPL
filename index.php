@@ -1,11 +1,12 @@
 <?php
 include('config/Database.php');
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SHOP THỜI TRANG - HPL FASHION</title>
+    <title>HPL FASHION - TRANG CHỦ</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <!-- Favicon -->
     <link href=" " rel="icon">
@@ -19,8 +20,8 @@ include('config/Database.php');
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 </head>
+
 <body>
-    <!-- Phần Header -->
     <?php include 'includes/header.php'; ?>
     <!-- Featured Start -->
     <div class="container-fluid pt-5">
@@ -28,29 +29,30 @@ include('config/Database.php');
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fa fa-check text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">Sản Phẩm Chất Lượng</h5>
+                    <h5 class="font-weight-semi-bold m-0">SẢN PHẨM CHẤT LƯỢNG</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
-                    <h5 class="font-weight-semi-bold m-0">Miễn Phí Vận Chuyển</h5>
+                    <h5 class="font-weight-semi-bold m-0">MIỄN PHÍ VẬN CHUYỂN</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fas fa-exchange-alt text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">Đổi Trả Trong 7 Ngày</h5>
+                    <h5 class="font-weight-semi-bold m-0">ĐỔI TRẢ TRONG 7 NGÀY</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fa fa-phone-volume text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">Hỗ Trợ 24/7</h5>
+                    <h5 class="font-weight-semi-bold m-0">HỖ TRỢ 24/7</h5>
                 </div>
             </div>
         </div>
     </div>
+
     <!-- Offer Start -->
     <div class="container-fluid offer pt-5">
         <div class="row px-xl-5">
@@ -78,55 +80,55 @@ include('config/Database.php');
     </div>
 
     <!-- Products -->
-    <div class="container-fluid pt-5">
-        <div class="text-center mb-4">
-            <h2 class="section-title px-5"><span class="px-2">Sản phẩm mới</span></h2>
-        </div>
-        <div class="row px-xl-5 pb-3">
-            <?php
-            // Kết nối đến cơ sở dữ liệu
-            $conn = Database::getConnection(); 
-            // Lấy 8 sản phẩm mới nhất
-            $sql = "SELECT * FROM products LIMIT 8"; 
-            $result = $conn->query($sql);
-
-            if ($result->num_rows > 0) {
-                // Hiển thị từng sản phẩm
-                while ($row = $result->fetch_assoc()) {
-                    ?>
-                        <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-                            <div class="card product-item border-0 mb-4">
-                                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                    <img class="img-fluid w-100" src="<?= $row['image']; ?>" alt="">
-                                </div>
-                                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                    <h6 class="text-truncate mb-3"><?= htmlspecialchars($row['product_name']); ?></h6>
-                                    <div class="d-flex justify-content-center">
-                                        <h6><?= number_format($row['price'], 0, ',', '.'); ?> VND</h6>
-                                    </div>
-                                </div>
-                                <div class="card-footer d-flex justify-content-between bg-light border">
-                                    <a href="views/detail.php?id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
-                                        <i class="fas fa-eye text-primary mr-1"></i>XEM CHI TIẾT
-                                    </a>
-                                    <a href="cart.php?action=add&id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
-                                        <i class="fas fa-shopping-cart text-primary mr-1"></i>THÊM VÀO GIỎ
-                                    </a>
-                                </div>
+<div class="container-fluid pt-5">
+    <div class="text-center mb-4">
+        <h2 class="section-title px-5"><span class="px-2">NEW</span></h2>
+    </div>
+    <div class="row px-xl-5 pb-3">
+        <?php
+        $conn = Database::getConnection(); 
+        $sql = "SELECT * FROM products LIMIT 8"; 
+        $result = $conn->query($sql);
+        if ($result->num_rows > 0) {
+            // Hiển thị từng sản phẩm
+            while ($row = $result->fetch_assoc()) {
+                $imagePath = (substr($row['image'], 0, 4) == 'http') ? $row['image'] : 'assets/img_product/' . $row['image'];
+                ?>
+                <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                    <div class="card product-item border-0 mb-4">
+                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                            <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= htmlspecialchars($row['product_name']); ?>">
+                        </div>
+                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                            <h6 class="text-truncate mb-3"><?= htmlspecialchars($row['product_name']); ?></h6>
+                            <div class="d-flex justify-content-center">
+                                <h6><?= number_format($row['price'], 0, ',', '.'); ?> VND</h6>
                             </div>
                         </div>
-                    <?php
-                    }
-            } else {
-                echo '<p class="text-center">Không có sản phẩm nào.</p>';
+                        <div class="card-footer d-flex justify-content-between bg-light border">
+                            <a href="views/detail.php?id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
+                                <i class="fas fa-eye text-primary mr-1"></i>XEM CHI TIẾT
+                            </a>
+                            <a href="cart.php?action=add&id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
+                                <i class="fas fa-shopping-cart text-primary mr-1"></i>THÊM VÀO GIỎ
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <?php
             }
-            $conn->close(); 
-            ?>
-        </div>
-        <div class="text-center mb-4">
-            <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
-        </div>
+        } else {
+            echo '<p class="text-center">Không có sản phẩm nào.</p>';
+        }
+        $conn->close(); 
+        ?>
     </div>
+    <div class="text-center mb-4">
+        <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
+    </div>
+</div>
+
+
     <!-- Footer-->
     <?php include 'includes/footer.php'; ?>
     <!-- Quay Lại Đầu Trang -->

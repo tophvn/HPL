@@ -2,7 +2,7 @@
 include('../config/Database.php');
 session_start();
 // Thiết lập giới hạn sản phẩm trên mỗi trang
-$limit = 20;
+$limit = 14;
 
 // Lấy trang hiện tại từ URL, nếu không có thì mặc định là 1
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -152,23 +152,23 @@ if (isset($_SESSION['message'])) {
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-1">
-                            <label class="custom-control-label" for="color-1">Louis Vuitton</label>
+                            <label class="custom-control-label" for="color-1">ÁO KHOÁC</label>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-2">
-                            <label class="custom-control-label" for="color-2">Gucci</label>
+                            <label class="custom-control-label" for="color-2">ÁO SƠ MI</label>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-3">
-                            <label class="custom-control-label" for="color-3">Chanel</label>
+                            <label class="custom-control-label" for="color-3">QUẦN JEANS</label>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-4">
-                            <label class="custom-control-label" for="color-4">Coach</label>
+                            <label class="custom-control-label" for="color-4">QUẦN DÀI</label>
                         </div>
                         <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
                             <input type="checkbox" class="custom-control-input" id="color-5">
-                            <label class="custom-control-label" for="color-5">Dior</label>
+                            <label class="custom-control-label" for="color-5">HOODIES</label>
                         </div>
                     </form>
                 </div>
@@ -209,13 +209,17 @@ if (isset($_SESSION['message'])) {
             <div class="col-lg-9 col-md-12">
                 <div class="row">
                     <?php while ($product = $result->fetch_assoc()): ?>
-                        <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                            <div class="card product-item border-0 mb-4">
+                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                            <div class="card product-item border-0">
                                 <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                    <img class="img-fluid w-100" src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['product_name']) ?>">
+                                    <?php
+                                        // Kiểm tra đường dẫn ảnh
+                                        $imagePath = (substr($product['image'], 0, 4) == 'http') ? $product['image'] : '../assets/img_product/' . $product['image'];
+                                    ?>
+                                    <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $product['product_name'] ?>">
                                 </div>
                                 <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                    <h6 class="text-truncate mb-3"><?= htmlspecialchars($product['product_name']) ?></h6>
+                                    <h6 class="text-truncate mb-3"><?= $product['product_name'] ?></h6>
                                     <div class="d-flex justify-content-center">
                                         <h6><?= number_format($product['price']) ?> VNĐ</h6>
                                         <?php if (isset($product['old_price']) && $product['old_price'] !== null): ?>
@@ -229,9 +233,8 @@ if (isset($_SESSION['message'])) {
                                     </a>
                                     <form method="POST" action="" class="d-flex align-items-center">
                                         <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
-                                        <input type="number" name="quantity" value="1" min="1" style="width: 60px;" class="form-control">
-                                        <button type="submit" name="add_to_cart" class="btn btn-sm text-dark p-0">
-                                            <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ Hàng
+                                        <button type="submit" name="add_to_cart" class="btn btn-sm text-dark p-0 bg-white">
+                                            <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ
                                         </button>
                                     </form>
                                 </div>
@@ -240,8 +243,7 @@ if (isset($_SESSION['message'])) {
                     <?php endwhile; ?>
                 </div>
             </div>
-        </div>  
-
+        </div>
         <!-- Thanh chuyển trang -->
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">
@@ -256,10 +258,8 @@ if (isset($_SESSION['message'])) {
 
     <!-- Footer -->
     <?php include '../includes/footer.php'; ?>
-    
     <!-- Quay Lại Đầu Trang -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
-    
+    <!-- <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a> -->
     <!-- Thư Viện JavaScript -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
