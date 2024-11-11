@@ -88,6 +88,7 @@ INSERT INTO `cart_item` (`cart_item_id`, `cart_id`, `product_id`, `quantity`, `s
 (4, 3, 1, 2, '', ''),
 (5, 3, 7, 3, 'XL', 'Green');
 
+
 -- --------------------------------------------------------
 
 --

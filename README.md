@@ -33,4 +33,8 @@ git push origin main --force (xóa toàn bộ và push lại) k nên
 git remote remove origin
 
 
+<<<<<<< HEAD
 git remote set-url origin https://github.com/tophvn/HPL.git
+=======
+git remote set-url origin https://github.com/tophvn/HPL.git
+>>>>>>> origin/main
