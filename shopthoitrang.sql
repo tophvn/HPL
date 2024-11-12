@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 11, 2024 at 02:15 PM
+-- Generation Time: Nov 12, 2024 at 11:56 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -24,28 +24,6 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `brands`
---
-
-CREATE TABLE `brands` (
-  `brand_id` int NOT NULL,
-  `brand_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `brands`
---
-
-INSERT INTO `brands` (`brand_id`, `brand_name`) VALUES
-(1, 'Louis Vuitton'),
-(2, 'Gucci'),
-(3, 'Chanel'),
-(4, 'Coach'),
-(5, 'Dior');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `cart`
 --
 
@@ -60,7 +38,9 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`cart_id`, `user_id`, `created_at`) VALUES
-(3, 29, '2024-11-11 04:46:39');
+(3, 29, '2024-11-11 04:46:39'),
+(6, 35, '2024-11-12 07:45:22'),
+(7, NULL, '2024-11-12 07:57:57');
 
 -- --------------------------------------------------------
 
@@ -82,12 +62,13 @@ CREATE TABLE `cart_item` (
 --
 
 INSERT INTO `cart_item` (`cart_item_id`, `cart_id`, `product_id`, `quantity`, `size`, `color`) VALUES
-(1, 3, 1, 1, 'XL', 'Black'),
-(2, 3, 1, 1, 'XL', 'Green'),
-(3, 3, 2, 2, 'XL', 'Red'),
-(4, 3, 1, 2, '', ''),
-(5, 3, 7, 3, 'XL', 'Green');
-
+(7, 3, 1, 2, 'L', 'Blue'),
+(8, 3, 8, 3, 'XL', 'White'),
+(9, 3, 2, 1, 'L', 'Red'),
+(17, 6, 2, 1, 'XL', 'Red'),
+(19, 6, 2, 2, 'S', 'White'),
+(20, 6, 1, 1, 'XL', 'Green'),
+(21, 6, 1, 2, 'S', 'White');
 
 -- --------------------------------------------------------
 
@@ -130,6 +111,29 @@ CREATE TABLE `comments` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `favorites`
+--
+
+CREATE TABLE `favorites` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `favorites`
+--
+
+INSERT INTO `favorites` (`id`, `user_id`, `product_id`, `created_at`) VALUES
+(11, 35, 1, '2024-11-12 08:40:26'),
+(12, 35, 2, '2024-11-12 08:40:58'),
+(19, 29, 2, '2024-11-12 11:47:37'),
+(24, 29, 1, '2024-11-12 11:52:20');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `order`
 --
 
@@ -139,8 +143,20 @@ CREATE TABLE `order` (
   `status_id` int DEFAULT NULL,
   `order_date` datetime DEFAULT NULL,
   `order_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `image_order` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
+  `payment_method` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `total_amount` decimal(10,2) NOT NULL,
+  `shipping_method` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order`
+--
+
+INSERT INTO `order` (`order_id`, `user_id`, `status_id`, `order_date`, `order_address`, `payment_method`, `total_amount`, `shipping_method`) VALUES
+(35, 29, 1, '2024-11-12 14:18:15', '61 Tân Hương, Tân Phú, TP.HCM', 'Thẻ Tín dụng/Ghi nợ', '73995.00', 'express'),
+(36, 29, 1, '2024-11-12 14:38:37', '61 Tân Hương, Tân Phú, TP.HCM', 'Thẻ Tín dụng/Ghi nợ', '27994.00', 'fast'),
+(37, 35, 1, '2024-11-12 14:53:39', '140 lê trọng tấn TP. HCM', 'Thanh toán khi nhận hàng (COD)', '3999.00', 'fast'),
+(38, 29, 1, '2024-11-12 18:54:10', 'Tân Phú, TP. HCM', 'Thanh toán khi nhận hàng (COD)', '27994.00', 'Fast');
 
 -- --------------------------------------------------------
 
@@ -154,6 +170,20 @@ CREATE TABLE `order_detail` (
   `product_id` int DEFAULT NULL,
   `order_quantity` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_detail`
+--
+
+INSERT INTO `order_detail` (`order_detail_id`, `order_id`, `product_id`, `order_quantity`) VALUES
+(48, 35, 8, 3),
+(49, 36, 1, 2),
+(50, 36, 8, 3),
+(51, 36, 2, 1),
+(52, 37, 2, 1),
+(53, 38, 1, 2),
+(54, 38, 8, 3),
+(55, 38, 2, 1);
 
 -- --------------------------------------------------------
 
@@ -178,7 +208,7 @@ CREATE TABLE `products` (
 
 INSERT INTO `products` (`product_id`, `product_name`, `price`, `category_id`, `image`, `image2`, `image3`, `description`) VALUES
 (1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 2999, 1, 'image1_1.png', 'image1_2.png', 'image1_3.png', 'Áo sweatshirt kiểu oversized boxy với thêu Boucle cổ điển của Boy London.\n\nTrọng lượng áo T-shirt 400GSM. Màu đen.\n\nChất liệu hoàn thiện mềm mại. Người mẫu cao 6ft và mặc size M.'),
-(2, 'ÁO PHÔNG BOY RACER', 3999, 2, 'image2_1.png', 'image2_2.png', 'image2_3.png', 'Áo T-shirt kiểu oversized boxy với logo/slogan lớn ở giữa.\n\nChất liệu hoàn thiện mềm mại.\n\nNgười mẫu cao 6ft và mặc size M.'),
+(2, 'ÁO PHÔNG BOY RACER', 3999, 6, 'image2_1.png', 'image2_2.png', 'image2_3.png', 'Áo T-shirt kiểu oversized boxy với logo/slogan lớn ở giữa.\n\nChất liệu hoàn thiện mềm mại.\n\nNgười mẫu cao 6ft và mặc size M.'),
 (3, 'ÁO THUN MOTO STICKER BOMB', 4999, 3, 'image3_1.png', 'image3_2.png', 'image3_3.png', 'Áo T-shirt với đồ họa sticker bomb 360 độ. Trọng lượng áo T-shirt 200GSM. Chất liệu hoàn thiện mềm mại.'),
 (4, 'ÁO THUN STRENGTH', 5999, 4, 'image4_1.png', 'image4_2.png', 'image4_3.png', 'Áo T-shirt kiểu oversized boxy với in và thêu đồ họa ở phía trước.\n\nNhãn da ở viền dưới phía trước.\n\nTrọng lượng áo T-shirt 200GSM.\n\nChất liệu hoàn thiện mềm mại.'),
 (5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 4599, 1, 'image5_1.png', 'image5_2.png', 'image5_3.png', 'Áo Polo Golf Nam với chất liệu chống nắng, phù hợp cho mọi sân golf.'),
@@ -231,30 +261,27 @@ CREATE TABLE `users` (
   `phonenumber` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `roles` enum('admin','user') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'user'
+  `roles` enum('admin','user') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'user',
+  `address1` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `address2` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `password`, `phonenumber`, `name`, `email`, `roles`) VALUES
-(29, 'hoanghai', '202cb962ac59075b964b07152d234b70', '0793897147', 'Hoàng Hải', '123@gmail.com', 'user'),
-(30, 'hoang1', '202cb962ac59075b964b07152d234b70', '0793897147', 'vua trò chơi ', 'hoanghaii1710@gmail.com', 'user'),
-(31, 'hoàng', '202cb962ac59075b964b07152d234b70', '123', 'Hoàng Hải', 'hoanghaimcpe@gmail.comg', 'user'),
-(32, 'hoang12', '202cb962ac59075b964b07152d234b70', '0330330333', 'hai', 'khongbiet@gmail.deptrai', 'user'),
-(33, 'hoanghai2', '202cb962ac59075b964b07152d234b70', '0793897147', 'SIMXtractor', 'hai0777@gmail.com', 'user'),
-(34, 'hoang14', '202cb962ac59075b964b07152d234b70', '0793897147', 'SIMXtractor', 'hoanghai070727@gmail.com', 'user');
+INSERT INTO `users` (`user_id`, `username`, `password`, `phonenumber`, `name`, `email`, `roles`, `address1`, `address2`) VALUES
+(29, 'hoanghai', '202cb962ac59075b964b07152d234b70', '0793897147', 'Hoàng Hải', '123@gmail.com', 'user', '61 Tân Hương, Tân Phú, TP.HCM', 'Tân Phú, TP. HCM'),
+(30, 'hoang1', '202cb962ac59075b964b07152d234b70', '0793897147', 'vua trò chơi ', 'hoanghaii1710@gmail.com', 'user', NULL, NULL),
+(31, 'hoàng', '202cb962ac59075b964b07152d234b70', '123', 'Hoàng Hải', 'hoanghaimcpe@gmail.comg', 'user', NULL, NULL),
+(32, 'hoang12', '202cb962ac59075b964b07152d234b70', '0330330333', 'hai', 'khongbiet@gmail.deptrai', 'user', NULL, NULL),
+(33, 'hoanghai2', '202cb962ac59075b964b07152d234b70', '0793897147', 'SIMXtractor', 'hai0777@gmail.com', 'user', NULL, NULL),
+(34, 'hoang14', '202cb962ac59075b964b07152d234b70', '0793897147', 'SIMXtractor', 'hoanghai070727@gmail.com', 'user', NULL, NULL),
+(35, 'hoanghaine', '202cb962ac59075b964b07152d234b70', '0793897147', 'Hải Đẹp Trai', 'hoanghai113@gmail.com', 'user', '140 lê trọng tấn TP. HCM', '');
 
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `brands`
---
-ALTER TABLE `brands`
-  ADD PRIMARY KEY (`brand_id`);
 
 --
 -- Indexes for table `cart`
@@ -283,6 +310,14 @@ ALTER TABLE `comments`
   ADD PRIMARY KEY (`comment_id`),
   ADD KEY `product_id` (`product_id`),
   ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `favorites`
+--
+ALTER TABLE `favorites`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `user_id` (`user_id`,`product_id`),
+  ADD KEY `product_id` (`product_id`);
 
 --
 -- Indexes for table `order`
@@ -324,22 +359,16 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT for table `brands`
---
-ALTER TABLE `brands`
-  MODIFY `brand_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `cart_item`
 --
 ALTER TABLE `cart_item`
-  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -354,16 +383,22 @@ ALTER TABLE `comments`
   MODIFY `comment_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
+-- AUTO_INCREMENT for table `favorites`
+--
+ALTER TABLE `favorites`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
 -- AUTO_INCREMENT for table `order`
 --
 ALTER TABLE `order`
-  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `order_detail`
 --
 ALTER TABLE `order_detail`
-  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -375,7 +410,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- Constraints for dumped tables
@@ -394,6 +429,13 @@ ALTER TABLE `cart_item`
 ALTER TABLE `comments`
   ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`),
   ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `favorites`
+--
+ALTER TABLE `favorites`
+  ADD CONSTRAINT `favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `favorites_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
 
 --
 -- Constraints for table `order`

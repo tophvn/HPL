@@ -10,8 +10,6 @@
    
    Download Laragon: https://laragon.org/download/
    
-commit(còn thiếu các hành động search, lọc, order, history, checkout,...)
-
 ### Cách push code lên repo: 
 
 git init

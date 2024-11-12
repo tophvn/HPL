@@ -1,67 +1,47 @@
 <?php
 session_start();
 include('../config/Database.php');
+
 // Lấy ID sản phẩm từ URL
 $product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-// Truy vấn để lấy thông tin sản phẩm
+
+// lấy thông tin sản phẩm
 $query = "SELECT * FROM products WHERE product_id = $product_id";
 $result = Database::getConnection()->query($query);
-if ($result->num_rows > 0) {
-    $product = $result->fetch_assoc();
-} else {
-    echo "<h2>Sản phẩm không tìm thấy</h2>";
-    exit;
+if ($result->num_rows === 0) {
+    exit; // Nếu không tìm thấy sản phẩm, dừng lại
 }
+$product = $result->fetch_assoc();
+
 // Kiểm tra và lấy ID người dùng từ session
-$id = 0; // Mặc định là không có người dùng
-if (isset($_SESSION['user']) && isset($_SESSION['user']['user_id'])) {
-    $id = $_SESSION['user']['user_id']; // Lấy user_id từ session nếu có
-} else {
-    echo "<script>alert('Vui lòng đăng nhập để tiếp tục.');</script>";
-    exit;
-}
+$id = isset($_SESSION['user']['user_id']) ? $_SESSION['user']['user_id'] : 0;
 
-// add sản phẩm vào giỏ hàng
+// Thêm sản phẩm vào giỏ hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
-    $size = isset($_POST['size']) ? htmlspecialchars($_POST['size']) : '';
-    $color = isset($_POST['color']) ? htmlspecialchars($_POST['color']) : '';
-    // Kiểm tra xem người dùng đã có giỏ hàng chưa
-    $conn = Database::getConnection();
-    $stmt = $conn->prepare("SELECT * FROM cart WHERE user_id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    // Nếu chưa có giỏ hàng, tạo giỏ hàng mới
-    if ($result->num_rows == 0) {
-        $stmt = $conn->prepare("INSERT INTO cart (user_id) VALUES (?)");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $cart_id = $conn->insert_id; // Lấy cart_id của giỏ hàng vừa tạo
+    if ($id === 0) {
+        echo "<script type='text/javascript'>alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');</script>";
     } else {
-        $cart = $result->fetch_assoc();
-        $cart_id = $cart['cart_id']; // Lấy cart_id của giỏ hàng đã có
+        $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
+        $size = $_POST['size'] ?? '';
+        $color = $_POST['color'] ?? '';
+
+        $conn = Database::getConnection();
+        // Kiểm tra xem người dùng đã có giỏ hàng chưa
+        $stmt = $conn->query("SELECT * FROM cart WHERE user_id = $id");
+        $cart_id = ($stmt->num_rows === 0) ? $conn->query("INSERT INTO cart (user_id) VALUES ($id)") : $stmt->fetch_assoc()['cart_id'];
+
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+        $stmt = $conn->query("SELECT * FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
+        
+        if ($stmt->num_rows > 0) {
+            // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
+            $conn->query("UPDATE cart_item SET quantity = quantity + $quantity WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
+        } else {
+            // Nếu sản phẩm chưa có, thêm vào giỏ hàng
+            $conn->query("INSERT INTO cart_item (cart_id, product_id, quantity, size, color) VALUES ($cart_id, $product_id, $quantity, '$size', '$color')");
+        }
+        echo "<script type='text/javascript'>alert('Sản phẩm đã được thêm vào giỏ hàng!');</script>";
     }
-
-    // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-    $stmt = $conn->prepare("SELECT * FROM cart_item WHERE cart_id = ? AND product_id = ? AND size = ? AND color = ?");
-    $stmt->bind_param("iiss", $cart_id, $product_id, $size, $color);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    if ($result->num_rows > 0) {
-        // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
-        $stmt = $conn->prepare("UPDATE cart_item SET quantity = quantity + ? WHERE cart_id = ? AND product_id = ? AND size = ? AND color = ?");
-        $stmt->bind_param("iiiss", $quantity, $cart_id, $product_id, $size, $color);
-        $stmt->execute();
-    } else {
-        // Nếu sản phẩm chưa có, thêm vào giỏ hàng
-        $stmt = $conn->prepare("INSERT INTO cart_item (cart_id, product_id, quantity, size, color) VALUES (?, ?, ?, ?, ?)");
-        $stmt->bind_param("iiiss", $cart_id, $product_id, $quantity, $size, $color);
-        $stmt->execute();
-    }
-
-    echo "<script>window.onload = function() { alert('Sản phẩm đã được thêm vào giỏ hàng!'); }</script>";
 }
 ?>
 
@@ -80,19 +60,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
-    <!-- Page Header Start -->
-    <!-- <div class="container-fluid bg-secondary mb-5">
-        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
-            <h1 class="font-weight-semi-bold text-uppercase mb-3">Chi Tiết Sản Phẩm</h1>
-            <div class="d-inline-flex">
-                <p class="m-0"><a href="../index.php">Trang Chủ</a></p>
-                <p class="m-0 px-2">-</p>
-                <p class="m-0">Chi Tiết Sản Phẩm</p>
-            </div>
-        </div>
-    </div> -->
-
-    <!-- Shop Detail Start -->
     <div class="container-fluid py-5">
         <div class="row px-xl-5">
             <div class="col-lg-5 pb-5">
@@ -118,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="col-lg-7 pb-5">
-                <h3 class="font-weight-semi-bold"><?= htmlspecialchars($product['product_name']) ?></h3>
+                <h3 class="font-weight-semi-bold"><?= $product['product_name'] ?></h3>
                 <div class="d-flex mb-3">
                     <div class="text-primary mr-2">
                         <small class="fas fa-star"></small>
@@ -127,10 +94,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <small class="fas fa-star-half-alt"></small>
                         <small class="far fa-star"></small>
                     </div>
-                    <small class="pt-1">(50 Reviews)</small>
+                    <small class="pt-1">(10 Reviews)</small>
                 </div>
                 <h3 class="font-weight-semi-bold mb-4"><?= number_format($product['price']) ?> VNĐ</h3>
-                <p class="mb-4"><?= htmlspecialchars($product['description']) ?></p>
+                <p class="mb-4"><?= $product['description'] ?></p>
 
                 <form method="POST" id="addToCartForm">
                     <div class="d-flex mb-3">
@@ -214,9 +181,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a class="text-dark px-2" href="">
                             <i class="fab fa-linkedin-in"></i>
                         </a>
-                        <a class="text-dark px-2" href="">
-                            <i class="fab fa-pinterest"></i>
-                        </a>
                     </div>
                 </div>
             </div>
@@ -233,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="tab-pane-1">
                         <h4 class="mb-3">Mô tả sản phẩm</h4>
-                        <p><?= htmlspecialchars($product['description']) ?></p>
+                        <p><?= $product['description'] ?></p>
                     </div>
                     <div class="tab-pane fade" id="tab-pane-2">
                         <h4 class="mb-3">Thông tin bổ sung</h4>
@@ -246,10 +210,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         if ($reviewQuery->num_rows > 0) {
                             while ($review = $reviewQuery->fetch_array()) {
                                 echo '<div class="media mb-4">
-                                        <img src="img/user.jpg" alt="Hình ảnh" class="img-fluid mr-3 mt-1" style="width: 45px;">
+                                        <img src="../img/user.jpg" alt="Hình ảnh" class="img-fluid mr-3 mt-1" style="width: 45px;">
                                         <div class="media-body">
-                                            <h6>' . htmlspecialchars($review['name']) . '<small> - <i>' . htmlspecialchars($review['time_create']) . '</i></small></h6>
-                                            <p>' . htmlspecialchars($review['comment_text']) . '.</p>
+                                            <h6>' . $review['name'] . '<small> - <i>' . $review['time_create'] . '</i></small></h6>
+                                            <p>' . $review['comment_text'] . '.</p>
                                         </div>
                                     </div>';
                             }
@@ -261,16 +225,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
         </div>
+
     </div>
 
-    <!-- Products you like -->
+    <!-- Products đề xuất -->
     <div class="container-fluid py-5">
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">BẠN CÓ THỂ THÍCH</span></h2>
         </div>
         <div class="row px-xl-5">
             <?php
-            // truy vấn lấy 4 sản phẩm ngẫu nhiên
+            // lấy 4 sản phẩm ngẫu nhiên
             $q1 = Database::query("SELECT products.*, categories.category_name 
                                     FROM products 
                                     JOIN categories ON products.category_id = categories.category_id 
@@ -288,21 +253,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <h6 class="text-truncate mb-3"><?= $r1['product_name'] ?></h6>
                             <div class="d-flex justify-content-center">
                                 <h6><?= number_format($r1['price']) ?> VNĐ</h6>
-                                <h6 class="text-muted ml-2"><del><?= number_format($r1['price']) ?> VNĐ</del></h6>
                             </div>
                         </div>
-                        <div class="card-footer d-flex justify-content-between bg-light border">
-                            <a href="detail.php?id=<?= $r1['product_id'] ?>" class="btn btn-sm text-dark p-0">
-                                <i class="fas fa-eye text-primary mr-1"></i>Xem Chi Tiết
-                            </a>
-                            <form action="" method="POST">
-                                <input type="hidden" name="productId" value="<?= $r1['product_id'] ?>">
-                                <input type="hidden" name="userId" value="<?= $id ?>">
-                                <button class="btn btn-sm text-dark p-0" type="submit">
-                                    <i class="fas fa-shopping-cart text-primary mr-1"></i>Thêm Vào Giỏ
-                                </button>
-                            </form>
-                        </div>
+                        <div class="card-footer d-flex justify-content-center bg-light border">
+                        <a href="detail.php?id=<?= $r1['product_id'] ?>" class="btn btn-sm text-dark p-0">
+                            <i class="fas fa-eye text-primary mr-1"></i>Xem Chi Tiết
+                        </a>
+                    </div>
                     </div>
                 </div>
             <?php } ?>
@@ -311,11 +268,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php include '../includes/footer.php'; ?>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="../js/main.js"></script>
-    
     <!-- scipt cho nút tăng giảm sl -->
     <script>
         function incrementQuantity() {

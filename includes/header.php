@@ -1,7 +1,6 @@
 <?php
-// Kiểm tra trạng thái session và khởi động nếu chưa có
 if (session_status() === PHP_SESSION_NONE) {
-    session_start(); // Bắt đầu session
+    session_start();
 }
 
 include_once __DIR__ . '/../config/Database.php';
@@ -9,8 +8,35 @@ include_once __DIR__ . '/../config/Database.php';
 $conn = Database::getConnection();
 // Lấy danh sách danh mục
 $q1 = $conn->query("SELECT * FROM categories");
-// Kiểm tra xem trang hiện tại có phải là index.php không
+// Kiểm tra xem trang hiện tại có phải là index.php k
 $isIndexPage = basename($_SERVER['PHP_SELF']) === 'index.php';
+// Kiểm tra nếu người dùng đã đăng nhập
+if (isset($_SESSION['user'])) {
+    $user_id = $_SESSION['user']['user_id'];
+    // Lấy số lượng sản phẩm trong giỏ
+    $cart_query = "
+        SELECT SUM(cart_item.quantity) AS total_quantity 
+        FROM cart 
+        JOIN cart_item ON cart.cart_id = cart_item.cart_id 
+        WHERE cart.user_id = $user_id
+    ";
+    $cart_result = $conn->query($cart_query);
+    $row = $cart_result->fetch_assoc();
+    $cart_count = $row['total_quantity'] ? $row['total_quantity'] : 0; // Đặt về 0 nếu k có sản phẩm
+
+    // Lấy số lượng sản phẩm yêu thích
+    $favorites_query = "
+        SELECT COUNT(*) AS favorite_count
+        FROM favorites
+        WHERE user_id = $user_id
+    ";
+    $favorites_result = $conn->query($favorites_query);
+    $favorite_row = $favorites_result->fetch_assoc();
+    $favorite_count = $favorite_row['favorite_count'] ? $favorite_row['favorite_count'] : 0; // Đặt về 0 nếu k có sản phẩm yêu thích
+} else {
+    $cart_count = 0; 
+    $favorite_count = 0; 
+}
 ?>
 
     <div class="container-fluid">
@@ -57,7 +83,7 @@ $isIndexPage = basename($_SERVER['PHP_SELF']) === 'index.php';
             <div class="col-lg-6 col-6 text-left">
                 <form action="">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                        <input type="text" class="form-control" placeholder="Tìm kiếm">
                         <div class="input-group-append">
                             <span class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
@@ -66,42 +92,59 @@ $isIndexPage = basename($_SERVER['PHP_SELF']) === 'index.php';
                     </div>
                 </form>
             </div>
+            <div class="col-lg-3 col-6 text-right">
+                <a href="/ShopThoiTrang/views/favorites.php" class="btn border">
+                    <i class="fas fa-heart text-primary"></i>
+                    <span class="badge"><?php echo $favorite_count; ?></span> 
+                </a>
+                <a href="/ShopThoiTrang/views/cart.php" class="btn border">
+                    <i class="fas fa-shopping-cart text-primary"></i>
+                    <span class="badge"><?php echo $cart_count; ?></span> 
+                </a>
+            </div>
         </div>
     </div>
     <!-- Navbar -->
     <div class="container-fluid mb-5">
         <div class="row border-top px-xl-5">
-        <div class="col-lg-3 d-none d-lg-block">
-        <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
-            <h6 class="m-0">Danh Mục</h6>
-            <i class="fa fa-angle-down text-dark"></i>
-        </a>
-        <?php if ($isIndexPage): ?>
-            <nav class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
-                <div class="navbar-nav w-100 overflow-hidden" style="height: 250px">
-                <?php
+            <div class="col-lg-3 d-none d-lg-block">
+                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" 
+                data-toggle="collapse" 
+                href="#navbar-vertical" 
+                style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                    <h6 class="m-0 ">Danh Mục</h6>
+                    <i class="fa fa-angle-down text-dark"></i>
+                </a>
+                <nav class="collapse <?php echo $isIndexPage ? 'show' : ''; ?> navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
+                    <div class="navbar-nav w-100 overflow-hidden" style="height: 250px">
+                    <?php
                     // Lấy danh sách danh mục để hiển thị
                     while ($r1 = $q1->fetch_array()) {
                         echo '<li class="nav-item">';
-                        if ($r1['category_id'] == 2) {
-                            // Nếu là danh mục thứ 2, link tới trang collections.php
-                            echo '<a href="views/collection.php" class="nav-item nav-link">' . $r1['category_name'] . '</a>';
+                        echo '<a href="';
+                        // Đường dẫn tuyệt đối từ thư mục gốc (không có / trong đường dẫn)
+                        if ($r1['category_id'] == 1) {
+                            echo '/ShopThoiTrang/views/sale.php" class="nav-item nav-link">SALE</a>';
+                        } elseif ($r1['category_id'] == 2) {
+                            echo '/ShopThoiTrang/views/collection.php" class="nav-item nav-link">Bộ Sưu Tập</a>';
                         } elseif ($r1['category_id'] == 3) {
-                            // Nếu là danh mục thứ 3, link tới trang shop.php
-                            echo '<a href="../views/shop.php" class="nav-item nav-link">' . $r1['category_name'] . '</a>';
+                            echo '/ShopThoiTrang/views/accessories.php" class="nav-item nav-link">Phụ Kiện</a>';
+                        } elseif ($r1['category_id'] == 4) {
+                            echo '/ShopThoiTrang/views/women.php" class="nav-item nav-link">Nữ</a>';
+                        } elseif ($r1['category_id'] == 5) {
+                            echo '/ShopThoiTrang/views/kids.php" class="nav-item nav-link">Trẻ Em</a>';
+                        } elseif ($r1['category_id'] == 6) {
+                            echo '/ShopThoiTrang/views/men.php" class="nav-item nav-link">Nam</a>';
                         } else {
-                            // Các danh mục khác vẫn giữ nguyên link ban đầu
-                            echo '<a href="#' . $r1['category_id'] . '" class="nav-item nav-link">' . $r1['category_name'] . '</a>';
+                            echo '#'. $r1['category_id'] . '" class="nav-item nav-link">' . $r1['category_name'] . '</a>';
                         }
                         echo '</li>';
                     }
                     ?>
-
                     </div>
                 </nav>
-            <?php endif; ?>
-        </div>
-
+            </div>
+            
         <div class="col-lg-9">
             <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
                 <a href="index.php" class="text-decoration-none d-block d-lg-none">
@@ -127,9 +170,9 @@ $isIndexPage = basename($_SERVER['PHP_SELF']) === 'index.php';
                     <div class="navbar-nav">
                         <?php if (isset($_SESSION['user'])): ?>
                             <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Xin chào, <?php echo $_SESSION['user']['name']; ?>!</a>
+                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fas fa-user"></i> <?php echo $_SESSION['user']['name']; ?>!</a>
                                 <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="#" class="dropdown-item">Tài Khoản</a>
+                                    <a href="/ShopThoiTrang/views/account.php" class="dropdown-item">Tài Khoản</a>
                                     <a href="/ShopThoiTrang/views/logout.php" class="dropdown-item">Đăng Xuất</a>
                                 </div>
                             </div>

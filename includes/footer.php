@@ -1,35 +1,4 @@
-<div class="container-fluid py-5">
-    <!-- <div class="row px-xl-5">
-        <div class="col">
-            <div class="owl-carousel vendor-carousel">
-                <div class="vendor-item border p-4">
-                    <img src="img/vendor-1.jpg" alt="Nhà cung cấp 1">
-                </div>
-                <div class="vendor-item border p-4">
-                    <img src="img/vendor-2.jpg" alt="Nhà cung cấp 2">
-                </div>
-                <div class="vendor-item border p-4">
-                    <img src="img/vendor-3.jpg" alt="Nhà cung cấp 3">
-                </div>
-                <div class="vendor-item border p-4">
-                    <img src="img/vendor-4.jpg" alt="Nhà cung cấp 4">
-                </div>
-                <div class="vendor-item border p-4">
-                    <img src="img/vendor-5.jpg" alt="Nhà cung cấp 5">
-                </div>
-                <div class="vendor-item border p-4">
-                    <img src="img/vendor-6.jpg" alt="Nhà cung cấp 6">
-                </div>
-                <div class="vendor-item border p-4">
-                    <img src="img/vendor-7.jpg" alt="Nhà cung cấp 7">
-                </div>
-                <div class="vendor-item border p-4">
-                    <img src="img/vendor-8.jpg" alt="Nhà cung cấp 8">
-                </div>
-            </div>
-        </div>
-    </div> -->
-</div>
+
 <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
     <div class="row px-xl-5 pt-5">
         <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
@@ -46,27 +15,27 @@
         <div class="col-lg-8 col-md-12">
             <div class="row">
             <div class="col-md-4 mb-5">
-                <h5 class="font-weight-bold text-dark mb-4">Liên Kết Nhanh</h5>
+                <h5 class="font-weight-bold text-dark mb-4">LIÊN KẾT NHANH</h5>
                 <div class="d-flex flex-column justify-content-start">
-                    <a class="text-dark mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>Trang Chủ</a>
-                    <a class="text-dark mb-2" href="shop.php"><i class="fa fa-angle-right mr-2"></i>Sản Phẩm</a>
-                    <a class="text-dark mb-2" href="detail.php"><i class="fa fa-angle-right mr-2"></i>Chi Tiết</a>
-                    <a class="text-dark mb-2" href="cart.php"><i class="fa fa-angle-right mr-2"></i>Giỏ Hàng</a>
-                    <a class="text-dark" href="contact.php"><i class="fa fa-angle-right mr-2"></i>Liên Hệ</a>
+                    <a class="text-dark mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>TRANG CHỦ</a>
+                    <a class="text-dark mb-2" href="shop.php"><i class="fa fa-angle-right mr-2"></i>SẢN PHẨM</a>
+                    <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>ĐIỀU KHOẢN & ĐIỀU KIỆN</a>
+                    <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>CHÍNH SÁCH BẢO MẬT VÀ COOKIE</a>
+                    <a class="text-dark" href="#"><i class="fa fa-angle-right mr-2"></i>THẺ QUÀ TẶNG</a>
                 </div>
             </div>
             <div class="col-md-4 mb-5">
-                <h5 class="font-weight-bold text-dark mb-4">Liên Kết Khác</h5>
+                <h5 class="font-weight-bold text-dark mb-4">CHĂM SÓC KHÁCH HÀNG</h5>
                 <div class="d-flex flex-column justify-content-start">
-                    <a class="text-dark mb-2" href="about.php"><i class="fa fa-angle-right mr-2"></i>Giới Thiệu</a>
-                    <a class="text-dark mb-2" href="faq.php"><i class="fa fa-angle-right mr-2"></i>Câu Hỏi Thường Gặp</a>
-                    <a class="text-dark mb-2" href="return_policy.php"><i class="fa fa-angle-right mr-2"></i>Chính Sách Đổi Trả</a>
-                    <a class="text-dark mb-2" href="shipping_info.php"><i class="fa fa-angle-right mr-2"></i>Thông Tin Vận Chuyển</a>
-                    <a class="text-dark" href="contact.php"><i class="fa fa-angle-right mr-2"></i>Liên Hệ</a>
+                    <a class="text-dark mb-2" href="about.php"><i class="fa fa-angle-right mr-2"></i>VỀ CHÚNG TÔI</a>
+                    <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>CÂU HỎI THƯỜNG GẶP</a>
+                    <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>CHÍNH SÁCH ĐỔI TRẢ</a>
+                    <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>GIAO HÀNG & TRẢ HÀNG</a>
+                    <a class="text-dark" href="contact.php"><i class="fa fa-angle-right mr-2"></i>LIÊN HỆ</a>
                 </div>
             </div>
                 <div class="col-md-4 mb-5">
-                    <h5 class="font-weight-bold text-dark mb-4">Đăng ký để nhận tin tức</h5>
+                    <h5 class="font-weight-bold text-dark mb-4">ĐĂNG KÝ ĐỂ NHẬN TIN TỨC</h5>
                     <form action="">
                         <div class="form-group">
                             <input type="text" class="form-control border-0 py-4" placeholder="Họ Tên" required="required" />

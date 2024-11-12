@@ -1,76 +1,167 @@
-<!DOCTYPE html>
-<html lang="en">
+<?php
+include('../config/Database.php');
+session_start();
 
+// Kiểm tra nếu người dùng đã đăng nhập
+if (!isset($_SESSION['user'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// Lấy kết nối từ lớp Database
+$conn = Database::getConnection();
+$user_id = $_SESSION['user']['user_id'];
+
+// Lấy dữ liệu người dùng và giỏ hàng
+$user_query = "SELECT address1, address2 FROM users WHERE user_id = $user_id";
+$user = $conn->query($user_query)->fetch_assoc();
+
+$product_query = "SELECT products.product_name, products.price, cart_item.quantity, products.product_id 
+                  FROM products 
+                  JOIN cart_item ON products.product_id = cart_item.product_id 
+                  JOIN cart ON cart_item.cart_id = cart.cart_id 
+                  WHERE cart.user_id = $user_id";
+$result = $conn->query($product_query);
+
+$products = $result->fetch_all(MYSQLI_ASSOC);
+$total = array_reduce($products, fn($carry, $item) => $carry + $item['price'] * $item['quantity'], 0);
+
+// Khởi tạo phí giao hàng
+$shipping_fee = 0;
+
+// Xử lý form khi người dùng bấm đặt hàng
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $payment_method = $_POST['payment_method'];
+    $order_address = $_POST['shipping_address'];
+    $shipping_method = $_POST['shipping_method']; // Lưu phương thức giao hàng
+    $shipping_fee = ($shipping_method === 'Express') ? 50000 : 0;
+
+    // Cộng phí giao hàng vào tổng
+    $total += $shipping_fee;
+
+    // Lưu đơn hàng vào bảng `order`
+    $order_query = "INSERT INTO `order` (user_id, status_id, order_date, order_address, payment_method, shipping_method, total_amount) 
+                    VALUES ($user_id, 1, NOW(), '$order_address', '$payment_method', '$shipping_method', $total)";
+    
+    if ($conn->query($order_query)) {
+        $order_id = $conn->insert_id;
+
+        // Lưu chi tiết đơn hàng vào bảng `order_detail`
+        foreach ($products as $product) {
+            $detail_query = "INSERT INTO `order_detail` (order_id, product_id, order_quantity) 
+                             VALUES ($order_id, {$product['product_id']}, {$product['quantity']})";
+            $conn->query($detail_query);
+        }
+
+        // Điều hướng đến trang bill.php
+        header("Location: bill.php?order_id=" . $order_id);
+        exit();
+    } else {
+        echo "Error: " . $conn->error;
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8">
-    <title>HPL FASHION</title>
+    <title>HPL FASHION - Thanh Toán</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
-    <!-- Favicon -->
-    <link href="img/favicon.ico" rel="icon">
-    <!-- Google Web Fonts -->
+    <link href=" " rel="icon">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <!-- Customized Bootstrap Stylesheet -->
     <link href="../css/style.css" rel="stylesheet">
 </head>
 
 <body>
     <?php include '../includes/header.php'; ?>
-
     <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">Thanh Toán</h1>
             <div class="d-inline-flex">
-                <p class="m-0"><a href="index.php">TRANG CHỦ</a></p>
+                <p class="m-0"><a href="../index.php">Trang Chủ</a></p>
                 <p class="m-0 px-2">-</p>
                 <p class="m-0">Thanh Toán</p>
             </div>
         </div>
     </div>
 
-    <!-- Checkout  -->
+    <!-- Nội dung thanh toán -->
     <div class="container-fluid pt-5">
-        <div class="row px-xl-5">
-            <div class="col-lg-8">
-                <div class="mb-4">
-                    <h4 class="font-weight-semi-bold mb-4">Shipping Address</h4>
-                    <div class="row">
-                        <div class="col-md-12 form-group">
-                            <label>ĐỊA CHỈ</label>
-                            <input id="address" class="form-control" type="text" placeholder="123 Street">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-12 d-flex justify-content-between border rounded p-4">
+                <!-- Thông tin giao hàng -->
+                <div class="w-50 pr-3">
+                    <form action="" method="POST">
+                        <div class="mb-4">
+                            <h4 class="font-weight-semi-bold mb-4">Địa Chỉ Giao Hàng</h4>
+                            <div class="form-group">
+                                <label>Chọn Địa Chỉ</label>
+                                <?php if (empty($user['address1']) && empty($user['address2'])): ?>
+                                    <p style="color: red;">Vui lòng thêm địa chỉ trong tài khoản.</p>
+                                <?php else: ?>
+                                    <select class="form-control" name="shipping_address" required>
+                                        <?php if (!empty($user['address1'])) echo "<option value='{$user['address1']}'>{$user['address1']}</option>"; ?>
+                                        <?php if (!empty($user['address2'])) echo "<option value='{$user['address2']}'>{$user['address2']}</option>"; ?>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                    </div>
+
+                        <!-- Phương thức giao hàng -->
+                        <div class="mb-4">
+                            <h4 class="font-weight-semi-bold mb-4">Phương Thức Giao Hàng</h4>
+                            <div class="form-group">
+                                <label><input type="radio" name="shipping_method" value="Fast" checked> Giao hàng nhanh (0₫)</label><br>
+                                <label><input type="radio" name="shipping_method" value="Express"> Giao hàng hỏa tốc (50,000₫)</label>
+                            </div>
+                        </div>
+
+                        <!-- Phương thức thanh toán -->
+                        <div class="mb-4">
+                            <h4 class="font-weight-semi-bold mb-4">Phương Thức Thanh Toán</h4>
+                            <div class="form-group">
+                                <label><input type="radio" name="payment_method" value="Thanh toán khi nhận hàng (COD)" checked> Thanh toán khi nhận hàng (COD)</label><br>
+                                <label><input type="radio" name="payment_method" value="Thẻ Tín dụng/Ghi nợ"> Thẻ Tín dụng/Ghi nợ</label><br>
+                                <label><input type="radio" name="payment_method" value="Chuyển khoản ngân hàng"> Chuyển khoản ngân hàng</label><br>
+                                <label><input type="radio" name="payment_method" value="Thẻ nội địa NAPAS"> Thẻ nội địa NAPAS</label><br>
+                            </div>
+                        </div>
+                        <button class="btn btn-block btn-primary my-3 py-3" type="submit">Đặt Hàng</button>
+                    </form>
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="card border-secondary mb-5">
-                    <div class="card-header bg-secondary border-0">
-                        <h4 class="font-weight-semi-bold m-0">Order Total</h4>
-                    </div>
-                    <div class="card-body">
-                        <h5 class="font-weight-medium mb-3">Products</h5>
-                        <div class="d-flex justify-content-between">
-                            <p>Product 1 x 2</p>
-                            <p>$10.00</p>
+
+                <!-- Chi tiết đơn hàng -->
+                <div class="w-50 pl-3">
+                    <div class="card border-secondary mb-5">
+                        <div class="card-header bg-secondary border-0">
+                            <h4 class="font-weight-semi-bold m-0">Tổng Đơn Hàng</h4>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <p>Product 2 x 1</p>
-                            <p>$20.00</p>
+                        <div class="card-body">
+                            <h5 class="font-weight-medium mb-3">Sản Phẩm</h5>
+                            <?php foreach ($products as $product): ?>
+                            <div class="d-flex justify-content-between">
+                                <p><?php echo htmlspecialchars($product['product_name']) . ' x ' . htmlspecialchars($product['quantity']); ?></p>
+                                <p><?php echo number_format($product['price'] * $product['quantity'], 0, ',', '.'); ?>₫</p>
+                            </div>
+                            <?php endforeach; ?>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <h6>Tổng Cộng</h6>
+                                <h6><?php echo number_format($total, 0, ',', '.'); ?>₫</h6>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <h6>Phí Giao Hàng</h6>
+                                <h6><?php echo number_format($shipping_fee, 0, ',', '.'); ?>₫</h6>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <h6>Tổng Thanh Toán</h6>
+                                <h6><?php echo number_format($total + $shipping_fee, 0, ',', '.'); ?>₫</h6> <!-- Cập nhật tổng thanh toán -->
+                            </div>
                         </div>
-                        <hr>
-                        <div class="d-flex justify-content-between">
-                            <h6>Total</h6>
-                            <h6>$30.00</h6>
-                        </div>
-                    </div>
-                    <div class="card-footer border-secondary bg-transparent">
-                        <button class="btn btn-block btn-primary my-3 py-3" type="submit">Proceed To Checkout</button>
                     </div>
                 </div>
             </div>
