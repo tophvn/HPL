@@ -56,7 +56,7 @@ $result = $conn->query($sql);
 <html lang="vi">
 <head>
     <meta charset="utf-8">
-    <title>GIỎ HÀNG - HPL FASHION</title>
+    <title>Giỏ Hàng - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="img/favicon.ico" rel="icon">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 

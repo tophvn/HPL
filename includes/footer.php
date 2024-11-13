@@ -1,4 +1,3 @@
-
 <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
     <div class="row px-xl-5 pt-5">
         <div class="col-lg-4 col-md-12 mb-5 pr-3 pr-xl-5">
@@ -27,7 +26,7 @@
             <div class="col-md-4 mb-5">
                 <h5 class="font-weight-bold text-dark mb-4">CHĂM SÓC KHÁCH HÀNG</h5>
                 <div class="d-flex flex-column justify-content-start">
-                    <a class="text-dark mb-2" href="about.php"><i class="fa fa-angle-right mr-2"></i>VỀ CHÚNG TÔI</a>
+                    <a class="text-dark mb-2" href="views/about.php"><i class="fa fa-angle-right mr-2"></i>VỀ CHÚNG TÔI</a>
                     <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>CÂU HỎI THƯỜNG GẶP</a>
                     <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>CHÍNH SÁCH ĐỔI TRẢ</a>
                     <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>GIAO HÀNG & TRẢ HÀNG</a>

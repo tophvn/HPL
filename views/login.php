@@ -1,37 +1,70 @@
 <?php
 session_start();
 include('../config/Database.php');
-$errors = []; // Mảng lưu lỗi
+require_once '../google-api/vendor/autoload.php'; // Tải Google API Client
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+// Thông tin cấu hình OAuth 2.0
+$clientID = '614640831923-vulhph6ovaq4rbhfb1l4nd2iu5q611go.apps.googleusercontent.com';
+$clientSecret = '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';
+$redirectUri = 'http://localhost:8080/ShopThoiTrang/views/login.php'; 
+
+// Cấu hình Google Client
+$client = new Google_Client();
+$client->setClientId($clientID);
+$client->setClientSecret($clientSecret);
+$client->setRedirectUri($redirectUri);
+$client->addScope("email");
+$client->addScope("profile");
+
+$errors = []; // Mảng lưu trữ thông báo lỗi
+
+// Xử lý đăng nhập bằng Google
+if (isset($_GET['code'])) {
+    $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
+    if (empty($token['error'])) {
+        $client->setAccessToken($token['access_token']);
+        $google_account_info = (new Google_Service_Oauth2($client))->userinfo->get();
+        
+        // Lưu thông tin người dùng vào phiên
+        $_SESSION['user'] = [
+            'user_id' => $google_account_info->id,
+            'username' => $google_account_info->email,
+            'name' => $google_account_info->name
+        ];
+        header("Location: ../index.php");
+        exit();
+    } else {
+        $errors[] = 'Đăng nhập bằng Google không thành công!';
+    }
+}
+
+// Xử lý đăng nhập thông thường
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login = $_POST['login'] ?? '';
-    $password = $_POST['password'] ?? '';
+    $password = md5($_POST['password'] ?? ''); // Mã hóa mật khẩu
     $conn = Database::getConnection();
-    // Mã hóa pass
-    $hashedPassword = md5($password);
-    // Sử dụng Prepared Statement để tránh SQL Injection
-    $stmt = $conn->prepare("SELECT * FROM users WHERE (email = ? OR username = ?) AND password = ?");
-    $stmt->bind_param("sss", $login, $login, $hashedPassword);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    if ($result->num_rows > 0) {
-        // Đăng nhập thành công
+
+    // Truy vấn để tìm người dùng
+    $query = "SELECT * FROM users WHERE (email = '$login' OR username = '$login') AND password = '$password'";
+    $result = $conn->query($query); // Thực thi truy vấn
+
+    if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();
-        // Lưu thông tin người dùng vào session
         $_SESSION['user'] = [
             'user_id' => $user['user_id'],
             'username' => $user['username'],
-            'name' => $user['name'] 
+            'name' => $user['name']
         ];
-        
-        header("Location: ../index.php"); 
+        header("Location: ../index.php");
         exit();
     } else {
         $errors[] = 'Tên đăng nhập hoặc mật khẩu không đúng!';
     }
 }
-?>
 
+// Tạo URL đăng nhập Google
+$googleLoginUrl = $client->createAuthUrl();
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -79,17 +112,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                         <div><a href="#">Quên mật khẩu?</a></div>
                     </div>
-
                     <div class="d-grid mb-4">
                         <button type="submit" class="btn btn-primary">Đăng Nhập</button>
                     </div>
-
                     <div class="mb-2">Bạn chưa có tài khoản? <a href="register.php">Đăng ký</a></div>
-
                     <div class="social-account-wrap">
                         <h4 class="mb-4"><span>hoặc tiếp tục với</span></h4>
                         <ul class="list-unstyled social-account d-flex justify-content-between">
-                            <li><a href="#"><img src="../assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
+                            <li><a href="<?php echo $googleLoginUrl; ?>"><img src="../assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
                             <li><a href="#"><img src="../assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
                             <li><a href="#"><img src="../assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
                             <li><a href="#"><img src="../assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
@@ -99,7 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </div>
-    <!-- nút trở về trang chủ -->
     <a href="../index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
         <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
     </a>

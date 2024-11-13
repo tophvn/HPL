@@ -13,14 +13,15 @@ $conn = Database::getConnection();
 $user_id = $_SESSION['user']['user_id'];
 
 // Lấy danh sách đơn hàng của người dùng
-$query = "SELECT o.order_id, o.order_date, o.order_address, od.product_id, od.order_quantity, p.product_name, p.price, p.image 
-          FROM `order` o 
-          JOIN order_detail od ON o.order_id = od.order_id 
-          JOIN products p ON od.product_id = p.product_id 
-          WHERE o.user_id = $user_id 
-          ORDER BY o.order_date DESC";
+$query = "SELECT `order`.order_id, `order`.order_date, `order`.order_address, 
+                 order_detail.product_id, order_detail.order_quantity, 
+                 products.product_name, products.price, products.image 
+          FROM `order` 
+          JOIN order_detail ON `order`.order_id = order_detail.order_id 
+          JOIN products ON order_detail.product_id = products.product_id 
+          WHERE `order`.user_id = $user_id 
+          ORDER BY `order`.order_date DESC";
 $result = $conn->query($query);
-
 // Tổ chức dữ liệu đơn hàng
 $orders = [];
 while ($row = $result->fetch_assoc()) {
@@ -41,7 +42,7 @@ while ($row = $result->fetch_assoc()) {
 
 <head>
     <meta charset="utf-8">
-    <title>LỊCH SỬ MUA HÀNG - HPL FASHION</title>
+    <title>Lịch Sử - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href=" " rel="icon">
     <link rel="preconnect" href="https://fonts.gstatic.com">

@@ -39,7 +39,7 @@ $active_tab = $_SESSION['active_tab'] ?? 'dashboard';
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>TÀI KHOẢN - HPL FASHION</title>
+    <title>Tài Khoản - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="../css/css-2.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">

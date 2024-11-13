@@ -10,6 +10,8 @@
    
    Download Laragon: https://laragon.org/download/
    
+4. Truy cập: http://localhost:8080/ShopThoiTrang/index.php
+
 ### Cách push code lên repo: 
 
 git init

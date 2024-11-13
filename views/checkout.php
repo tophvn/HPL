@@ -28,36 +28,41 @@ $total = array_reduce($products, fn($carry, $item) => $carry + $item['price'] * 
 
 // Khởi tạo phí giao hàng
 $shipping_fee = 0;
+$show_alert = false; // Biến kiểm tra để hiển thị alert
 
 // Xử lý form khi người dùng bấm đặt hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $payment_method = $_POST['payment_method'];
-    $order_address = $_POST['shipping_address'];
-    $shipping_method = $_POST['shipping_method']; // Lưu phương thức giao hàng
-    $shipping_fee = ($shipping_method === 'Express') ? 50000 : 0;
+    $payment_method = $_POST['payment_method'] ?? '';
+    $order_address = $_POST['shipping_address'] ?? '';
+    $shipping_method = $_POST['shipping_method'] ?? '';
 
-    // Cộng phí giao hàng vào tổng
-    $total += $shipping_fee;
-
-    // Lưu đơn hàng vào bảng `order`
-    $order_query = "INSERT INTO `order` (user_id, status_id, order_date, order_address, payment_method, shipping_method, total_amount) 
-                    VALUES ($user_id, 1, NOW(), '$order_address', '$payment_method', '$shipping_method', $total)";
-    
-    if ($conn->query($order_query)) {
-        $order_id = $conn->insert_id;
-
-        // Lưu chi tiết đơn hàng vào bảng `order_detail`
-        foreach ($products as $product) {
-            $detail_query = "INSERT INTO `order_detail` (order_id, product_id, order_quantity) 
-                             VALUES ($order_id, {$product['product_id']}, {$product['quantity']})";
-            $conn->query($detail_query);
-        }
-
-        // Điều hướng đến trang bill.php
-        header("Location: bill.php?order_id=" . $order_id);
-        exit();
+    // Kiểm tra nếu người dùng không chọn địa chỉ giao hàng
+    if (empty($order_address)) {
+        $show_alert = true; // Đặt biến để hiển thị cảnh báo
     } else {
-        echo "Error: " . $conn->error;
+        $shipping_fee = ($shipping_method === 'Express') ? 50000 : 0;
+        $total += $shipping_fee;
+
+        // Lưu đơn hàng vào bảng `order`
+        $order_query = "INSERT INTO `order` (user_id, status_id, order_date, order_address, payment_method, shipping_method, total_amount) 
+                        VALUES ($user_id, 1, NOW(), '$order_address', '$payment_method', '$shipping_method', $total)";
+        
+        if ($conn->query($order_query)) {
+            $order_id = $conn->insert_id;
+
+            // Lưu chi tiết đơn hàng vào bảng `order_detail`
+            foreach ($products as $product) {
+                $detail_query = "INSERT INTO `order_detail` (order_id, product_id, order_quantity) 
+                                 VALUES ($order_id, {$product['product_id']}, {$product['quantity']})";
+                $conn->query($detail_query);
+            }
+
+            // Điều hướng đến trang bill.php
+            header("Location: bill.php?order_id=" . $order_id);
+            exit();
+        } else {
+            echo "Error: " . $conn->error;
+        }
     }
 }
 ?>
@@ -66,13 +71,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="vi">
 <head>
     <meta charset="utf-8">
-    <title>HPL FASHION - Thanh Toán</title>
+    <title>Thanh Toán - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href=" " rel="icon">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
+    <script>
+        // Hiển thị cảnh báo nếu cần thiết
+        window.onload = function() {
+            <?php if ($show_alert): ?>
+                alert('Vui lòng chọn địa chỉ giao hàng trước khi đặt hàng.');
+            <?php endif; ?>
+        };
+    </script>
 </head>
 
 <body>

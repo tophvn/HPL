@@ -146,7 +146,8 @@ if (isset($_POST['add_to_favorites'])) {
             <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
         </div>
     </div>
-    <div class="container-fluid py-5">
+    
+    <!-- <div class="container-fluid py-5">
         <div class="row px-xl-5">
             <div class="col">
                 <div class="owl-carousel vendor-carousel">
@@ -177,7 +178,7 @@ if (isset($_POST['add_to_favorites'])) {
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <!-- Footer-->
     <?php include 'includes/footer.php'; ?>

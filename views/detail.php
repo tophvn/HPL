@@ -17,6 +17,7 @@ $product = $result->fetch_assoc();
 $id = isset($_SESSION['user']['user_id']) ? $_SESSION['user']['user_id'] : 0;
 
 // Thêm sản phẩm vào giỏ hàng
+// Thêm sản phẩm vào giỏ hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($id === 0) {
         echo "<script type='text/javascript'>alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');</script>";
@@ -26,9 +27,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $color = $_POST['color'] ?? '';
 
         $conn = Database::getConnection();
+        
         // Kiểm tra xem người dùng đã có giỏ hàng chưa
-        $stmt = $conn->query("SELECT * FROM cart WHERE user_id = $id");
-        $cart_id = ($stmt->num_rows === 0) ? $conn->query("INSERT INTO cart (user_id) VALUES ($id)") : $stmt->fetch_assoc()['cart_id'];
+        $stmt = $conn->query("SELECT cart_id FROM cart WHERE user_id = $id");
+        if ($stmt->num_rows === 0) {
+            // Nếu chưa có giỏ hàng, tạo mới
+            $conn->query("INSERT INTO cart (user_id) VALUES ($id)");
+            $cart_id = $conn->insert_id; // Lấy cart_id vừa tạo
+        } else {
+            // Nếu đã có giỏ hàng, lấy cart_id
+            $cart_id = $stmt->fetch_assoc()['cart_id'];
+        }
 
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         $stmt = $conn->query("SELECT * FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");

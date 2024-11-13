@@ -5,7 +5,7 @@ include('../config/Database.php');
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>SHOP THỜI TRANG - HPL FASHION</title>
+    <title>Liên Hệ - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <!-- Favicon -->
     <link href=" " rel="icon">
