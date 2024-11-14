@@ -17,7 +17,7 @@
                 <h5 class="font-weight-bold text-dark mb-4">LIÊN KẾT NHANH</h5>
                 <div class="d-flex flex-column justify-content-start">
                     <a class="text-dark mb-2" href="index.php"><i class="fa fa-angle-right mr-2"></i>TRANG CHỦ</a>
-                    <a class="text-dark mb-2" href="shop.php"><i class="fa fa-angle-right mr-2"></i>SẢN PHẨM</a>
+                    <a class="text-dark mb-2" href="views/search.php"><i class="fa fa-angle-right mr-2"></i>TÌM KIẾM</a>
                     <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>ĐIỀU KHOẢN & ĐIỀU KIỆN</a>
                     <a class="text-dark mb-2" href="#"><i class="fa fa-angle-right mr-2"></i>CHÍNH SÁCH BẢO MẬT VÀ COOKIE</a>
                     <a class="text-dark" href="#"><i class="fa fa-angle-right mr-2"></i>THẺ QUÀ TẶNG</a>

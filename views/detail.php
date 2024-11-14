@@ -2,29 +2,29 @@
 session_start();
 include('../config/Database.php');
 
-// Lấy ID sản phẩm từ URL
 $product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-// lấy thông tin sản phẩm
+// Lấy thông tin sản phẩm
 $query = "SELECT * FROM products WHERE product_id = $product_id";
 $result = Database::getConnection()->query($query);
 if ($result->num_rows === 0) {
-    exit; // Nếu không tìm thấy sản phẩm, dừng lại
+    exit; 
 }
 $product = $result->fetch_assoc();
 
-// Kiểm tra và lấy ID người dùng từ session
 $id = isset($_SESSION['user']['user_id']) ? $_SESSION['user']['user_id'] : 0;
 
-// Thêm sản phẩm vào giỏ hàng
 // Thêm sản phẩm vào giỏ hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($id === 0) {
         echo "<script type='text/javascript'>alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');</script>";
     } else {
         $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
-        $size = $_POST['size'] ?? '';
+        $size = $_POST['size'] ?? []; // Đây là mảng
         $color = $_POST['color'] ?? '';
+
+        // Chọn kích thước đầu tiên nếu có nhiều kích thước
+        $size = !empty($size) ? reset($size) : ''; // Lấy kích thước đầu tiên hoặc để trống
 
         $conn = Database::getConnection();
         
@@ -109,28 +109,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <p class="mb-4"><?= $product['description'] ?></p>
 
                 <form method="POST" id="addToCartForm">
+                <?php
+                    //biến product chứa thông tin sản phẩm hiện tại
+                    $product_id = $product['product_id'];
+                    // size sản phẩm cụ thể
+                    $sizeString = Database::query("SELECT size FROM products WHERE product_id = $product_id")->fetch_assoc()['size'];
+                    // tách chuỗi thành mảng
+                    $sizes = !empty($sizeString) ? explode(',', $sizeString) : [];
+                    ?>
                     <div class="d-flex mb-3">
                         <p class="text-dark font-weight-medium mb-0 mr-3">Kích thước:</p>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-1" name="size" value="XS" required>
-                            <label class="custom-control-label" for="size-1">XS</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-2" name="size" value="S">
-                            <label class="custom-control-label" for="size-2">S</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-3" name="size" value="M">
-                            <label class="custom-control-label" for="size-3">M</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-4" name="size" value="L">
-                            <label class="custom-control-label" for="size-4">L</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="size-5" name="size" value="XL">
-                            <label class="custom-control-label" for="size-5">XL</label>
-                        </div>
+                        <?php if ($sizes): ?>
+                            <?php foreach ($sizes as $index => $size): ?>
+                                <div class="custom-control custom-checkbox custom-control-inline">
+                                    <input type="checkbox" class="custom-control-input" id="size-<?= $index ?>" name="size[]" value="<?= trim($size) ?>">
+                                    <label class="custom-control-label" for="size-<?= $index ?>"><?= trim($size) ?></label>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p class="text-muted">Không có kích thước nào để chọn.</p>
+                        <?php endif; ?>
                     </div>
 
                     <div class="d-flex mb-4">
