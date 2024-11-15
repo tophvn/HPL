@@ -32,7 +32,7 @@ $order_address = $order['order_address'] ?? 'Chưa xác định';
 $shipping_fee = ($shipping_method === 'hỏa tốc') ? 50000 : 0; // 50.000đ cho giao hàng hỏa tốc
 
 // Truy vấn để lấy sản phẩm từ giỏ hàng của người dùng
-$query = "SELECT products.product_id, products.product_name, products.price, cart_item.quantity 
+$query = "SELECT products.product_id, products.product_name, products.price, products.discount, cart_item.quantity 
           FROM products 
           JOIN cart_item ON products.product_id = cart_item.product_id 
           JOIN cart ON cart_item.cart_id = cart.cart_id 
@@ -67,7 +67,7 @@ $order_date = date('F d, Y');  // Ngày hiện tại
   <main class="columns">
     <div class="inner-container">
       <header class="row align-center">
-      <a class="button hollow secondary" href="shop.php"><i class="ion ion-chevron-left"></i> Quay lại Mua Hàng</a>
+        <a class="button hollow secondary" href="shop.php"><i class="ion ion-chevron-left"></i> Quay lại Mua Hàng</a>
         &nbsp;&nbsp;<a class="button" onclick="window.print();"><i class="ion ion-ios-printer-outline"></i> In Hóa Đơn</a>      
       </header>
       <section class="row">
@@ -83,7 +83,7 @@ $order_date = date('F d, Y');  // Ngày hiện tại
             </tr>
             <tr class="intro">
               <td class="">
-                  Xin chào, <?php echo htmlspecialchars($_SESSION['user']['name']); ?><br>
+                  Xin chào, <?php echo $_SESSION['user']['name']; ?><br>
                   Cảm ơn bạn đã đặt hàng.
               </td>
               <td class="text-right">
@@ -99,16 +99,26 @@ $order_date = date('F d, Y');  // Ngày hiện tại
                       <th class="desc">Mô Tả Sản Phẩm</th>
                       <th class="id">Mã Sản Phẩm</th>
                       <th class="qty">Số Lượng</th>
+                      <th class="amt">Khuyến Mãi</th>
+                      <th class="amt">Giá</th>
                       <th class="amt">Thành Tiền</th>
                     </tr>
                   </thead>
                   <tbody>
                       <?php foreach ($products as $product): ?>
                       <tr class="item">
-                          <td class="desc"><?php echo htmlspecialchars($product['product_name']); ?></td>
-                          <td class="id num"><?php echo htmlspecialchars($product['product_id']); ?></td>
-                          <td class="qty"><?php echo htmlspecialchars($product['quantity']); ?></td>
-                          <td class="amt"><?php echo number_format($product['price'] * $product['quantity'], 0, ',', '.'); ?>₫</td>
+                          <td class="desc"><?php echo $product['product_name']; ?></td>
+                          <td class="id num"><?php echo $product['product_id']; ?></td>
+                          <td class="qty"><?php echo $product['quantity']; ?></td>
+                          <td class="amt"><?php echo number_format($product['discount'], 0, ',', '.'); ?>%</td>
+                          <td class="amt"><?php echo number_format($product['price'], 0, ',', '.'); ?>₫</td>
+                          <td class="amt">
+                              <?php 
+                              $final_price = $product['price'] - $product['discount']; // Giá sau khuyến mãi
+                              $total_price = $final_price * $product['quantity']; // Thành tiền
+                              echo number_format($total_price, 0, ',', '.'); 
+                              ?>₫
+                          </td>
                       </tr>
                       <?php endforeach; ?>
                   </tbody>
@@ -125,11 +135,11 @@ $order_date = date('F d, Y');  // Ngày hiện tại
                   </tr>
                   <tr class="fees">
                     <td class="num">Phí Vận Chuyển</td>
-                    <td class="num"><?php echo number_format($shipping_fee, 0, ',', '.'); ?>₫</td> <!-- Hiển thị phí vận chuyển -->
+                    <td class="num"><?php echo number_format($shipping_fee, 0, ',', '.'); ?>₫</td>
                   </tr>
                   <tr class="total">
                     <td>Tổng Cộng</td>
-                    <td><?php echo number_format($total_amount + $shipping_fee, 0, ',', '.'); ?>₫</td> <!-- Cập nhật tổng cộng -->
+                    <td><?php echo number_format($total_amount + $shipping_fee, 0, ',', '.'); ?>₫</td>
                   </tr>
                 </table>
               </td>
@@ -140,16 +150,15 @@ $order_date = date('F d, Y');  // Ngày hiện tại
             <div class="row">
               <div class="columns">
                 <h5>Thông Tin Thanh Toán</h5>
-                  <?php echo htmlspecialchars($order_address); ?><br> <!-- Hiển thị địa chỉ từ đơn hàng -->
-                </p>
+                <?php echo $order_address; ?><br>
               </div>
               <div class="columns">
                 <h5>Phương Thức Thanh Toán</h5>
-                <p><?php echo htmlspecialchars($payment_method); ?></p> <!-- Hiển thị phương thức thanh toán -->
+                <p><?php echo $payment_method; ?></p>
               </div>
               <div class="columns">
                 <h5>Phương Thức Giao Hàng</h5>
-                <p><?php echo htmlspecialchars($shipping_method); ?></p> <!-- Hiển thị phương thức giao hàng -->
+                <p><?php echo $shipping_method; ?></p>
               </div>
             </div>
           </section>

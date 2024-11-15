@@ -109,16 +109,22 @@ if (isset($_POST['add_to_favorites'])) {
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     $imagePath = (substr($row['image'], 0, 4) == 'http') ? $row['image'] : 'assets/img_product/' . $row['image'];
+                    // Tính giá sau khuyến mãi
+                    $discount = $row['discount'] ?? 0; // Phần trăm khuyến mãi
+                    $discounted_price = $row['price'] * (1 - $discount / 100);
                     ?>
                     <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                         <div class="card product-item border-0 mb-4">
                             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= htmlspecialchars($row['product_name']); ?>">
+                                <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $row['product_name']; ?>">
                             </div>
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3"><?= htmlspecialchars($row['product_name']); ?></h6>
+                                <h6 class="text-truncate mb-3"><?= $row['product_name']; ?></h6>
                                 <div class="d-flex justify-content-center">
-                                    <h6><?= number_format($row['price'], 0, ',', '.'); ?> VND</h6>
+                                    <h6 class="text-danger"><?= number_format($discounted_price, 0, ',', '.') ?> VNĐ</h6>
+                                    <?php if ($discount > 0): ?>
+                                        <h6 class="text-muted ml-2"><del><?= number_format($row['price'], 0, ',', '.') ?> VNĐ</del></h6>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
@@ -146,7 +152,7 @@ if (isset($_POST['add_to_favorites'])) {
             <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
         </div>
     </div>
-    
+        
     <!-- <div class="container-fluid py-5">
         <div class="row px-xl-5">
             <div class="col">

@@ -16,7 +16,7 @@ $client->setRedirectUri($redirectUri);
 $client->addScope("email");
 $client->addScope("profile");
 
-$errors = []; // Mảng lưu trữ thông báo lỗi
+$errors = [];
 
 // Xử lý đăng nhập bằng Google
 if (isset($_GET['code'])) {
@@ -25,11 +25,37 @@ if (isset($_GET['code'])) {
         $client->setAccessToken($token['access_token']);
         $google_account_info = (new Google_Service_Oauth2($client))->userinfo->get();
         
+        // Kết nối CSDL
+        $conn = Database::getConnection();
+        
+        // Lấy thông tin của người dùng
+        $email = $google_account_info->email;
+        $google_user_id = $google_account_info->id;
+        $user_id = $google_user_id % 1000000000; // Giới hạn giá trị trong khoảng INT
+
+        // Kiểm tra xem người dùng đã tồn tại trong CSDL chưa
+        $query = "SELECT * FROM users WHERE email = '$email'";
+        $result = $conn->query($query);
+        
+        if ($result->num_rows == 0) {
+            // Nếu không tồn tại, tiến hành thêm mới người dùng
+            $name = $google_account_info->name;
+            $defaultPassword = md5(uniqid()); // Tạo mật khẩu mặc định với md5
+            
+            // Truy vấn thêm người dùng mới
+            $insertQuery = "INSERT INTO users (user_id, username, email, name, password) VALUES ($user_id, '$email', '$email', '$name', '$defaultPassword')";
+            $conn->query($insertQuery);
+        } else {
+            // Nếu người dùng đã tồn tại, lấy thông tin người dùng
+            $user = $result->fetch_assoc();
+            $name = $user['name']; // Lấy tên từ cơ sở dữ liệu
+        }
+
         // Lưu thông tin người dùng vào phiên
         $_SESSION['user'] = [
-            'user_id' => $google_account_info->id,
-            'username' => $google_account_info->email,
-            'name' => $google_account_info->name
+            'user_id' => $user_id,
+            'username' => $email,
+            'name' => $name 
         ];
         header("Location: ../index.php");
         exit();
@@ -41,13 +67,12 @@ if (isset($_GET['code'])) {
 // Xử lý đăng nhập thông thường
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login = $_POST['login'] ?? '';
-    $password = md5($_POST['password'] ?? ''); // Mã hóa mật khẩu
+    $password = md5($_POST['password'] ?? ''); 
+    // Kết nối CSDL
     $conn = Database::getConnection();
-
     // Truy vấn để tìm người dùng
     $query = "SELECT * FROM users WHERE (email = '$login' OR username = '$login') AND password = '$password'";
-    $result = $conn->query($query); // Thực thi truy vấn
-
+    $result = $conn->query($query);
     if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();
         $_SESSION['user'] = [

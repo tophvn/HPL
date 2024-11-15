@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Lấy danh sách sản phẩm trong giỏ hàng
-$sql = "SELECT products.product_id, products.product_name, products.price, products.image, cart_item.quantity 
+// Lấy danh sách sản phẩm trong giỏ hàng với giá từ cart_item
+$sql = "SELECT products.product_id, products.product_name, cart_item.price, products.image, cart_item.quantity 
         FROM products 
         JOIN cart_item ON products.product_id = cart_item.product_id 
         JOIN cart ON cart_item.cart_id = cart.cart_id 
@@ -83,13 +83,13 @@ $result = $conn->query($sql);
                         <?php 
                         $tong_tien = 0;
                         while ($row = $result->fetch_assoc()): 
-                            $tong_tien += $row['price'] * $row['quantity'];
+                            $tong_tien += $row['price'] * $row['quantity']; // Tính tổng tiền dựa trên giá từ cart_item
                         ?>
                         <tr id="row-<?= $row['product_id'] ?>">
                             <td class="align-middle">
                                 <img src="<?= $row['image'] ?>" alt="" style="width: 50px;"> <?= htmlspecialchars($row['product_name']) ?>
                             </td>
-                            <td class="align-middle"><?= number_format($row['price']) ?> VNĐ</td>
+                            <td class="align-middle"><?= number_format($row['price']) ?> VNĐ</td> 
                             <td class="align-middle">
                                 <div class="input-group quantity mx-auto" style="width: 120px;">
                                     <div class="input-group-prepend">
@@ -118,7 +118,7 @@ $result = $conn->query($sql);
             </div>
             
             <div class="col-lg-4">
-            <form class="mb-5" action="">
+                <form class="mb-5" action="">
                     <div class="input-group">
                         <input type="text" class="form-control p-4" placeholder="Mã giảm giá">
                         <div class="input-group-append">
@@ -143,7 +143,7 @@ $result = $conn->query($sql);
                     <div class="card-footer border-primary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
                             <h5 class="font-weight-bold">Tổng cộng</h5>
-                            <h5 class="font-weight-bold"><?= number_format($tong_tien + 0) ?> VNĐ</h5>
+                            <h5 class="font-weight-bold"><?= number_format($tong_tien) ?> VNĐ</h5>
                         </div>
                         <a href="checkout.php" class="btn btn-block btn-primary my-3 py-3">Tiến Hành Thanh Toán</a>
                     </div>
@@ -172,7 +172,7 @@ $result = $conn->query($sql);
             let data = JSON.parse(response);
             if (data.status === 'success') {
                 quantityInput.value = newQuantity;
-                location.reload();  // Reload to update the total
+                location.reload();  // Reload để cập nhật tổng
             }
         });
     }
@@ -186,7 +186,7 @@ $result = $conn->query($sql);
                 let data = JSON.parse(response);
                 if (data.status === 'success') {
                     document.getElementById(`row-${productId}`).remove();
-                    location.reload(); // Reload to update the total
+                    location.reload(); // Reload để cập nhật tổng
                 }
             });
         }

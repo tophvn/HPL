@@ -84,8 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <?php include '../includes/header.php'; ?>
-
-    <!-- Nút hamburger và bộ lọc -->
+    <!-- bộ lọc -->
     <div class="filter-toggle d-lg-none">
         <i class="fas fa-bars" style="font-size: 30px; color: #333;"></i>
     </div>
@@ -122,9 +121,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                     <h6 class="text-truncate mb-3"><?= $product['product_name'] ?></h6>
                                     <div class="d-flex justify-content-center">
-                                        <h6><?= number_format($product['price']) ?> VNĐ</h6>
-                                        <?php if (isset($product['old_price'])): ?>
-                                            <h6 class="text-muted ml-2"><del><?= number_format($product['old_price']) ?> VNĐ</del></h6>
+                                        <?php 
+                                        $discount = $product['discount']; 
+                                        $discounted_price = $product['price'] * (1 - $discount / 100);
+                                        ?>
+                                        <h6 class="text-danger"><?= number_format($discounted_price) ?> VNĐ</h6>
+                                        <?php if ($discount > 0): ?>
+                                            <h6 class="text-muted ml-2"><del><?= number_format($product['price']) ?> VNĐ</del></h6>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -144,7 +147,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endwhile; ?>
                 </div>
             </div>
-        </div>
         <!-- Thanh chuyển trang -->
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center">

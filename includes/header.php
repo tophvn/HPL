@@ -6,11 +6,8 @@ if (session_status() === PHP_SESSION_NONE) {
 include_once __DIR__ . '/../config/Database.php';
 // Kết nối đến cơ sở dữ liệu
 $conn = Database::getConnection();
-// Lấy danh sách danh mục
 $q1 = $conn->query("SELECT * FROM categories");
-// Kiểm tra xem trang hiện tại có phải là index.php không
 $isIndexPage = basename($_SERVER['PHP_SELF']) === 'index.php';
-// Kiểm tra nếu người dùng đã đăng nhập
 if (isset($_SESSION['user'])) {
     $user_id = $_SESSION['user']['user_id'];
     // Lấy số lượng sản phẩm trong giỏ
@@ -23,7 +20,6 @@ if (isset($_SESSION['user'])) {
     $cart_result = $conn->query($cart_query);
     $row = $cart_result->fetch_assoc();
     $cart_count = $row['total_quantity'] ? $row['total_quantity'] : 0; // Đặt về 0 nếu không có sản phẩm
-
     // Lấy số lượng sản phẩm yêu thích
     $favorites_query = "
         SELECT COUNT(*) AS favorite_count

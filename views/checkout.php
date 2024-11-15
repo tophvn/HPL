@@ -16,7 +16,7 @@ $user_id = $_SESSION['user']['user_id'];
 $user_query = "SELECT address1, address2 FROM users WHERE user_id = $user_id";
 $user = $conn->query($user_query)->fetch_assoc();
 
-$product_query = "SELECT products.product_name, products.price, cart_item.quantity, products.product_id 
+$product_query = "SELECT products.product_name, cart_item.price, cart_item.quantity, products.product_id 
                   FROM products 
                   JOIN cart_item ON products.product_id = cart_item.product_id 
                   JOIN cart ON cart_item.cart_id = cart.cart_id 
@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Kiểm tra nếu người dùng không chọn địa chỉ giao hàng
     if (empty($order_address)) {
-        $show_alert = true; // Đặt biến để hiển thị cảnh báo
+        $show_alert = true; 
     } else {
         $shipping_fee = ($shipping_method === 'Express') ? 50000 : 0;
         $total += $shipping_fee;
@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <h5 class="font-weight-medium mb-3">Sản Phẩm</h5>
                             <?php foreach ($products as $product): ?>
                             <div class="d-flex justify-content-between">
-                                <p><?php echo htmlspecialchars($product['product_name']) . ' x ' . htmlspecialchars($product['quantity']); ?></p>
+                                <p><?php echo $product['product_name'] . ' x ' . $product['quantity']; ?></p>
                                 <p><?php echo number_format($product['price'] * $product['quantity'], 0, ',', '.'); ?>₫</p>
                             </div>
                             <?php endforeach; ?>
@@ -177,7 +177,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                     </div>
                 </div>
-            </div>
+
         </div>
     </div>
 
