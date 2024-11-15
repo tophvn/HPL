@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 14, 2024 at 09:15 AM
+-- Generation Time: Nov 15, 2024 at 02:31 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -38,11 +38,7 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`cart_id`, `user_id`, `created_at`) VALUES
-(3, 29, '2024-11-11 04:46:39'),
-(6, 35, '2024-11-12 07:45:22'),
-(7, NULL, '2024-11-12 07:57:57'),
-(8, 33, '2024-11-13 13:09:48'),
-(9, 36, '2024-11-13 15:02:23');
+(10, 854775807, '2024-11-15 12:36:25');
 
 -- --------------------------------------------------------
 
@@ -56,16 +52,17 @@ CREATE TABLE `cart_item` (
   `product_id` int NOT NULL,
   `quantity` int NOT NULL,
   `size` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `color` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `color` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `cart_item`
 --
 
-INSERT INTO `cart_item` (`cart_item_id`, `cart_id`, `product_id`, `quantity`, `size`, `color`) VALUES
-(31, 3, 1, 3, 'L', 'Black'),
-(32, 3, 1, 1, 'M', 'White');
+INSERT INTO `cart_item` (`cart_item_id`, `cart_id`, `product_id`, `quantity`, `size`, `color`, `price`) VALUES
+(45, 10, 2, 1, 'L', 'Black', '800000.00'),
+(46, 10, 1, 2, 'L', 'Black', '45000.00');
 
 -- --------------------------------------------------------
 
@@ -128,7 +125,9 @@ INSERT INTO `favorites` (`id`, `user_id`, `product_id`, `created_at`) VALUES
 (25, 33, 2, '2024-11-13 13:11:10'),
 (26, 36, 1, '2024-11-13 15:02:15'),
 (33, 37, 1, '2024-11-14 08:28:16'),
-(34, 37, 3, '2024-11-14 08:28:23');
+(34, 37, 3, '2024-11-14 08:28:23'),
+(35, 29, 8, '2024-11-14 09:17:11'),
+(36, 854775807, 2, '2024-11-15 12:36:54');
 
 -- --------------------------------------------------------
 
@@ -158,7 +157,9 @@ INSERT INTO `order` (`order_id`, `user_id`, `status_id`, `order_date`, `order_ad
 (38, 29, 1, '2024-11-12 18:54:10', 'Tân Phú, TP. HCM', 'Thanh toán khi nhận hàng (COD)', '27994.00', 'Fast'),
 (39, 33, 1, '2024-11-13 20:11:29', '', 'Chuyển khoản ngân hàng', '2999.00', 'Fast'),
 (40, 33, 1, '2024-11-13 20:16:27', '11 Tan Huong, Tan Phu, Ho Chi Minh', 'Thanh toán khi nhận hàng (COD)', '2999.00', 'Fast'),
-(41, 29, 1, '2024-11-14 15:25:40', 'Tân Phú, TP. HCM', 'Thẻ nội địa NAPAS', '59998.00', 'Express');
+(41, 29, 1, '2024-11-14 15:25:40', 'Tân Phú, TP. HCM', 'Thẻ nội địa NAPAS', '59998.00', 'Express'),
+(42, 29, 1, '2024-11-14 16:17:37', 'Tân Phú, TP. HCM', 'Thẻ Tín dụng/Ghi nợ', '217997.00', 'Fast'),
+(43, 854775807, 1, '2024-11-15 21:04:33', 'Tân Hương', 'Thanh toán khi nhận hàng (COD)', '890000.00', 'Fast');
 
 -- --------------------------------------------------------
 
@@ -188,7 +189,12 @@ INSERT INTO `order_detail` (`order_detail_id`, `order_id`, `product_id`, `order_
 (55, 38, 2, 1),
 (56, 39, 1, 1),
 (57, 40, 1, 1),
-(58, 41, 3, 2);
+(58, 41, 3, 2),
+(59, 42, 1, 3),
+(60, 42, 1, 1),
+(61, 42, 4, 3),
+(62, 43, 2, 1),
+(63, 43, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -206,33 +212,34 @@ CREATE TABLE `products` (
   `image3` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `size` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci
+  `size` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci,
+  `discount` int DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `products`
 --
 
-INSERT INTO `products` (`product_id`, `product_name`, `price`, `category_id`, `image`, `image2`, `image3`, `description`, `type`, `size`) VALUES
-(1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 50000, 1, 'image1_1.png', 'image1_2.png', 'image1_3.png', 'Áo sweatshirt kiểu oversized boxy với thêu Boucle cổ điển của Boy London.\n\nTrọng lượng áo T-shirt 400GSM. Màu đen.\n\nChất liệu hoàn thiện mềm mại. Người mẫu cao 6ft và mặc size M.', NULL, 'L,M,X,S'),
-(2, 'ÁO PHÔNG BOY RACER', 1000000, 6, 'image2_1.png', 'image2_2.png', 'image2_3.png', 'Áo T-shirt kiểu oversized boxy với logo/slogan lớn ở giữa.\n\nChất liệu hoàn thiện mềm mại.\n\nNgười mẫu cao 6ft và mặc size M.', NULL, 'L,S,M'),
-(3, 'ÁO THUN MOTO STICKER BOMB', 4999, 3, 'image3_1.png', 'image3_2.png', 'image3_3.png', 'Áo T-shirt với đồ họa sticker bomb 360 độ. Trọng lượng áo T-shirt 200GSM. Chất liệu hoàn thiện mềm mại.', NULL, 'M,S,XS'),
-(4, 'ÁO THUN STRENGTH', 5999, 4, 'image4_1.png', 'image4_2.png', 'image4_3.png', 'Áo T-shirt kiểu oversized boxy với in và thêu đồ họa ở phía trước.\n\nNhãn da ở viền dưới phía trước.\n\nTrọng lượng áo T-shirt 200GSM.\n\nChất liệu hoàn thiện mềm mại.', NULL, 'S,L,XL,XXL'),
-(5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 4599, 1, 'image5_1.png', 'image5_2.png', 'image5_3.png', 'Áo Polo Golf Nam với chất liệu chống nắng, phù hợp cho mọi sân golf.', NULL, 'S,M,XL,XXL'),
-(6, 'ÁO VARSITY DENIM MOTO', 3599, 2, 'image6_1.png', 'image6_2.png', 'image6_3.png', 'Áo varsity denim moto kết hợp phong cách thể thao với chất liệu denim, tạo nên vẻ ngoài năng động và cá tính.', NULL, 'XXL'),
-(7, 'ÁO KHOÁC VARSITY BOMBER NỮ MOTO STICKER', 4999, 3, 'image7_1.png', 'image7_2.png', 'image7_3.png', 'Áo khoác varsity bomber nữ với họa tiết sticker moto, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái và thiết kế thời trang phù hợp cho nhiều dịp.', NULL, 'L, XL,M,S'),
-(8, 'ÁO T-SHIRT NỮ FUTURE BOY CORE', 5999, 4, 'image8_1.png', 'image8_2.png', 'image8_3.png', 'Áo T-shirt nữ Future Boy Core với thiết kế hiện đại, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái, phù hợp cho cả những ngày thường và các hoạt động ngoài trời.', NULL, 'ONE SIZE'),
-(9, 'ÁO T-SHIRT NỮ BOY RACER', 2599, 5, 'image9_1.png', 'image9_2.png', 'image9_3.png', 'Áo T-shirt nữ Boy Racer có thiết kế thể thao và năng động, phù hợp cho những ai yêu thích phong cách trẻ trung.', NULL, 'ONE SIZE'),
-(10, 'QUẦN JOGGING STRENGTH', 1799, 6, 'image10_1.png', 'image10_2.png', 'image10_3.png', 'Quần jogging Strength được thiết kế để mang lại sự thoải mái và linh hoạt trong mọi hoạt động.', NULL, 'S, XL, XXL,M'),
-(11, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU ĐEN', 5999, 3, 'image11_1.png', 'image11_2.png', 'image11_3.png', 'Áo sweatshirt Boy Eagle Smudge màu đen mang đến phong cách trẻ trung và năng động.', NULL, 'M, XS,S'),
-(12, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU XANH WASH', 1899, 1, 'image12_1.png', 'image12_2.png', 'image12_3.png', 'Áo sweatshirt Boy Eagle Smudge màu xanh wash mang đến vẻ ngoài năng động và cá tính.', NULL, 'ONE SIZE'),
-(13, 'ÁO SWEATSHIRT BOY EAGLE - MÀU ĐEN/TRẮNG', 2499, 2, 'image13_1.png', 'image13_2.png', 'image13_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', NULL, 'S,M,L'),
-(14, 'ÁO JUMPER NỮ CHEEKY DEVIL DOUBLE SLEEVE', 6999, 3, 'image14_1.png', 'image14_2.png', 'image14_3.png', 'Áo jumper nữ Cheeky Devil Double Sleeve mang đến phong cách thú vị và độc đáo.', NULL, 'L,XXL,XL,S'),
-(15, 'ÁO FUTURE BOY CORE', 3299, 5, 'image15_1.png', 'image15_2.png', 'image15_3.png', 'Áo T-shirt Future Boy Core mang đến phong cách hiện đại và trẻ trung.', NULL, 'ONE SIZE'),
-(16, 'QUẦN JOGGERS BOY 3D EMB - MÀU ĐEN', 2199, 6, 'image16_1.png', 'image16_2.png', 'image16_3.png', 'Quần joggers Boy 3D Emb màu đen mang đến phong cách thể thao và hiện đại.', NULL, 'L,S,M'),
-(17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 3599, 2, 'image17_1.png', 'image17_2.png', 'image17_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', NULL, 'L,XL,XXL'),
-(18, 'ÁO SWEATSHIRT BOY WAFFLE RUGBY - MÀU OFF WHITE', 4999, 3, 'image18_1.png', 'image18_2.png', 'image18_3.png', 'Áo sweatshirt Boy Waffle Rugby màu off white mang đến phong cách thể thao và hiện đại.', NULL, 'M,S'),
-(19, 'ÁO HOODIE BOY MANIA EMBROIDERY - MÀU ĐEN', 5999, 4, 'image19_1.png', 'image19_2.png', 'image19_3.png', 'Áo hoodie Boy Mania Embroidery màu đen mang đến phong cách trẻ trung và năng động.', 'Hoodie', 'L,M');
+INSERT INTO `products` (`product_id`, `product_name`, `price`, `category_id`, `image`, `image2`, `image3`, `description`, `type`, `size`, `discount`) VALUES
+(1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 50000, 1, 'image1_1.png', 'image1_2.png', 'image1_3.png', 'Áo sweatshirt kiểu oversized boxy với thêu Boucle cổ điển của Boy London.\n\nTrọng lượng áo T-shirt 400GSM. Màu đen.\n\nChất liệu hoàn thiện mềm mại. Người mẫu cao 6ft và mặc size M.', NULL, 'L,M,X,S', 10),
+(2, 'ÁO PHÔNG BOY RACER', 1000000, 6, 'image2_1.png', 'image2_2.png', 'image2_3.png', 'Áo T-shirt kiểu oversized boxy với logo/slogan lớn ở giữa.\n\nChất liệu hoàn thiện mềm mại.\n\nNgười mẫu cao 6ft và mặc size M.', NULL, 'L,S,M', 20),
+(3, 'ÁO THUN MOTO STICKER BOMB', 4999, 3, 'image3_1.png', 'image3_2.png', 'image3_3.png', 'Áo T-shirt với đồ họa sticker bomb 360 độ. Trọng lượng áo T-shirt 200GSM. Chất liệu hoàn thiện mềm mại.', NULL, 'M,S,XS', 0),
+(4, 'ÁO THUN STRENGTH', 5999, 4, 'image4_1.png', 'image4_2.png', 'image4_3.png', 'Áo T-shirt kiểu oversized boxy với in và thêu đồ họa ở phía trước.\n\nNhãn da ở viền dưới phía trước.\n\nTrọng lượng áo T-shirt 200GSM.\n\nChất liệu hoàn thiện mềm mại.', NULL, 'S,L,XL,XXL', 0),
+(5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 4599, 1, 'image5_1.png', 'image5_2.png', 'image5_3.png', 'Áo Polo Golf Nam với chất liệu chống nắng, phù hợp cho mọi sân golf.', NULL, 'S,M,XL,XXL', 0),
+(6, 'ÁO VARSITY DENIM MOTO', 3599, 2, 'image6_1.png', 'image6_2.png', 'image6_3.png', 'Áo varsity denim moto kết hợp phong cách thể thao với chất liệu denim, tạo nên vẻ ngoài năng động và cá tính.', NULL, 'XXL', 0),
+(7, 'ÁO KHOÁC VARSITY BOMBER NỮ MOTO STICKER', 4999, 3, 'image7_1.png', 'image7_2.png', 'image7_3.png', 'Áo khoác varsity bomber nữ với họa tiết sticker moto, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái và thiết kế thời trang phù hợp cho nhiều dịp.', NULL, 'L, XL,M,S', 0),
+(8, 'ÁO T-SHIRT NỮ FUTURE BOY CORE', 5999, 4, 'image8_1.png', 'image8_2.png', 'image8_3.png', 'Áo T-shirt nữ Future Boy Core với thiết kế hiện đại, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái, phù hợp cho cả những ngày thường và các hoạt động ngoài trời.', NULL, 'ONE SIZE', 0),
+(9, 'ÁO T-SHIRT NỮ BOY RACER', 2599, 5, 'image9_1.png', 'image9_2.png', 'image9_3.png', 'Áo T-shirt nữ Boy Racer có thiết kế thể thao và năng động, phù hợp cho những ai yêu thích phong cách trẻ trung.', NULL, 'ONE SIZE', 0),
+(10, 'QUẦN JOGGING STRENGTH', 1799, 6, 'image10_1.png', 'image10_2.png', 'image10_3.png', 'Quần jogging Strength được thiết kế để mang lại sự thoải mái và linh hoạt trong mọi hoạt động.', NULL, 'S, XL, XXL,M', 0),
+(11, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU ĐEN', 5999, 3, 'image11_1.png', 'image11_2.png', 'image11_3.png', 'Áo sweatshirt Boy Eagle Smudge màu đen mang đến phong cách trẻ trung và năng động.', NULL, 'M, XS,S', 0),
+(12, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU XANH WASH', 1899, 1, 'image12_1.png', 'image12_2.png', 'image12_3.png', 'Áo sweatshirt Boy Eagle Smudge màu xanh wash mang đến vẻ ngoài năng động và cá tính.', NULL, 'ONE SIZE', 0),
+(13, 'ÁO SWEATSHIRT BOY EAGLE - MÀU ĐEN/TRẮNG', 2499, 2, 'image13_1.png', 'image13_2.png', 'image13_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', NULL, 'S,M,L', 0),
+(14, 'ÁO JUMPER NỮ CHEEKY DEVIL DOUBLE SLEEVE', 6999, 3, 'image14_1.png', 'image14_2.png', 'image14_3.png', 'Áo jumper nữ Cheeky Devil Double Sleeve mang đến phong cách thú vị và độc đáo.', NULL, 'L,XXL,XL,S', 0),
+(15, 'ÁO FUTURE BOY CORE', 3299, 5, 'image15_1.png', 'image15_2.png', 'image15_3.png', 'Áo T-shirt Future Boy Core mang đến phong cách hiện đại và trẻ trung.', NULL, 'ONE SIZE', 0),
+(16, 'QUẦN JOGGERS BOY 3D EMB - MÀU ĐEN', 2199, 6, 'image16_1.png', 'image16_2.png', 'image16_3.png', 'Quần joggers Boy 3D Emb màu đen mang đến phong cách thể thao và hiện đại.', NULL, 'L,S,M', 0),
+(17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 3599, 2, 'image17_1.png', 'image17_2.png', 'image17_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', NULL, 'L,XL,XXL', 0),
+(18, 'ÁO SWEATSHIRT BOY WAFFLE RUGBY - MÀU OFF WHITE', 4999, 3, 'image18_1.png', 'image18_2.png', 'image18_3.png', 'Áo sweatshirt Boy Waffle Rugby màu off white mang đến phong cách thể thao và hiện đại.', NULL, 'M,S', 0),
+(19, 'ÁO HOODIE BOY MANIA EMBROIDERY - MÀU ĐEN', 5999, 4, 'image19_1.png', 'image19_2.png', 'image19_3.png', 'Áo hoodie Boy Mania Embroidery màu đen mang đến phong cách trẻ trung và năng động.', 'Hoodie', 'L,M', 0);
 
 -- --------------------------------------------------------
 
@@ -286,7 +293,8 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `phonenumber`, `name`, `
 (34, 'hoang14', '202cb962ac59075b964b07152d234b70', '0793897147', 'SIMXtractor', 'hoanghai070727@gmail.com', 'user', NULL, NULL),
 (35, 'hoanghaine', '202cb962ac59075b964b07152d234b70', '0793897147', 'Hải Đẹp Trai', 'hoanghai113@gmail.com', 'user', '140 lê trọng tấn TP. HCM', ''),
 (36, '113', '202cb962ac59075b964b07152d234b70', '0793897147', '113', '12345@gmail.com', 'user', '', ''),
-(37, 'hoang17', '202cb962ac59075b964b07152d234b70', '0793897147', '113', 'hai077@gmail.com', 'user', '1 Tan Huong, Tan Phu, Ho Chi Minh', '');
+(37, 'hoang17', '202cb962ac59075b964b07152d234b70', '0793897147', '113', 'hai077@gmail.com', 'user', '1 Tan Huong, Tan Phu, Ho Chi Minh', ''),
+(854775807, 'hoanghai07077@gmail.com', '199c68714de7cb368d5f40d0babe1c86', '113', 'Nguyễn', 'hoanghai07077@gmail.com', 'user', 'Tân Hương', 'Tân Phú, TP. HCM');
 
 --
 -- Indexes for dumped tables
@@ -371,13 +379,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `cart_item`
 --
 ALTER TABLE `cart_item`
-  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -395,19 +403,19 @@ ALTER TABLE `comments`
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `order`
 --
 ALTER TABLE `order`
-  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `order_detail`
 --
 ALTER TABLE `order_detail`
-  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -419,7 +427,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=854775808;
 
 --
 -- Constraints for dumped tables
