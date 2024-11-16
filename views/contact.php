@@ -1,5 +1,5 @@
 <?php
-include('../config/Database.php');
+include('../config/database.php');
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -1,5 +1,5 @@
 <?php
-include('config/Database.php');
+include('config/database.php');
 session_start();
 
 // thêm sản phẩm vào danh sách yêu thích
@@ -37,6 +37,24 @@ if (isset($_POST['add_to_favorites'])) {
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
+    <style>
+        .discount-badge {
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .cat-img img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+    </style>
 </head>
 
 <body>
@@ -78,8 +96,8 @@ if (isset($_POST['add_to_favorites'])) {
                     <img src="img/offer-1.png" alt="">
                     <div class="position-relative" style="z-index: 1;">
                         <h5 class="text-uppercase text-primary mb-3">Giảm 20% cho</h5>
-                        <h1 class="mb-4 font-weight-semi-bold">Bộ Sưu Tập Mùa Xuân</h1>
-                        <a href="" class="btn btn-outline-primary py-md-2 px-md-3">Mua Ngay</a>
+                        <h1 class="mb-4 font-weight-semi-bold">PHỤ KIỆN</h1>
+                        <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3">Mua Ngay</a>
                     </div>
                 </div>
             </div>
@@ -89,10 +107,37 @@ if (isset($_POST['add_to_favorites'])) {
                     <div class="position-relative" style="z-index: 1;">
                         <h5 class="text-uppercase text-primary mb-3">Giảm 20% cho</h5>
                         <h1 class="mb-4 font-weight-semi-bold">Bộ Sưu Tập Mùa Đông</h1>
-                        <a href="" class="btn btn-outline-primary py-md-2 px-md-3">Mua Ngay</a>
+                        <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3">Mua Ngay</a>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Categories Start -->
+    <div class="container-fluid pt-5">
+        <div class="row px-xl-5 pb-3">
+            <?php
+            $q1 = Database::query("SELECT categories.*, COUNT(products.product_id) AS product_count
+                        FROM categories
+                        LEFT JOIN products ON categories.category_id = products.category_id
+                        GROUP BY categories.category_id"
+            );
+
+            while ($r1 = $q1->fetch_array()) {
+            ?>
+                <div class="col-lg-4 col-md-6 pb-1">
+                    <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
+                        <p class="text-right"><?php echo $r1['product_count']; ?> Sản Phẩm</p>
+                        <a class="cat-img position-relative overflow-hidden mb-3">
+                            <img class="img-fluid" src="img/img-collection/<?php echo $r1['category_image']; ?>" alt="">
+                        </a>
+                        <h5 class="font-weight-semi-bold m-0"><?php echo $r1['category_name']; ?></h5>
+                    </div>
+                </div>
+            <?php
+            }
+            ?>
         </div>
     </div>
 
@@ -117,6 +162,11 @@ if (isset($_POST['add_to_favorites'])) {
                         <div class="card product-item border-0 mb-4">
                             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
                                 <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $row['product_name']; ?>">
+                                <?php if ($discount > 0): ?>
+                                    <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
+                                        -<?= $discount ?>%
+                                    </div>
+                                <?php endif; ?>
                             </div>
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                 <h6 class="text-truncate mb-3"><?= $row['product_name']; ?></h6>
@@ -152,44 +202,9 @@ if (isset($_POST['add_to_favorites'])) {
             <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
         </div>
     </div>
-        
-    <!-- <div class="container-fluid py-5">
-        <div class="row px-xl-5">
-            <div class="col">
-                <div class="owl-carousel vendor-carousel">
-                    <div class="vendor-item border p-4">
-                        <img src="img/img-vendors/v-1.png" alt="Nhà cung cấp 1">
-                    </div>
-                    <div class="vendor-item border p-4">
-                        <img src="img/img-vendors/v-2.png" alt="Nhà cung cấp 2">
-                    </div>
-                    <div class="vendor-item border p-4">
-                        <img src="img/img-vendors/v-3.png" alt="Nhà cung cấp 3">
-                    </div>
-                    <div class="vendor-item border p-4">
-                        <img src="img/img-vendors/v-4.png" alt="Nhà cung cấp 4">
-                    </div>
-                    <div class="vendor-item border p-4">
-                        <img src="img/img-vendors/v-5.png" alt="Nhà cung cấp 5">
-                    </div>
-                    <div class="vendor-item border p-4">
-                        <img src="img/img-vendors/v-6.png" alt="Nhà cung cấp 6">
-                    </div>
-                    <div class="vendor-item border p-4">
-                        <img src="img/img-vendors/v-7.png" alt="Nhà cung cấp 7">
-                    </div>
-                    <div class="vendor-item border p-4">
-                        <img src="img/img-vendors/v-8.png" alt="Nhà cung cấp 8">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div> -->
 
     <!-- Footer-->
     <?php include 'includes/footer.php'; ?>
-    <!-- Quay Lại Đầu Trang -->
-    <!-- <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a> -->
     <!-- Thư Viện JavaScript -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>

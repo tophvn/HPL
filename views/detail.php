@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('../config/Database.php');
+include('../config/database.php');
 
 $product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -15,7 +15,6 @@ $product = $result->fetch_assoc();
 $id = isset($_SESSION['user']['user_id']) ? $_SESSION['user']['user_id'] : 0;
 
 // Thêm sản phẩm vào giỏ hàng
-// Thêm sản phẩm vào giỏ hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($id === 0) {
         echo "<script type='text/javascript'>alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');</script>";
@@ -25,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $color = $_POST['color'] ?? '';
 
         // Lấy giá đã giảm
-        $discount = $product['discount'] ?? 0; // Phần trăm khuyến mãi
+        $discount = $product['discount'] ?? 0; // % khuyến mãi
         $discounted_price = $product['price'] * (1 - $discount / 100);
 
         // Chọn kích thước đầu tiên nếu có nhiều kích thước

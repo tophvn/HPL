@@ -1,5 +1,6 @@
 <?php
-include('../config/Database.php'); 
+include('../../config/database.php'); 
+include('../../config/config.php');
 
 $errors = []; // Mảng lưu trữ lỗi
 
@@ -11,24 +12,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $role = 'user'; 
+
+    // Kiểm tra xem username có chứa dấu hoặc khoảng trắng
+    if (preg_match('/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ\s]/i', $username)) {
+        $errors['username'] = 'Tên đăng nhập không được chứa dấu hoặc khoảng trắng!';
+    }
+
     // Kiểm tra mật khẩu
     if ($password !== $confirm_password) {
         $errors['confirm_password'] = 'Mật khẩu không trùng khớp!';
     }
+
     $conn = Database::getConnection();
-    // Kiểm tra tồn tại
+
+    // Kiểm tra tồn tại tên đăng nhập hoặc email
     $sql = "SELECT * FROM users WHERE username = '$username' OR email = '$email'";
     $result = mysqli_query($conn, $sql);
     if (mysqli_num_rows($result) > 0) {
         $errors['username_email'] = 'Tên đăng nhập hoặc email đã tồn tại!';
     }
+
     // nếu không có lỗi thì thêm người dùng vào database
     if (empty($errors)) {
         $hashedPassword = md5($password);
         $sql = "INSERT INTO users (username, password, phonenumber, name, email, roles) 
                 VALUES ('$username', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
         if (mysqli_query($conn, $sql)) {
-            header("Location: login.php");
+            header("Location: " . BASE_URL . "views/auth/login.php");
             exit(); 
         } else {
             $errors['database'] = 'Đăng ký không thành công!';
@@ -44,14 +54,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký</title>
-    <link rel="shortcut icon" href=" ">
+    <link rel="shortcut icon" href="<?php echo BASE_URL; ?>favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="../css/css-login-register.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/css-login-register.css">
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('../img/back-regis.jpg')"></div>
+        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/back-regis.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Đăng Ký</h1>
@@ -97,14 +107,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="d-grid mb-4">
                         <button type="submit" class="btn btn-primary">Tạo Tài Khoản</button>
                     </div>
-                    <div class="mb-2">Đã có tài khoản? <a href="login.php">Đăng Nhập</a></div>
+                    <div class="mb-2">Đã có tài khoản? <a href="<?php echo BASE_URL; ?>views/auth/login.php">Đăng Nhập</a></div>
                     <div class="social-account-wrap">
                         <h4 class="mb-4"><span>hoặc tiếp tục với</span></h4>
                         <ul class="list-unstyled social-account d-flex justify-content-between">
-                            <li><a href="#"><img src="../assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
-                            <li><a href="#"><img src="../assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
-                            <li><a href="#"><img src="../assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
-                            <li><a href="#"><img src="../assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
+                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
+                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
+                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
+                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
                         </ul>
                     </div>
                 </form>
@@ -112,9 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
     <!-- nút trở về trang chủ -->
-    <a href="../index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
+    <a href="<?php echo BASE_URL; ?>index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
         <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
     </a>
-    <script src="../js/custom.js"></script>
+    <script src="<?php echo BASE_URL; ?>js/custom.js"></script>
 </body>
 </html>

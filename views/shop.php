@@ -1,5 +1,5 @@
 <?php
-include('../config/Database.php');
+include('../config/database.php');
 session_start();
 
 $limit = 14;
@@ -73,12 +73,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <title>Sản Phẩm - HPL FASHION</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="../css/style.css" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
     <style>
-        
+        nav[aria-label="Page navigation"] {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .pagination {
+            margin: 0;
+        }
+        .discount-badge {
+            top: 10px;
+            right: 10px;
+            background-color: red; 
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 5px 10px;
+            border-radius: 50%; 
+            z-index: 10; 
+        }
     </style>
 </head>
 
@@ -117,6 +135,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
                                     <?php $imagePath = (substr($product['image'], 0, 4) == 'http') ? $product['image'] : '../assets/img_product/' . $product['image']; ?>
                                     <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $product['product_name'] ?>">
+
+                                    <?php if ($product['discount'] > 0): ?>
+                                        <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
+                                            -<?= $product['discount'] ?>%
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                     <h6 class="text-truncate mb-3"><?= $product['product_name'] ?></h6>
@@ -147,9 +171,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endwhile; ?>
                 </div>
             </div>
+
         <!-- Thanh chuyển trang -->
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-center">
+        <nav aria-label="Page navigation" class="d-flex justify-content-center">
+            <ul class="pagination">
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                     <li class="page-item <?= $i === $page ? 'active' : '' ?>">
                         <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
@@ -157,6 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endfor; ?>
             </ul>
         </nav>
+
     </div>
 
     <!-- Footer -->

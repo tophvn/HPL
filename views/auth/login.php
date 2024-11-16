@@ -1,12 +1,14 @@
 <?php
 session_start();
-include('../config/Database.php');
-require_once '../google-api/vendor/autoload.php'; // Tải Google API Client
+include('../../config/database.php');
+include('../../config/config.php'); 
+
+require_once '../../google-api/vendor/autoload.php'; // Tải Google API Client
 
 // Thông tin cấu hình OAuth 2.0
 $clientID = '614640831923-vulhph6ovaq4rbhfb1l4nd2iu5q611go.apps.googleusercontent.com';
 $clientSecret = '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';
-$redirectUri = 'http://localhost:8080/ShopThoiTrang/views/login.php'; 
+$redirectUri = BASE_URL . 'views/auth/login.php'; // Sử dụng BASE_URL
 
 // Cấu hình Google Client
 $client = new Google_Client();
@@ -31,7 +33,6 @@ if (isset($_GET['code'])) {
         // Lấy thông tin của người dùng
         $email = $google_account_info->email;
         $google_user_id = $google_account_info->id;
-        $user_id = $google_user_id % 1000000000; // Giới hạn giá trị trong khoảng INT
 
         // Kiểm tra xem người dùng đã tồn tại trong CSDL chưa
         $query = "SELECT * FROM users WHERE email = '$email'";
@@ -43,21 +44,24 @@ if (isset($_GET['code'])) {
             $defaultPassword = md5(uniqid()); // Tạo mật khẩu mặc định với md5
             
             // Truy vấn thêm người dùng mới
-            $insertQuery = "INSERT INTO users (user_id, username, email, name, password) VALUES ($user_id, '$email', '$email', '$name', '$defaultPassword')";
+            $insertQuery = "INSERT INTO users (username, email, name, password) VALUES ('$email', '$email', '$name', '$defaultPassword')";
             $conn->query($insertQuery);
         } else {
             // Nếu người dùng đã tồn tại, lấy thông tin người dùng
             $user = $result->fetch_assoc();
+            $user_id = $user['user_id']; // Sử dụng `user_id` từ CSDL
             $name = $user['name']; // Lấy tên từ cơ sở dữ liệu
         }
-
+        
         // Lưu thông tin người dùng vào phiên
         $_SESSION['user'] = [
             'user_id' => $user_id,
             'username' => $email,
             'name' => $name 
         ];
-        header("Location: ../index.php");
+
+        // Chuyển hướng đến trang chính
+        header("Location: " . BASE_URL . "index.php");
         exit();
     } else {
         $errors[] = 'Đăng nhập bằng Google không thành công!';
@@ -80,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'username' => $user['username'],
             'name' => $user['name']
         ];
-        header("Location: ../index.php");
+        header("Location: " . BASE_URL . "index.php"); // Chuyển hướng
         exit();
     } else {
         $errors[] = 'Tên đăng nhập hoặc mật khẩu không đúng!';
@@ -100,11 +104,11 @@ $googleLoginUrl = $client->createAuthUrl();
     <title>Đăng Nhập</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="../css/css-login-register.css">
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/css-login-register.css">
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('../img/back-login.jpg')"></div>
+        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/back-login.jpg')"></div> <
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Đăng Nhập</h1>
@@ -133,9 +137,9 @@ $googleLoginUrl = $client->createAuthUrl();
                     <div class="d-flex justify-content-between">
                         <div class="form-check">
                             <input type="checkbox" class="form-check-input" id="remember">
-                            <label for="remember" class="form-check-label">Giữ tôi đăng nhập</label>
+                            <label for="remember" class="form-check-label">Nhớ tài khoản</label>
                         </div>
-                        <div><a href="#">Quên mật khẩu?</a></div>
+                        <div><a href="forgot_password.php">Quên mật khẩu?</a></div>
                     </div>
                     <div class="d-grid mb-4">
                         <button type="submit" class="btn btn-primary">Đăng Nhập</button>
@@ -144,19 +148,19 @@ $googleLoginUrl = $client->createAuthUrl();
                     <div class="social-account-wrap">
                         <h4 class="mb-4"><span>hoặc tiếp tục với</span></h4>
                         <ul class="list-unstyled social-account d-flex justify-content-between">
-                            <li><a href="<?php echo $googleLoginUrl; ?>"><img src="../assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
-                            <li><a href="#"><img src="../assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
-                            <li><a href="#"><img src="../assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
-                            <li><a href="#"><img src="../assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
+                            <li><a href="<?php echo $googleLoginUrl; ?>"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
+                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
+                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
+                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
                         </ul>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <a href="../index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
+    <a href="<?php echo BASE_URL; ?>index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
         <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
     </a>
-    <script src="../js/custom.js"></script>
+    <script src="<?php echo BASE_URL; ?>js/custom.js"></script> 
 </body>
 </html>

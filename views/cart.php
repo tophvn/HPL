@@ -1,10 +1,10 @@
 <?php
 session_start();
-include('../config/Database.php');
+include('../config/database.php');
 
 // Kiểm tra xem người dùng đã đăng nhập hay chưa
 if (!isset($_SESSION['user']) || empty($_SESSION['user']['user_id'])) {
-    header("Location: login.php");
+    header("Location: auth/login.php");
     exit();
 }
 
