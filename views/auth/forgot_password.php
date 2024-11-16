@@ -19,19 +19,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn = Database::getConnection();
 
     // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
-    $stmt = $conn->prepare("SELECT user_id FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->store_result();
+    $query = "SELECT user_id FROM users WHERE email = '$email'";
+    $result = $conn->query($query);
 
-    if ($stmt->num_rows > 0) {
+    if ($result->num_rows > 0) {
         // Tạo mã đặt lại mật khẩu (token)
         $token = bin2hex(random_bytes(50));
 
         // Lưu token vào cơ sở dữ liệu
-        $stmt = $conn->prepare("UPDATE users SET reset_token = ? WHERE email = ?");
-        $stmt->bind_param("ss", $token, $email);
-        $stmt->execute();
+        $query = "UPDATE users SET reset_token = '$token' WHERE email = '$email'";
+        $conn->query($query);
 
         // Gửi email
         $mail = new PHPMailer(true);
@@ -42,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
             $mail->Username = 'hoanghai07077@gmail.com';
-            $mail->Password = ''; // Thay bằng mật khẩu ứng dụng
+            $mail->Password = 'rnqg fgie hdoz xwkk'; // Thay bằng mật khẩu ứng dụng
             $mail->SMTPSecure = 'ssl';
             $mail->Port = 465;
             $mail->setFrom('hoanghai07077@gmail.com', 'HPL - Fashion');
@@ -61,10 +58,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = 'Email không tồn tại trong hệ thống.';
     }
 
-    $stmt->close();
     $conn->close();
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

@@ -1,6 +1,9 @@
 <?php
-// Đường dẫn gốc của website
+// Đường dẫn gốc của website (Chạy Local)
 define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/ShopThoiTrang/');
+
+// Khi đưa lên hosting
+// define('BASE_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/');
 
 // Đường dẫn đến thư mục "views"
 define('VIEWS_URL', BASE_URL . 'views/');
