@@ -3,6 +3,12 @@ include('../../config/database.php');
 include('../../config/config.php');
 
 $errors = []; // Mảng lưu trữ lỗi
+$username = '';
+$name = '';
+$email = '';
+$phonenumber = '';
+$password = '';
+$confirm_password = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -17,10 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (preg_match('/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ\s]/i', $username)) {
         $errors['username'] = 'Tên đăng nhập không được chứa dấu hoặc khoảng trắng!';
     }
-
+    
+    // Kiểm tra mật khẩu không chứa ký tự có dấu
+    if (preg_match('/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ]/i', $password)) {
+        $errors['password'] = 'Mật khẩu không được chứa dấu!';
+    }
+    
     // Kiểm tra mật khẩu
     if ($password !== $confirm_password) {
         $errors['confirm_password'] = 'Mật khẩu không trùng khớp!';
+    } elseif (strlen($password) < 6) {
+        $errors['password'] = 'Mật khẩu phải có ít nhất 6 ký tự!';
     }
 
     $conn = Database::getConnection();
@@ -50,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Ký</title>
@@ -74,50 +87,53 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 <?php endif; ?>
                 <form action="" method="POST" class="pt-3">
-                    <div class="form-floating">
-                        <input type="text" class="form-control" name="username" id="username" placeholder="Tên Đăng Nhập" required>
-                        <label for="username">Tên Đăng Nhập</label>
+                <div class="form-floating">
+                    <input type="text" class="form-control" name="username" id="username" placeholder="Tên Đăng Nhập" value="<?php echo $username; ?>" required>
+                    <label for="username">Tên Đăng Nhập</label>
+                </div>
+                <div class="form-floating">
+                    <input type="text" class="form-control" name="name" id="name" placeholder="Họ và Tên" value="<?php echo $name; ?>" required>
+                    <label for="name">Họ và Tên</label>
+                </div>
+                <div class="form-floating">
+                    <input type="email" class="form-control" name="email" id="email" placeholder="info@example.com" value="<?php echo $email; ?>" required>
+                    <label for="email">Địa Chỉ Email</label>
+                </div>
+                <div class="form-floating">
+                    <input type="text" class="form-control" name="phonenumber" id="phonenumber" placeholder="Số Điện Thoại" value="<?php echo $phonenumber; ?>" required>
+                    <label for="phonenumber">Số Điện Thoại</label>
+                </div>
+                <div class="form-floating">
+                    <span class="password-show-toggle js-password-show-toggle"><span class="uil"></span></span>
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Mật khẩu" value="<?php echo $password; ?>" required>
+                    <label for="password">Mật Khẩu</label>
+                </div>
+                
+                <div class="form-floating">
+                    <span class="password-show-toggle js-password-show-toggle"><span class="uil"></span></span>
+                    <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Xác Nhận Mật Khẩu" value="<?php echo $confirm_password; ?>" required>
+                    <label for="confirm_password">Xác Nhận Mật Khẩu</label>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" required>
+                        <label for="remember" class="form-check-label">Tôi đồng ý với <a href="#">Điều Khoản Dịch Vụ</a> và <a href="#">Chính Sách Bảo Mật</a></label>
                     </div>
-                    <div class="form-floating">
-                        <input type="text" class="form-control" name="name" id="name" placeholder="Họ và Tên" required>
-                        <label for="name">Họ và Tên</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="email" class="form-control" name="email" id="email" placeholder="info@example.com" required>
-                        <label for="email">Địa Chỉ Email</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="text" class="form-control" name="phonenumber" id="phonenumber" placeholder="Số Điện Thoại" required>
-                        <label for="phonenumber">Số Điện Thoại</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="password" class="form-control" name="password" id="password" placeholder="Mật khẩu" required>
-                        <label for="password">Mật Khẩu</label>
-                    </div>
-                    <div class="form-floating">
-                        <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Xác Nhận Mật Khẩu" required>
-                        <label for="confirm_password">Xác Nhận Mật Khẩu</label>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" required>
-                            <label for="remember" class="form-check-label">Tôi đồng ý với <a href="#">Điều Khoản Dịch Vụ</a> và <a href="#">Chính Sách Bảo Mật</a></label>
-                        </div>
-                    </div>
-                    <div class="d-grid mb-4">
-                        <button type="submit" class="btn btn-primary">Tạo Tài Khoản</button>
-                    </div>
-                    <div class="mb-2">Đã có tài khoản? <a href="<?php echo BASE_URL; ?>views/auth/login.php">Đăng Nhập</a></div>
-                    <div class="social-account-wrap">
-                        <h4 class="mb-4"><span>hoặc tiếp tục với</span></h4>
-                        <ul class="list-unstyled social-account d-flex justify-content-between">
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
-                        </ul>
-                    </div>
-                </form>
+                </div>
+                <div class="d-grid mb-4">
+                    <button type="submit" class="btn btn-primary">Tạo Tài Khoản</button>
+                </div>
+                <div class="mb-2">Đã có tài khoản? <a href="<?php echo BASE_URL; ?>views/auth/login.php">Đăng Nhập</a></div>
+                <div class="social-account-wrap">
+                    <h4 class="mb-4"><span>hoặc tiếp tục với</span></h4>
+                    <ul class="list-unstyled social-account d-flex justify-content-between">
+                        <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
+                        <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
+                        <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
+                        <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
+                    </ul>
+                </div>
+            </form>
             </div>
         </div>
     </div>

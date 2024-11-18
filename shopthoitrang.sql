@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 16, 2024 at 08:39 AM
+-- Generation Time: Nov 18, 2024 at 01:56 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -33,6 +33,13 @@ CREATE TABLE `cart` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`cart_id`, `user_id`, `created_at`) VALUES
+(11, 29, '2024-11-18 13:03:08');
+
 -- --------------------------------------------------------
 
 --
@@ -48,6 +55,14 @@ CREATE TABLE `cart_item` (
   `color` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cart_item`
+--
+
+INSERT INTO `cart_item` (`cart_item_id`, `cart_id`, `product_id`, `quantity`, `size`, `color`, `price`) VALUES
+(50, 11, 2, 3, '', '', '800000.00'),
+(51, 11, 1, 2, '', '', '45000.00');
 
 -- --------------------------------------------------------
 
@@ -87,6 +102,18 @@ CREATE TABLE `comments` (
   `time_create` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `comments`
+--
+
+INSERT INTO `comments` (`comment_id`, `product_id`, `user_id`, `comment_text`, `time_create`) VALUES
+(17, 2, 29, 'sản phẩm chất lượng', '2024-11-18 13:39:12'),
+(18, 2, 29, 'ok', '2024-11-18 13:39:54'),
+(19, 2, 29, 'good', '2024-11-18 13:40:47'),
+(20, 2, 29, 'good', '2024-11-18 13:42:24'),
+(21, 1, 29, '1', '2024-11-18 13:44:02'),
+(22, 1, 29, 'good', '2024-11-18 13:49:54');
+
 -- --------------------------------------------------------
 
 --
@@ -105,7 +132,8 @@ CREATE TABLE `favorites` (
 --
 
 INSERT INTO `favorites` (`id`, `user_id`, `product_id`, `created_at`) VALUES
-(37, 29, 1, '2024-11-16 07:50:50');
+(37, 29, 1, '2024-11-16 07:50:50'),
+(38, 29, 2, '2024-11-18 13:03:03');
 
 -- --------------------------------------------------------
 
@@ -124,6 +152,13 @@ CREATE TABLE `order` (
   `shipping_method` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `order`
+--
+
+INSERT INTO `order` (`order_id`, `user_id`, `status_id`, `order_date`, `order_address`, `payment_method`, `total_amount`, `shipping_method`) VALUES
+(45, 29, 1, '2024-11-18 20:10:34', '61 Tân Hương, Tân Phú, TP.HCM', 'Thẻ nội địa NAPAS', '1695000.00', 'Express');
+
 -- --------------------------------------------------------
 
 --
@@ -134,8 +169,17 @@ CREATE TABLE `order_detail` (
   `order_detail_id` int NOT NULL,
   `order_id` int DEFAULT NULL,
   `product_id` int DEFAULT NULL,
-  `order_quantity` int DEFAULT NULL
+  `order_quantity` int DEFAULT NULL,
+  `status_id` int DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_detail`
+--
+
+INSERT INTO `order_detail` (`order_detail_id`, `order_id`, `product_id`, `order_quantity`, `status_id`) VALUES
+(65, 45, 2, 2, 1),
+(66, 45, 1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -198,10 +242,10 @@ CREATE TABLE `status` (
 --
 
 INSERT INTO `status` (`status_id`, `status_value`) VALUES
-(1, 'Đã đặt hàng'),
-(2, 'Đang xử lý'),
-(3, 'Đã giao hàng'),
-(4, 'Đã hủy');
+(1, 'ĐANG XỬ LÝ'),
+(2, 'ĐANG GIAO HÀNG'),
+(3, 'ĐÃ GIAO HÀNG'),
+(4, 'ĐÃ HỦY');
 
 -- --------------------------------------------------------
 
@@ -213,7 +257,7 @@ CREATE TABLE `users` (
   `user_id` int NOT NULL,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
-  `phonenumber` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `phonenumber` varchar(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `reset_token` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
@@ -236,10 +280,11 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `phonenumber`, `name`, `
 (36, '113', '202cb962ac59075b964b07152d234b70', '0793897147', '113', '12345@gmail.com', NULL, 'user', '', ''),
 (37, 'hoang17', '202cb962ac59075b964b07152d234b70', '0793897147', '113', 'hai077@gmail.com', NULL, 'user', '1 Tan Huong, Tan Phu, Ho Chi Minh', ''),
 (38, 'hoangQ', '202cb962ac59075b964b07152d234b70', '0793897147', '113', '123456@gmail.com', NULL, 'user', NULL, NULL),
-(39, 'hoanghai07077@gmail.com', '67f14b7d30f09c94a55a845a09df07e9', NULL, 'Nguyễn Hoàng Hải', 'hoanghai07077@gmail.com', NULL, 'user', NULL, NULL),
-(40, 'hoangdev', '202cb962ac59075b964b07152d234b70', '0793897147', 'hoàng hải', 'hoanghaimcpe@gmail.com', NULL, 'user', NULL, NULL),
+(39, 'hoanghai07077@gmail.com', '67f14b7d30f09c94a55a845a09df07e9', NULL, 'Nguyễn Hoàng Hải', 'hoanghai07077@gmail.com', '120a04cd2730ad48866c0bbfefbec442ec63018ed54faeca30fc2d1fe75003e538432cde86d7b6e14ef2090508942fed4b77', 'user', NULL, NULL),
+(40, 'hoangdev', '202cb962ac59075b964b07152d234b70', '0793897147', 'hoàng hải', 'hoanghaimcpe@gmail.com', '00559a38a74595ecbd624f161a5f7dc482ff38573a0034e8cc11c8710cc0c87aa6ce8d80bcecfaa67c34417bd48eb9513d59', 'user', NULL, NULL),
 (41, '8989', '202cb962ac59075b964b07152d234b70', '0112232132', '8989', '8989@gmail.com', NULL, 'user', NULL, NULL),
-(42, '222', 'bcbe3365e6ac95ea2c0343a2395834dd', '222', '113', '122234@gmail.com', NULL, 'user', NULL, NULL);
+(42, '222', 'bcbe3365e6ac95ea2c0343a2395834dd', '222', '113', '122234@gmail.com', NULL, 'user', NULL, NULL),
+(43, 'hoang', 'e10adc3949ba59abbe56e057f20f883e', '0793897147', 'hpl', 'hai07r77@gmail.com', NULL, 'user', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -324,13 +369,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `cart_item`
 --
 ALTER TABLE `cart_item`
-  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -342,25 +387,25 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `comment_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `comment_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `order`
 --
 ALTER TABLE `order`
-  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT for table `order_detail`
 --
 ALTER TABLE `order_detail`
-  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -372,7 +417,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- Constraints for dumped tables

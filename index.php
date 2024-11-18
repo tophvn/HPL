@@ -106,7 +106,7 @@ if (isset($_POST['add_to_favorites'])) {
                     <img src="img/offer-2.png" alt="">
                     <div class="position-relative" style="z-index: 1;">
                         <h5 class="text-uppercase text-primary mb-3">Giảm 20% cho</h5>
-                        <h1 class="mb-4 font-weight-semi-bold">Bộ Sưu Tập Mùa Đông</h1>
+                        <h1 class="mb-4 font-weight-semi-bold">ÁO OWEN</h1>
                         <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3">Mua Ngay</a>
                     </div>
                 </div>
@@ -201,6 +201,13 @@ if (isset($_POST['add_to_favorites'])) {
         <div class="text-center mb-4">
             <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
         </div>
+        <div class="image-row" style="display: flex; justify-content: center; padding: 20px; gap: 40px;">
+            <img class="banner_coll" src="img/banner_coll/banner_coll_1.png" alt="new" style="flex: 1; width: 100%; max-width: 300px; height: auto;">
+            <img class="banner_coll" src="img/banner_coll/banner_coll_2.png" alt="top" style="flex: 1; width: 100%; max-width: 300px; height: auto;">
+            <img class="banner_coll" src="img/banner_coll/banner_coll_3.png" alt="sale" style="flex: 1; width: 100%; max-width: 300px; height: auto;">
+        </div>
+            <br>
+        <img class="img-fluid" src="img/banner_coll/banner-1.jpg" alt="Banner" style="width: 100%; height: auto;">
     </div>
 
     <!-- Footer-->

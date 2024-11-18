@@ -32,8 +32,27 @@ if (!empty($size_filter)) {
 
 $whereClause = $conditions ? "WHERE " . implode(" AND ", $conditions) : "";
 
+// Xử lý sắp xếp
+$sort_by = $_GET['sort_by'] ?? '';
+switch ($sort_by) {
+    case 'price_asc':
+        $orderClause = "ORDER BY price ASC";
+        break;
+    case 'price_desc':
+        $orderClause = "ORDER BY price DESC";
+        break;
+    case 'name_asc':
+        $orderClause = "ORDER BY product_name ASC";
+        break;
+    case 'name_desc':
+        $orderClause = "ORDER BY product_name DESC";
+        break;
+    default:
+        $orderClause = "ORDER BY product_id ASC"; // Sắp xếp mặc định
+}
+
 // Truy vấn sản phẩm và tổng số sản phẩm
-$result = Database::query("SELECT * FROM products $whereClause LIMIT $limit OFFSET $offset");
+$result = Database::query("SELECT * FROM products $whereClause $orderClause LIMIT $limit OFFSET $offset");
 $totalProducts = Database::query("SELECT COUNT(*) as total FROM products $whereClause")->fetch_assoc()['total'];
 $totalPages = ceil($totalProducts / $limit);
 
@@ -125,9 +144,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="col-lg-3 col-md-12 filter-container">
                 <?php include '../includes/filter.php'; ?>
             </div>
-
-            <!-- Sản phẩm -->
+            <!-- Sản phẩm --> 
             <div class="col-lg-9 col-md-12">
+                <div class="dropdown ml-8">
+                    <button class="btn border dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
+                        <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=price_asc">Giá thấp đến cao</a>
+                        <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=price_desc">Giá cao đến thấp</a>
+                        <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=name_asc">Name A - Z</a>
+                        <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=name_desc">Name Z - A</a>
+                    </div>
+                </div>
+                <br>
                 <div class="row">
                     <?php while ($product = $result->fetch_assoc()): ?>
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
@@ -171,7 +200,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endwhile; ?>
                 </div>
             </div>
-
         <!-- Thanh chuyển trang -->
         <nav aria-label="Page navigation" class="d-flex justify-content-center">
             <ul class="pagination">

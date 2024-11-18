@@ -75,107 +75,72 @@ if (isset($_SESSION['user'])) {
 
 <!-- Navbar -->
 <div class="container-fluid mb-5">
-    <div class="row border-top px-xl-5">
-        <div class="col-lg-3 d-none d-lg-block">
-            <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" 
-               data-toggle="collapse" 
-               href="#navbar-vertical" 
-               style="height: 65px; margin-top: -1px; padding: 0 30px;">
-                <h6 class="m-0">Danh Mục</h6>
-                <i class="fa fa-angle-down text-dark"></i>
-            </a>
-            <nav class="collapse <?php echo $isIndexPage ? 'show' : ''; ?> navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
-                <div class="navbar-nav w-100 overflow-hidden" style="height: 250px">
-                <?php
-                while ($r1 = $q1->fetch_array()) {
-                    echo '<li class="nav-item">';
-                    echo '<a href="' . VIEWS_URL . 'collection.php?category_id=' . $r1['category_id'] . '" class="nav-item nav-link">';
-                    
-                    if ($r1['category_id'] == 1) {
-                        echo 'SALE';
-                    } elseif ($r1['category_id'] == 2) {
-                        echo 'Bộ Sưu Tập';
-                    } elseif ($r1['category_id'] == 3) {
-                        echo 'Phụ Kiện';
-                    } elseif ($r1['category_id'] == 4) {
-                        echo 'Nữ';
-                    } elseif ($r1['category_id'] == 5) {
-                        echo 'Trẻ Em';
-                    } elseif ($r1['category_id'] == 6) {
-                        echo 'Nam';
-                    } else {
-                        echo htmlspecialchars($r1['category_name']);
-                    }
-                    echo '</a>';
-                    echo '</li>';
-                }
-                ?>
+    <!-- <div class="row border-top px-xl-5"> -->
+    <div class="container-fluid px-0">
+    <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+    <a href="<?php echo BASE_URL; ?>index.php" class="text-decoration-none d-block d-lg-none">
+        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">HPL</span>Fashion</h1>
+    </a>
+    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+        <div class="navbar-nav mx-auto py-0">
+            <a href="<?php echo BASE_URL; ?>index.php" class="nav-item nav-link active">TRANG CHỦ</a>
+            <a href="<?php echo VIEWS_URL; ?>shop.php" class="nav-item nav-link">SẢN PHẨM</a>
+            <div class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">DANH MUC</a>
+                <div class="dropdown-menu rounded-0 m-0">
+                    <a href="<?php echo VIEWS_URL; ?>cart.php" class="dropdown-item">GIỎ HÀNG</a>
+                    <a href="<?php echo VIEWS_URL; ?>checkout.php" class="dropdown-item">THANH TOÁN</a>
                 </div>
-            </nav>
+            </div>
+            <a href="<?php echo VIEWS_URL; ?>order_history.php" class="nav-item nav-link">LỊCH SỬ MUA HÀNG</a>
+            <a href="<?php echo VIEWS_URL; ?>contact.php" class="nav-item nav-link">LIÊN HỆ</a>
+            <a href="#" class="nav-item nav-link">TIN TỨC</a>
         </div>
-
-        <div class="col-lg-9">
-            <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
-                <a href="<?php echo BASE_URL; ?>index.php" class="text-decoration-none d-block d-lg-none">
-                    <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1">HPL</span>Fashion</h1>
-                </a>
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                    <div class="navbar-nav mr-auto py-0">
-                        <a href="<?php echo BASE_URL; ?>index.php" class="nav-item nav-link active">Trang Chủ</a>
-                        <a href="<?php echo VIEWS_URL; ?>shop.php" class="nav-item nav-link">Sản Phẩm</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Danh Mục</a>
-                            <div class="dropdown-menu rounded-0 m-0">
-                                <a href="<?php echo VIEWS_URL; ?>cart.php" class="dropdown-item">Giỏ Hàng</a>
-                                <a href="<?php echo VIEWS_URL; ?>checkout.php" class="dropdown-item">Thanh Toán</a>
-                            </div>
-                        </div>
-                        <a href="<?php echo VIEWS_URL; ?>contact.php" class="nav-item nav-link">Liên Hệ</a>
-                        <a href="<?php echo VIEWS_URL; ?>order_history.php" class="nav-item nav-link">Lịch Sử Mua Hàng</a>
-                    </div>
-                    <div class="navbar-nav">
-                        <?php if (isset($_SESSION['user'])): ?>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fas fa-user"></i> <?php echo $_SESSION['user']['name']; ?>!</a>
-                                <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="<?php echo VIEWS_URL; ?>account.php" class="dropdown-item">Tài Khoản</a>
-                                    <a href="<?php echo AUTH_URL . '/logout.php'; ?>" class="dropdown-item">Đăng Xuất</a>
-                                </div>
-                            </div>
-                        <?php else: ?>
-                            <a href="<?php echo AUTH_URL . '/login.php'; ?>" class="nav-item nav-link">Đăng Nhập</a> 
-                            <a href="<?php echo AUTH_URL . '/register.php'; ?>" class="nav-item nav-link">Đăng Ký</a> 
-                        <?php endif; ?>
+        <div class="navbar-nav">
+            <?php if (isset($_SESSION['user'])): ?>
+                <div class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fas fa-user"></i> <?php echo $_SESSION['user']['name']; ?>!</a>
+                    <div class="dropdown-menu rounded-0 m-0">
+                        <a href="<?php echo VIEWS_URL; ?>account.php" class="dropdown-item">Tài Khoản</a>
+                        <a href="<?php echo AUTH_URL . '/logout.php'; ?>" class="dropdown-item">Đăng Xuất</a>
                     </div>
                 </div>
-            </nav>
-            <?php if ($isIndexPage): ?>
-                <div id="header-carousel" class="carousel slide" data-ride="carousel">
-                    <div class="carousel-inner">
-                        <div class="carousel-item active" style="height: 410px;">
-                            <img class="img-fluid" src="img/carousel-1.jpg" alt="Hình ảnh">
-                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                <div class="p-3" style="max-width: 700px;">
-                                    <h4 class="text-light text-uppercase font-weight-medium mb-3">Giao Hàng Nhanh, Miễn Phí Ship</h4>
-                                    <h3 class="display-4 text-white font-weight-semi-bold mb-4">Sản Phẩm Chất Lượng</h3>
-                                    <a href="#" class="btn btn-light py-2 px-3">Mua Ngay</a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="carousel-item" style="height: 410px;">
-                            <img class="img-fluid" src="img/carousel-2.jpg" alt="Hình ảnh">
-                            <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
-                                <div class="p-3" style="max-width: 700px;">
-                                    <h4 class="text-light text-uppercase font-weight-medium mb-3">Giảm Giá đến 20% Cho Quần Áo</h4>
-                                    <h3 class="display-4 text-white font-weight-semi-bold mb-4">Giá Cả Hợp Lý</h3>
-                                    <a href="#" class="btn btn-light py-2 px-3">Mua Ngay</a>
-                                </div>
+            <?php else: ?>
+                <a href="<?php echo AUTH_URL . '/login.php'; ?>" class="nav-item nav-link">Đăng Nhập</a> 
+                <a href="<?php echo AUTH_URL . '/register.php'; ?>" class="nav-item nav-link">Đăng Ký</a> 
+            <?php endif; ?>
+        </div>
+    </div>
+</nav>
+    <div class="col-lg-9 mx-auto">
+        <!-- Carousel -->
+        <?php if ($isIndexPage): ?>
+            <div id="header-carousel" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active" style="height: 410px;">
+                        <img class="img-fluid w-100" src="img/carousel-1.jpg" alt="Hình ảnh">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 700px;">
+                                <h4 class="text-light text-uppercase font-weight-medium mb-3">Giao Hàng Nhanh, Miễn Phí Ship</h4>
+                                <h3 class="display-4 text-white font-weight-semi-bold mb-4">Sản Phẩm Chất Lượng</h3>
+                                <a href="#" class="btn btn-light py-2 px-3">Mua Ngay</a>
                             </div>
                         </div>
                     </div>
+                    <div class="carousel-item" style="height: 410px;">
+                        <img class="img-fluid w-100" src="img/carousel-2.jpg" alt="Hình ảnh">
+                        <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
+                            <div class="p-3" style="max-width: 700px;">
+                                <h4 class="text-light text-uppercase font-weight-medium mb-3">Giảm Giá đến 20% Cho Quần Áo</h4>
+                                <h3 class="display-4 text-white font-weight-semi-bold mb-4">Giá Cả Hợp Lý</h3>
+                                <a href="#" class="btn btn-light py-2 px-3">Mua Ngay</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                     <a class="carousel-control-prev" href="#header-carousel" data-slide="prev">
                         <div class="btn btn-dark" style="width: 45px; height: 45px;">
                             <span class="carousel-control-prev-icon mb-n2"></span>
@@ -189,5 +154,6 @@ if (isset($_SESSION['user'])) {
                 </div>
             <?php endif; ?>
         </div>
+    </div>
     </div>
 </div>

@@ -15,7 +15,8 @@ $user_id = $_SESSION['user']['user_id'];
 // Lấy danh sách đơn hàng của người dùng
 $query = "SELECT `order`.order_id, `order`.order_date, `order`.order_address, 
                  order_detail.product_id, order_detail.order_quantity, 
-                 products.product_name, cart_item.price, products.image 
+                 products.product_name, cart_item.price, products.image,
+                 order_detail.status_id 
           FROM `order` 
           JOIN order_detail ON `order`.order_id = order_detail.order_id 
           JOIN products ON order_detail.product_id = products.product_id 
@@ -30,6 +31,7 @@ $orders = [];
 while ($row = $result->fetch_assoc()) {
     $orders[$row['order_id']]['order_date'] = $row['order_date'];
     $orders[$row['order_id']]['order_address'] = $row['order_address'];
+    $orders[$row['order_id']]['status_id'] = $row['status_id']; // Lưu status_id
     $orders[$row['order_id']]['products'][] = [
         'product_id' => $row['product_id'],
         'product_name' => $row['product_name'],
@@ -48,7 +50,6 @@ while ($row = $result->fetch_assoc()) {
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href=" " rel="icon">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
@@ -72,7 +73,6 @@ while ($row = $result->fetch_assoc()) {
             </div>
         </div>
     </div>
-
     <section class="h-100 gradient-custom">
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -80,7 +80,7 @@ while ($row = $result->fetch_assoc()) {
                     <?php foreach ($orders as $order_id => $order): ?>
                     <div class="card mb-4" style="border-radius: 10px;">
                         <div class="card-header px-4 py-5">
-                            <h5 class="text-muted mb-0">Ngày Đặt: <span style="color: #a8729a;"><?php echo htmlspecialchars(date('F d, Y H:i:s', strtotime($order['order_date']))); ?></span></h5>
+                            <h5 class="text-muted mb-0">Ngày Đặt: <span style="color: #a8729a;"><?php echo date('F d, Y H:i:s', strtotime($order['order_date'])); ?></span></h5>
                         </div>
                         <div class="card-body p-4">
                             <?php 
@@ -92,11 +92,11 @@ while ($row = $result->fetch_assoc()) {
                                 <div class="card-body">
                                     <div class="row">
                                         <div class="col-md-2">
-                                            <img src="../assets/img_product/<?php echo htmlspecialchars($product['image']); ?>" class="img-fluid" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+                                            <img src="../assets/img_product/<?php echo $product['image']; ?>" class="img-fluid" alt="<?php echo $product['product_name']; ?>">
                                         </div>
                                         <div class="col-md-5 text-center d-flex flex-column justify-content-center">
-                                            <h5 class="text-muted"><?php echo htmlspecialchars($product['product_name']); ?></h5>
-                                            <p class="text-muted">Số Lượng: <?php echo htmlspecialchars($product['quantity']); ?></p>
+                                            <h5 class="text-muted"><?php echo $product['product_name']; ?></h5>
+                                            <p class="text-muted">Số Lượng: <?php echo $product['quantity']; ?></p>
                                         </div>
                                         <div class="col-md-3 d-flex justify-content-center align-items-center">
                                             <h5 class="text-muted"><?php echo number_format($product['quantity'] * $product['price'], 0, ',', '.'); ?>₫</h5>
@@ -107,6 +107,17 @@ while ($row = $result->fetch_assoc()) {
                             <?php endforeach; ?>
                             <div class="d-flex justify-content-between align-items-center mt-4">
                                 <h5 class="text-muted">Tổng Tiền: <span style="color: #a8729a;"><?php echo number_format($total_amount, 0, ',', '.'); ?>₫</span></h5>
+                            </div>
+                            <div class="mt-3">
+                                <?php
+                                // Lấy trạng thái đơn hàng
+                                $status_id = $order['status_id'];
+                                $status_query = "SELECT status_value FROM status WHERE status_id = $status_id";
+                                $status_result = $conn->query($status_query);
+                                $status_row = $status_result->fetch_assoc();
+                                $status_value = $status_row['status_value'];
+                                echo "<h5 class='text-muted'>Trạng Thái: <span style='color: #a8729a;'>$status_value</span></h5>";
+                                ?>
                             </div>
                         </div>
                     </div>

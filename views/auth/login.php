@@ -98,7 +98,7 @@ $googleLoginUrl = $client->createAuthUrl();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập</title>
@@ -131,7 +131,7 @@ $googleLoginUrl = $client->createAuthUrl();
                     <div class="form-floating">
                         <span class="password-show-toggle js-password-show-toggle"><span class="uil"></span></span>
                         <input type="password" class="form-control" name="password" id="password" placeholder="Mật khẩu" required>
-                        <label for="password">Mật Khẩu</label>
+                        <label for="password">Mật Khẩu</label> 
                     </div>
 
                     <div class="d-flex justify-content-between">

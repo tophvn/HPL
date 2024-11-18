@@ -1,6 +1,6 @@
 <?php
 include('../../config/database.php');
-
+include('../../config/config.php'); 
 // Kiểm tra nếu có mã xác nhận từ URL (token)
 if (!isset($_GET['token'])) {
     echo "Mã xác nhận không hợp lệ.";
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đặt lại Mật Khẩu</title>

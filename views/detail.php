@@ -44,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
         $stmt = $conn->query("SELECT * FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
-
         if ($stmt->num_rows > 0) {
             // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
             $conn->query("UPDATE cart_item SET quantity = quantity + $quantity WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
@@ -219,28 +218,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p><?= $product['description'] ?></p>
                     </div>
                     <div class="tab-pane fade" id="tab-pane-2">
-                        <h4 class="mb-3">Thông tin bổ sung</h4>
+                        <h4 class="mb-3">Chính sách đổi trả</h4>
                         <p>Xin lưu ý, tất cả các mặt hàng giảm giá được mua từ ngày 8 tháng 11 đến ngày 1 tháng 1 chỉ được ĐỔI TRẢ.</p>
                     </div>
                     <div class="tab-pane fade" id="tab-pane-3">
-                        <h4 class="mb-3">Đánh giá</h4>
-                        <?php
-                        $reviewQuery = Database::query("SELECT comments.*, users.name FROM comments INNER JOIN users ON comments.user_id = users.user_id WHERE comments.product_id = '$product_id'");
-                        if ($reviewQuery->num_rows > 0) {
-                            while ($review = $reviewQuery->fetch_array()) {
-                                echo '<div class="media mb-4">
-                                        <img src="../img/user.jpg" alt="Hình ảnh" class="img-fluid mr-3 mt-1" style="width: 45px;">
-                                        <div class="media-body">
-                                            <h6>' . $review['name'] . '<small> - <i>' . $review['time_create'] . '</i></small></h6>
-                                            <p>' . $review['comment_text'] . '.</p>
-                                        </div>
-                                    </div>';
-                            }
-                        } else {
-                            echo '<p>Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>';
-                        }
-                        ?>
-                    </div>
+                    <h4 class="mb-3">Đánh giá</h4>
+                    <p>Chưa có đánh giá nào</p>
+                </div>
                 </div>
             </div>
         </div>
