@@ -28,9 +28,7 @@ if (isset($_POST['add_to_favorites'])) {
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <!-- Favicon -->
     <link href=" " rel="icon">
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+    
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <!-- Libraries Stylesheet -->
@@ -38,22 +36,7 @@ if (isset($_POST['add_to_favorites'])) {
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
     <style>
-        .discount-badge {
-            top: 10px;
-            right: 10px;
-            background-color: red;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 50%;
-            z-index: 10;
-        }
-        .cat-img img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
+        
     </style>
 </head>
 
@@ -64,25 +47,25 @@ if (isset($_POST['add_to_favorites'])) {
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fa fa-check text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">SẢN PHẨM CHẤT LƯỢNG</h5>
+                    <h5 class="font-weight-semi-bold m-0" style="font-weight: bold;">SẢN PHẨM CHẤT LƯỢNG</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fa fa-shipping-fast text-primary m-0 mr-2"></h1>
-                    <h5 class="font-weight-semi-bold m-0">MIỄN PHÍ VẬN CHUYỂN</h5>
+                    <h5 class="font-weight-semi-bold m-0" style="font-weight: bold;">MIỄN PHÍ VẬN CHUYỂN</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fas fa-exchange-alt text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">ĐỔI TRẢ TRONG 7 NGÀY</h5>
+                    <h5 class="font-weight-semi-bold m-0" style="font-weight: bold;">ĐỔI TRẢ TRONG 7 NGÀY</h5>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                 <div class="d-flex align-items-center border mb-4" style="padding: 30px;">
                     <h1 class="fa fa-phone-volume text-primary m-0 mr-3"></h1>
-                    <h5 class="font-weight-semi-bold m-0">HỖ TRỢ 24/7</h5>
+                    <h5 class="font-weight-semi-bold m-0" style="font-weight: bold;">HỖ TRỢ 24/7</h5>
                 </div>
             </div>
         </div>
@@ -97,7 +80,7 @@ if (isset($_POST['add_to_favorites'])) {
                     <div class="position-relative" style="z-index: 1;">
                         <h5 class="text-uppercase text-primary mb-3">Giảm 20% cho</h5>
                         <h1 class="mb-4 font-weight-semi-bold">PHỤ KIỆN</h1>
-                        <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3">Mua Ngay</a>
+                        <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3" style="font-weight: bold;">Mua Ngay</a>
                     </div>
                 </div>
             </div>
@@ -107,7 +90,7 @@ if (isset($_POST['add_to_favorites'])) {
                     <div class="position-relative" style="z-index: 1;">
                         <h5 class="text-uppercase text-primary mb-3">Giảm 20% cho</h5>
                         <h1 class="mb-4 font-weight-semi-bold">ÁO OWEN</h1>
-                        <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3">Mua Ngay</a>
+                        <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3" style="font-weight: bold;">Mua Ngay</a>
                     </div>
                 </div>
             </div>
@@ -132,7 +115,7 @@ if (isset($_POST['add_to_favorites'])) {
                         <a class="cat-img position-relative overflow-hidden mb-3">
                             <img class="img-fluid" src="img/img-collection/<?php echo $r1['category_image']; ?>" alt="">
                         </a>
-                        <h5 class="font-weight-semi-bold m-0"><?php echo $r1['category_name']; ?></h5>
+                        <h5 class="font-weight-semi-bold m-0" style="font-weight: bold;"><?php echo $r1['category_name']; ?></h5>
                     </div>
                 </div>
             <?php
@@ -144,7 +127,7 @@ if (isset($_POST['add_to_favorites'])) {
     <!-- Products -->
     <div class="container-fluid pt-5">
         <div class="text-center mb-4">
-            <h2 class="section-title px-5"><span class="px-2">NEW</span></h2>
+            <h2 class="section-title px-5"><span class="px-2">SẢN PHẨM MỚI</span></h2>
         </div>
         <div class="row px-xl-5 pb-3">
             <?php
@@ -169,7 +152,7 @@ if (isset($_POST['add_to_favorites'])) {
                                 <?php endif; ?>
                             </div>
                             <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3"><?= $row['product_name']; ?></h6>
+                                <h6 class="text-truncate mb-3" style="font-weight: bold;"><?= $row['product_name']; ?></h6>
                                 <div class="d-flex justify-content-center">
                                     <h6 class="text-danger"><?= number_format($discounted_price, 0, ',', '.') ?> VNĐ</h6>
                                     <?php if ($discount > 0): ?>
@@ -179,12 +162,12 @@ if (isset($_POST['add_to_favorites'])) {
                             </div>
                             <div class="card-footer d-flex justify-content-between bg-light border">
                                 <a href="views/detail.php?id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
-                                    <i class="fas fa-eye text-primary mr-1"></i>XEM CHI TIẾT
+                                    <i class="fas fa-eye text-primary mr-1"></i><span class="fw-bold">CHI TIẾT</span>
                                 </a>
                                 <form method="POST" action="" class="d-flex align-items-center">
                                     <input type="hidden" name="product_id" value="<?= $row['product_id']; ?>">
                                     <button type="submit" name="add_to_favorites" class="btn btn-sm text-dark p-0 bg-white">
-                                        <i class="fas fa-heart text-primary mr-1"></i>THÊM YÊU THÍCH
+                                        <i class="fas fa-heart text-primary mr-1"></i><span class="fw-bold">YÊU THÍCH</span>
                                     </button>
                                 </form>
                             </div>

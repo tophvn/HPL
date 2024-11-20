@@ -147,7 +147,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Sản phẩm --> 
             <div class="col-lg-9 col-md-12">
                 <div class="dropdown ml-8">
-                    <button class="btn border dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sort by
+                    <button class="btn border dropdown-toggle" type="button" id="triggerId" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Sắp Xếp
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
                         <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=price_asc">Giá thấp đến cao</a>
@@ -172,7 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php endif; ?>
                                 </div>
                                 <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                    <h6 class="text-truncate mb-3"><?= $product['product_name'] ?></h6>
+                                    <h6 class="text-truncate mb-3" style="font-weight: bold;"><?= $product['product_name'] ?></h6>
                                     <div class="d-flex justify-content-center">
                                         <?php 
                                         $discount = $product['discount']; 
@@ -186,12 +186,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                                 <div class="card-footer d-flex justify-content-between bg-light border">
                                     <a href="detail.php?id=<?= $product['product_id'] ?>" class="btn btn-sm text-dark p-0">
-                                        <i class="fas fa-eye text-primary mr-1"></i>CHI TIẾT
+                                        <i class="fas fa-eye text-primary mr-1"></i><span class="fw-bold">CHI TIẾT</span>
                                     </a>
                                     <form method="POST" action="" class="d-flex align-items-center">
                                         <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
                                         <button type="submit" name="add_to_favorites" class="btn btn-sm text-dark p-0 bg-white">
-                                            <i class="fas fa-heart text-primary mr-1"></i>YÊU THÍCH
+                                            <i class="fas fa-heart text-primary mr-1"></i><span class="fw-bold">YÊU THÍCH</span>
                                         </button>
                                     </form>
                                 </div>

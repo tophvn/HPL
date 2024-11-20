@@ -39,7 +39,38 @@ if (isset($_SESSION['user'])) {
     $favorite_count = 0; 
 }
 ?>
+
 <div class="container-fluid">
+    <div class="row bg-secondary py-2 px-xl-5">
+        <div class="col-lg-6 d-none d-lg-block">
+            <div class="d-inline-flex align-items-center">
+                <a class="text-dark" href="">FAQs</a>
+                <span class="text-muted px-2">|</span>
+                <a class="text-dark" href="">Help</a>
+                <span class="text-muted px-2">|</span>
+                <a class="text-dark" href="">Support</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                <a class="text-dark px-2" href="">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a class="text-dark px-2" href="">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a class="text-dark px-2" href="">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a class="text-dark px-2" href="">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a class="text-dark pl-2" href="">
+                    <i class="fab fa-youtube"></i>
+                </a>
+            </div>
+        </div>
+    </div>
     <div class="row align-items-center py-3 px-xl-5">
         <div class="col-lg-3 d-none d-lg-block">
             <a href="<?php echo BASE_URL; ?>index.php" class="text-decoration-none">
@@ -61,14 +92,25 @@ if (isset($_SESSION['user'])) {
             </form>
         </div>
         <div class="col-lg-3 col-6 text-right">
-            <a href="<?php echo VIEWS_URL; ?>favorites.php" class="btn border">
-                <i class="fas fa-heart text-primary"></i>
-                <span class="badge"><?php echo $favorite_count; ?></span> 
-            </a>
-            <a href="<?php echo VIEWS_URL; ?>cart.php" class="btn border">
-                <i class="fas fa-shopping-cart text-primary"></i>
-                <span class="badge"><?php echo $cart_count; ?></span> 
-            </a>
+            <?php if (isset($_SESSION['user'])): ?>
+                <a href="<?php echo VIEWS_URL; ?>favorites.php" class="btn border">
+                    <i class="fas fa-heart text-primary"></i>
+                    <span class="badge"><?php echo $favorite_count; ?></span> 
+                </a>
+                <a href="<?php echo VIEWS_URL; ?>cart.php" class="btn border">
+                    <i class="fas fa-shopping-cart text-primary"></i>
+                    <span class="badge"><?php echo $cart_count; ?></span> 
+                </a>
+            <?php else: ?>
+                <a href="<?php echo AUTH_URL . '/login.php'; ?>" class="btn border">
+                    <i class="fas fa-sign-in-alt text-primary"></i>
+                    Đăng Nhập
+                </a>
+                <a href="<?php echo AUTH_URL . '/register.php'; ?>" class="btn border">
+                    <i class="fas fa-user-plus text-primary"></i>
+                    Đăng Ký
+                </a>
+            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -85,38 +127,36 @@ if (isset($_SESSION['user'])) {
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-        <div class="navbar-nav mx-auto py-0">
-            <a href="<?php echo BASE_URL; ?>index.php" class="nav-item nav-link active">TRANG CHỦ</a>
-            <a href="<?php echo VIEWS_URL; ?>shop.php" class="nav-item nav-link">SẢN PHẨM</a>
+    <div class="navbar-nav mx-auto py-0">
+        <a href="<?php echo BASE_URL; ?>index.php" class="nav-item nav-link active fw-bold">TRANG CHỦ</a>
+        <a href="<?php echo VIEWS_URL; ?>shop.php" class="nav-item nav-link fw-bold">SẢN PHẨM</a>
+        <div class="nav-item dropdown">
+            <a href="#" class="nav-link dropdown-toggle fw-bold" data-toggle="dropdown">DANH MUC</a>
+            <div class="dropdown-menu rounded-0 m-0">
+                <a href="<?php echo VIEWS_URL; ?>cart.php" class="dropdown-item fw-bold">GIỎ HÀNG</a>
+                <a href="<?php echo VIEWS_URL; ?>checkout.php" class="dropdown-item fw-bold">THANH TOÁN</a>
+            </div>
+        </div>
+        <a href="<?php echo VIEWS_URL; ?>order_history.php" class="nav-item nav-link fw-bold">LỊCH SỬ MUA HÀNG</a>
+        <a href="<?php echo VIEWS_URL; ?>contact.php" class="nav-item nav-link fw-bold">LIÊN HỆ</a>
+        <a href="#" class="nav-item nav-link fw-bold">TIN TỨC</a>
+    </div>
+    <div class="navbar-nav">
+        <?php if (isset($_SESSION['user'])): ?>
             <div class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">DANH MUC</a>
+                <a href="#" class="nav-link dropdown-toggle fw-bold" data-toggle="dropdown"><i class="fas fa-user"></i> <?php echo $_SESSION['user']['name']; ?>!</a>
                 <div class="dropdown-menu rounded-0 m-0">
-                    <a href="<?php echo VIEWS_URL; ?>cart.php" class="dropdown-item">GIỎ HÀNG</a>
-                    <a href="<?php echo VIEWS_URL; ?>checkout.php" class="dropdown-item">THANH TOÁN</a>
+                    <a href="<?php echo VIEWS_URL; ?>account.php" class="dropdown-item fw-bold">Tài Khoản</a>
+                    <a href="<?php echo AUTH_URL . '/logout.php'; ?>" class="dropdown-item fw-bold">Đăng Xuất</a>
                 </div>
             </div>
-            <a href="<?php echo VIEWS_URL; ?>order_history.php" class="nav-item nav-link">LỊCH SỬ MUA HÀNG</a>
-            <a href="<?php echo VIEWS_URL; ?>contact.php" class="nav-item nav-link">LIÊN HỆ</a>
-            <a href="#" class="nav-item nav-link">TIN TỨC</a>
-        </div>
-        <div class="navbar-nav">
-            <?php if (isset($_SESSION['user'])): ?>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown"><i class="fas fa-user"></i> <?php echo $_SESSION['user']['name']; ?>!</a>
-                    <div class="dropdown-menu rounded-0 m-0">
-                        <a href="<?php echo VIEWS_URL; ?>account.php" class="dropdown-item">Tài Khoản</a>
-                        <a href="<?php echo AUTH_URL . '/logout.php'; ?>" class="dropdown-item">Đăng Xuất</a>
-                    </div>
-                </div>
-            <?php else: ?>
-                <a href="<?php echo AUTH_URL . '/login.php'; ?>" class="nav-item nav-link">Đăng Nhập</a> 
-                <a href="<?php echo AUTH_URL . '/register.php'; ?>" class="nav-item nav-link">Đăng Ký</a> 
-            <?php endif; ?>
-        </div>
+        <?php endif; ?>
     </div>
+</div>
 </nav>
     <div class="col-lg-9 mx-auto">
         <!-- Carousel -->
+        <br>
         <?php if ($isIndexPage): ?>
             <div id="header-carousel" class="carousel slide" data-ride="carousel">
                 <div class="carousel-inner">
