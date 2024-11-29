@@ -128,21 +128,21 @@ $result = $conn->query($sql);
                 </form>
                 <div class="card border-primary mb-5">
                     <div class="card-header bg-primary text-white">
-                        <h4 class="font-weight-semi-bold m-0">Tổng Thanh Toán</h4>
+                        <h4 class="font-weight-semi-bold m-0">Tổng Tiền</h4>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3 pt-1">
+                        <!-- <div class="d-flex justify-content-between mb-3 pt-1">
                             <h6 class="font-weight-medium">Tổng phụ</h6>
                             <h6 class="font-weight-medium"><?= number_format($tong_tien) ?> VNĐ</h6>
-                        </div>
-                        <div class="d-flex justify-content-between">
+                        </div> -->
+                        <!-- <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Phí giao hàng</h6>
                             <h6 class="font-weight-medium">0 VNĐ</h6>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="card-footer border-primary bg-transparent">
                         <div class="d-flex justify-content-between mt-2">
-                            <h5 class="font-weight-bold">Tổng cộng</h5>
+                            <h5 class="font-weight-bold">Tổng:</h5>
                             <h5 class="font-weight-bold"><?= number_format($tong_tien) ?> VNĐ</h5>
                         </div>
                         <a href="checkout.php" class="btn btn-block btn-primary my-3 py-3">Tiến Hành Thanh Toán</a>

@@ -8,7 +8,7 @@
             </a>
             <p>Chúng tôi cung cấp những sản phẩm tốt nhất cho bạn. Chất lượng là tiêu chí hàng đầu của chúng tôi.</p>
             <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>140 Lê Trọng Tấn, Tân Phú, TP. HCM</p>
-            <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>text@gmail.com</p>
+            <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>hplfashionvn@gmail.com</p>
             <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+84 779 779 779</p>
         </div>
         <div class="col-lg-8 col-md-12">

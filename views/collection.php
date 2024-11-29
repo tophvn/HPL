@@ -1,6 +1,5 @@
 <?php
 include('../config/database.php');
-
 // Kiểm tra xem category_id có trong URL không
 $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
 

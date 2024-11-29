@@ -19,7 +19,7 @@ if (!empty($price_filter)) {
 $type_filter = $_GET['type'] ?? []; 
 if (!empty($type_filter)) {
     foreach ($type_filter as $t) {
-        $conditions[] = "type = '$t'";
+        $conditions[] = "type_id = '$t'";
     }
 }
 
@@ -215,7 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Footer -->
     <?php include '../includes/footer.php'; ?>
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script>
         $(document).ready(function() {

@@ -1,57 +1,59 @@
 <?php
-session_start();
 include('../config/database.php');
-
-$product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-
-// Lấy thông tin sản phẩm
+session_start();
+// Lấy mã sản phẩm từ URL
+$product_id = isset($_GET['id']) ? $_GET['id'] : 0;
+// Lấy thông tin sản phẩm từ cơ sở dữ liệu
 $query = "SELECT * FROM products WHERE product_id = $product_id";
 $result = Database::getConnection()->query($query);
+// Kiểm tra nếu không tìm thấy sản phẩm
 if ($result->num_rows === 0) {
     exit; 
 }
 $product = $result->fetch_assoc();
 
-$id = isset($_SESSION['user']['user_id']) ? $_SESSION['user']['user_id'] : 0;
+// Tăng view product
+$conn = Database::getConnection();
+$conn->query("UPDATE products SET view_count = view_count + 1 WHERE product_id = $product_id");
 
-// Thêm sản phẩm vào giỏ hàng
+$user_id = $_SESSION['user']['user_id'] ?? 0;
+// Xử lý khi người dùng gửi thông tin giỏ hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if ($id === 0) {
-        echo "<script type='text/javascript'>alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');</script>";
+    if ($user_id === 0) {
+        echo "<script>alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');</script>";
     } else {
+        // Lấy số lượng sản phẩm từ form, mặc định là 1
         $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
-        $size = $_POST['size'] ?? []; 
+        $size = $_POST['size'] ?? ''; 
         $color = $_POST['color'] ?? '';
-
-        // Lấy giá đã giảm
-        $discount = $product['discount'] ?? 0; // % khuyến mãi
+        // Tính giá sau khi giảm giá
+        $discount = $product['discount'] ?? 0; 
         $discounted_price = $product['price'] * (1 - $discount / 100);
-
-        // Chọn kích thước đầu tiên nếu có nhiều kích thước
-        $size = !empty($size) ? reset($size) : ''; 
+        // Chọn kích thước đầu tiên nếu có nhiều lựa chọn
+        $size = !empty($size) ? reset($size) : '';
 
         $conn = Database::getConnection();
-        
+
         // Kiểm tra xem người dùng đã có giỏ hàng chưa
-        $stmt = $conn->query("SELECT cart_id FROM cart WHERE user_id = $id");
-        if ($stmt->num_rows === 0) {
-            $conn->query("INSERT INTO cart (user_id) VALUES ($id)");
+        $result = $conn->query("SELECT cart_id FROM cart WHERE user_id = $user_id");
+        if ($result->num_rows === 0) {
+            // Nếu chưa có giỏ hàng, tạo mới giỏ hàng
+            $conn->query("INSERT INTO cart (user_id) VALUES ($user_id)");
             $cart_id = $conn->insert_id;
         } else {
-            // Nếu đã có giỏ hàng, lấy cart_id
-            $cart_id = $stmt->fetch_assoc()['cart_id'];
+            // Nếu có giỏ hàng, lấy ID giỏ hàng
+            $cart_id = $result->fetch_assoc()['cart_id'];
         }
 
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-        $stmt = $conn->query("SELECT * FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
-        if ($stmt->num_rows > 0) {
-            // Nếu sản phẩm đã có trong giỏ hàng, tăng số lượng
+        $result = $conn->query("SELECT * FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
+        if ($result->num_rows > 0) {
+            // Nếu sản phẩm đã có, tăng số lượng
             $conn->query("UPDATE cart_item SET quantity = quantity + $quantity WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
         } else {
-            // Nếu sản phẩm chưa có, thêm vào giỏ hàng với giá đã giảm
             $conn->query("INSERT INTO cart_item (cart_id, product_id, quantity, size, color, price) VALUES ($cart_id, $product_id, $quantity, '$size', '$color', $discounted_price)");
         }
-        echo "<script type='text/javascript'>alert('Sản phẩm đã được thêm vào giỏ hàng!');</script>";
+        echo "<script>alert('Sản phẩm đã được thêm vào giỏ hàng!');</script>";
     }
 }
 ?>

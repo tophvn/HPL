@@ -2,7 +2,6 @@
 include('../config/database.php');
 session_start();
 
-// Kiểm tra nếu người dùng đã đăng nhập
 if (!isset($_SESSION['user'])) {
     header("Location: auth/login.php");
     exit();
@@ -10,48 +9,77 @@ if (!isset($_SESSION['user'])) {
 
 // Lấy kết nối từ lớp Database
 $conn = Database::getConnection();
+$user_id = $_SESSION['user']['user_id'];
 
 // Lấy dữ liệu người dùng từ cơ sở dữ liệu
-$user_id = $_SESSION['user']['user_id'];
-$query = "SELECT address1, address2 FROM users WHERE user_id = $user_id";
-$result = $conn->query($query);
-$user = $result->fetch_assoc();
+$user_query = "SELECT address1, address2 FROM users WHERE user_id = $user_id";
+$user_result = $conn->query($user_query);
+$user = $user_result->fetch_assoc();
 
-// Lấy thông tin đơn hàng
-$order_query = "SELECT total_amount, payment_method, shipping_method, order_address FROM `order` WHERE user_id = $user_id ORDER BY order_date DESC LIMIT 1";
+// Lấy thông tin hóa đơn gần nhất
+$order_query = "SELECT bills.bill_id, bills.total_amount, bills.payment_method, bills.shipping_address, bills.shipping_fee, 
+bills.shipping_method, bills.bill_date FROM bills WHERE bills.user_id = $user_id ORDER BY bills.bill_date DESC LIMIT 1";
+
 $order_result = $conn->query($order_query);
 $order = $order_result->fetch_assoc();
 
-// Kiểm tra thông tin đơn hàng
-$total_amount = $order['total_amount'] ?? 0;
-$payment_method = $order['payment_method'] ?? 'Chưa xác định';
-$shipping_method = $order['shipping_method'] ?? 'Chưa xác định';
-$order_address = $order['order_address'] ?? 'Chưa xác định';
+// Kiểm tra thông tin hóa đơn
+if ($order) {
+    $total_amount = $order['total_amount'] ?? 0;
+    $payment_method = $order['payment_method'] ?? 'Chưa xác định';
+    $shipping_address = $order['shipping_address'] ?? 'Chưa xác định';
+    $shipping_fee = $order['shipping_fee'] ?? 0;
+    $shipping_method = $order['shipping_method'] ?? 'Chưa xác định';
+    $bill_id = $order['bill_id'] ?? 0;
 
-// Tính phí vận chuyển
-$shipping_fee = ($shipping_method === 'hỏa tốc') ? 50000 : 0; // 50.000đ cho giao hàng hỏa tốc
+    // Truy vấn để lấy các sản phẩm trong hóa đơn
+    $items_query = "SELECT bill_items.product_name, bill_items.quantity, bill_items.original_price, bill_items.discount_price, 
+    bill_items.subtotal_price FROM bill_items WHERE bill_items.bill_id = $bill_id";
 
-// Truy vấn để lấy sản phẩm từ giỏ hàng của người dùng
-$query = "SELECT products.product_id, products.product_name, products.price, products.discount, cart_item.quantity 
-          FROM products 
-          JOIN cart_item ON products.product_id = cart_item.product_id 
-          JOIN cart ON cart_item.cart_id = cart.cart_id 
-          WHERE cart.user_id = $user_id";
-$result = $conn->query($query);
+    $items_result = $conn->query($items_query);
+    $products = $items_result->fetch_all(MYSQLI_ASSOC);
 
-$products = [];
-
-// Lưu sản phẩm vào mảng
-while ($row = $result->fetch_assoc()) {
-    $products[] = $row;
+    // Định dạng ngày hóa đơn
+    $order_date = date('F d, Y H:i:s', strtotime($order['bill_date']));  // Ngày và giờ hiện tại
+} else {
+    // Nếu không có hóa đơn, khởi tạo biến với giá trị mặc định
+    $total_amount = 0;
+    $payment_method = 'Chưa xác định';
+    $shipping_address = 'Chưa xác định';
+    $shipping_fee = 0;
+    $shipping_method = 'Chưa xác định';
+    $bill_id = 0;
+    $order_date = 'Chưa có dữ liệu';
+    $products = [];
 }
 
-$order_id = rand(1000, 9999);  // Mã đơn hàng ngẫu nhiên
-$order_date = date('F d, Y');  // Ngày hiện tại
+// Tính tổng số tiền cho các sản phẩm (không bao gồm phí giao hàng)
+$temp_total_amount = array_reduce($products, function($carry, $product) {
+    return $carry + $product['subtotal_price'];
+}, 0);
+
+// Tính tổng số tiền cuối (bao gồm phí giao hàng)
+$final_amount = $temp_total_amount + $shipping_fee;
+
+// Cập nhật hoặc lưu lại giá trị tổng cộng vào cơ sở dữ liệu
+if ($bill_id > 0) {
+    $update_query = "UPDATE bills SET total_amount = $final_amount WHERE bill_id = $bill_id";
+    $conn->query($update_query);
+} else {
+    // Nếu không có hóa đơn cũ, bạn có thể tạo một hóa đơn mới
+    $insert_query = "INSERT INTO bills (user_id, total_amount, shipping_fee, shipping_address, payment_method, shipping_method, bill_date) 
+    VALUES ($user_id, $final_amount, $shipping_fee, '$shipping_address', '$payment_method', '$shipping_method', NOW())";
+    $conn->query($insert_query);
+}
+
+// Định dạng tiền
+function formatCurrency($amount) {
+    return number_format($amount, 0, ',', '.') . '₫';
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -64,108 +92,105 @@ $order_date = date('F d, Y');  // Ngày hiện tại
 <body>
 
 <div class="row expanded">
-  <main class="columns">
-    <div class="inner-container">
-      <header class="row align-center">
-        <a class="button hollow secondary" href="shop.php"><i class="ion ion-chevron-left"></i> Quay lại Mua Hàng</a>
-        &nbsp;&nbsp;<a class="button" onclick="window.print();"><i class="ion ion-ios-printer-outline"></i> In Hóa Đơn</a>      
-      </header>
-      <section class="row">
-        <div class="callout large invoice-container">
-          <table class="invoice">
-            <tr class="header">
-              <td class="">
-                <img src="../img/hpl.png" alt="Tên Công Ty" />
-              </td>
-              <td class="align-right">
-                <h2>Hóa Đơn</h2>
-              </td>
-            </tr>
-            <tr class="intro">
-              <td class="">
-                  Xin chào, <?php echo $_SESSION['user']['name']; ?><br>
-                  Cảm ơn bạn đã đặt hàng.
-              </td>
-              <td class="text-right">
-                <span class="num">Mã Đơn Hàng #<?php echo $order_id; ?></span><br>
-                <?php echo $order_date; ?>
-              </td>
-            </tr>
-            <tr class="details">
-              <td colspan="2">
-                <table>
-                  <thead>
-                    <tr>
-                      <th class="desc">Mô Tả Sản Phẩm</th>
-                      <th class="id">Mã Sản Phẩm</th>
-                      <th class="qty">Số Lượng</th>
-                      <th class="amt">Khuyến Mãi</th>
-                      <th class="amt">Giá</th>
-                      <th class="amt">Thành Tiền</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                      <?php foreach ($products as $product): ?>
-                      <tr class="item">
-                          <td class="desc"><?php echo $product['product_name']; ?></td>
-                          <td class="id num"><?php echo $product['product_id']; ?></td>
-                          <td class="qty"><?php echo $product['quantity']; ?></td>
-                          <td class="amt"><?php echo number_format($product['discount'], 0, ',', '.'); ?>%</td>
-                          <td class="amt"><?php echo number_format($product['price'], 0, ',', '.'); ?>₫</td>
-                          <td class="amt">
-                              <?php 
-                              $final_price = $product['price'] - $product['discount']; // Giá sau khuyến mãi
-                              $total_price = $final_price * $product['quantity']; // Thành tiền
-                              echo number_format($total_price, 0, ',', '.'); 
-                              ?>₫
-                          </td>
-                      </tr>
-                      <?php endforeach; ?>
-                  </tbody>
-                </table>
-              </td> 
-            </tr>
-            <tr class="totals">
-              <td></td>
-              <td>
-                <table>
-                  <tr class="subtotal">
-                    <td class="num">Tạm Tính</td>
-                    <td class="num"><?php echo number_format($total_amount, 0, ',', '.'); ?>₫</td> 
-                  </tr>
-                  <tr class="fees">
-                    <td class="num">Phí Vận Chuyển</td>
-                    <td class="num"><?php echo number_format($shipping_fee, 0, ',', '.'); ?>₫</td>
-                  </tr>
-                  <tr class="total">
-                    <td>Tổng Cộng</td>
-                    <td><?php echo number_format($total_amount + $shipping_fee, 0, ',', '.'); ?>₫</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+    <main class="columns">
+        <div class="inner-container">
+            <header class="row align-center">
+                <a class="button hollow secondary" href="shop.php">
+                    <i class="ion ion-chevron-left"></i> Quay lại Mua Hàng
+                </a>
+                &nbsp;&nbsp;
+                <a class="button" onclick="window.print();">
+                    <i class="ion ion-ios-printer-outline"></i> In Hóa Đơn
+                </a>      
+            </header>
+            <section class="row">
+                <div class="callout large invoice-container">
+                    <table class="invoice">
+                        <tr class="header">
+                            <td>
+                                <img src="../img/hpl.png" alt="Tên Công Ty" />
+                            </td>
+                            <td class="align-right">
+                                <h2>Hóa Đơn</h2>
+                            </td>
+                        </tr>
+                        <tr class="intro">
+                            <td>
+                                Xin chào, <?php echo $_SESSION['user']['name']; ?><br>
+                                Cảm ơn bạn đã đặt hàng.
+                            </td>
+                            <td class="text-right">
+                                <span class="num">Mã Đơn Hàng #<?php echo $bill_id; ?></span><br>
+                                Ngày lập hóa đơn: <?php echo $order_date; ?><br>
+                            </td>
+                        </tr>
+                        <tr class="details">
+                            <td colspan="2">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="desc">Mô Tả Sản Phẩm</th>
+                                            <th class="qty">Số Lượng</th>
+                                            <th class="amt">Giá Gốc</th>
+                                            <th class="amt">Giá Khuyến Mãi</th>
+                                            <th class="amt">Thành Tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($products as $product): ?>
+                                            <tr class="item">
+                                                <td class="desc"><?php echo $product['product_name']; ?></td>
+                                                <td class="qty"><?php echo $product['quantity']; ?></td>
+                                                <td class="amt"><?php echo formatCurrency($product['original_price']); ?></td>
+                                                <td class="amt"><?php echo formatCurrency($product['discount_price']); ?></td>
+                                                <td class="amt"><?php echo formatCurrency($product['subtotal_price']); ?></td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </td> 
+                        </tr>
+                        <tr class="totals">
+                            <td></td>
+                            <td>
+                                <table>
+                                    <tr class="subtotal">
+                                        <td class="num">Tạm Tính</td>
+                                        <td class="num"><?php echo formatCurrency($temp_total_amount); ?></td>
+                                    </tr>
+                                    <tr class="fees">
+                                        <td class="num">Phí Vận Chuyển</td>
+                                        <td class="num"><?php echo formatCurrency($shipping_fee); ?></td>
+                                    </tr>
+                                    <tr class="total">
+                                        <td>Tổng Cộng</td>
+                                        <td><?php echo formatCurrency($final_amount); ?></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
 
-          <section class="additional-info">
-            <div class="row">
-              <div class="columns">
-                <h5>Thông Tin Thanh Toán</h5>
-                <?php echo $order_address; ?><br>
-              </div>
-              <div class="columns">
-                <h5>Phương Thức Thanh Toán</h5>
-                <p><?php echo $payment_method; ?></p>
-              </div>
-              <div class="columns">
-                <h5>Phương Thức Giao Hàng</h5>
-                <p><?php echo $shipping_method; ?></p>
-              </div>
-            </div>
-          </section>
+                    <section class="additional-info">
+                        <div class="row">
+                            <div class="columns">
+                                <h5>Thông Tin Giao Hàng</h5>
+                                <?php echo $shipping_address; ?><br>
+                            </div>
+                            <div class="columns">
+                                <h5>Phương Thức Thanh Toán</h5>
+                                <p><?php echo $payment_method; ?></p>
+                            </div>
+                            <div class="columns">
+                                <h5>Phương Thức Giao Hàng</h5>
+                                <p><?php echo $shipping_method; ?></p>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </section>
         </div>
-      </section>
-    </div>
-  </main>
+    </main>
 </div>
 
 </body>

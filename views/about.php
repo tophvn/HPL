@@ -8,16 +8,10 @@ include('../config/database.php');
     <meta charset="UTF-8">
     <title>Về Chúng Tôi - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <!-- Favicon -->
-    <link href="../assets/favicon.ico" rel="icon">
-    <!-- Google Web Fonts -->
+    <link href=" " rel="icon">
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <!-- Libraries Stylesheet -->
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <!-- Customized Bootstrap Stylesheet -->
     <link href="../css/style.css" rel="stylesheet">
     <style>
         
@@ -35,9 +29,9 @@ include('../config/database.php');
                 <!-- Thành viên 1 -->
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="team-member">
-                        <img src="https://s.net.vn/Clmg" alt="Thành viên 1">
+                        <img src="https://cdn-icons-png.flaticon.com/512/219/219986.png" alt="Thành viên 1">
                         <h3>Nguyễn Hoàng Hải</h3>
-                        <p>Nhân Viên</p>
+                        <p>2033216401</p>
                         <div class="social-icons">
                             <a href="#"><i class="fab fa-facebook-f"></i></a>
                             <a href="#"><i class="fab fa-instagram"></i></a>
@@ -47,9 +41,9 @@ include('../config/database.php');
                 </div>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="team-member">
-                        <img src="https://s.net.vn/swUj" alt="Thành viên 2">
+                        <img src="https://cdn-icons-png.flaticon.com/512/219/219986.png" alt="Thành viên 2">
                         <h3>Nguyễn Tấn Phát</h3>
-                        <p>Giám Đốc Tư Vấn Tâm Lý Tình Cảm</p>
+                        <p>2033210949</p>
                         <div class="social-icons">
                             <a href="#"><i class="fab fa-facebook-f"></i></a>
                             <a href="#"><i class="fab fa-instagram"></i></a>
@@ -59,9 +53,9 @@ include('../config/database.php');
                 </div>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="team-member">
-                        <img src="https://s.net.vn/Z1Az" alt="Thành viên 3">
+                        <img src="https://cdn-icons-png.flaticon.com/512/219/219986.png" alt="Thành viên 3">
                         <h3>Lê Ngọc Phi Long</h3>
-                        <p>Chủ Tịch Tập Đoàn Quản Trị</p>
+                        <p>2033210472</p>
                         <div class="social-icons">
                             <a href="#"><i class="fab fa-facebook-f"></i></a>
                             <a href="#"><i class="fab fa-instagram"></i></a>

@@ -1,27 +1,21 @@
 <?php
 include('../config/database.php');
 session_start();
-
-// Kiểm tra xem người dùng đã đăng nhập hay chưa
 if (!isset($_SESSION['user'])) {
-    header("Location: ../index.php"); // Chuyển hướng tới trang chủ nếu chưa đăng nhập
+    header("Location: ../index.php");
     exit();
 }
 
 $user_id = $_SESSION['user']['user_id'];
 $conn = Database::getConnection();
 
-// Kiểm tra nếu có yêu cầu xóa sản phẩm khỏi danh sách yêu thích
+// Kiểm tra nếu có yêu cầu xóa sản phẩm
 if (isset($_POST['product_id'])) {
-    $product_id = $_POST['product_id'];
+    $product_id = intval($_POST['product_id']); // Chuyển đổi ID sản phẩm thành số nguyên
 
-    // Xóa sản phẩm khỏi danh sách yêu thích
-    $sql = "DELETE FROM favorites WHERE user_id = ? AND product_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ii", $user_id, $product_id);
-
-    if ($stmt->execute()) {
-        // Chuyển hướng lại trang danh sách yêu thích sau khi xóa thành công
+    // Tạo câu lệnh SQL để xóa sản phẩm khỏi danh sách yêu thích
+    $sql = "DELETE FROM favorites WHERE user_id = $user_id AND product_id = $product_id";
+    if ($conn->query($sql)) {
         header("Location: favorites.php");
         exit();
     } else {
@@ -30,12 +24,13 @@ if (isset($_POST['product_id'])) {
 }
 
 // Truy vấn để lấy danh sách sản phẩm yêu thích của người dùng
-$sql = "SELECT p.product_id, p.product_name AS name, p.description, p.price, p.image 
-        FROM favorites f 
-        JOIN products p ON f.product_id = p.product_id 
-        WHERE f.user_id = $user_id";
+$sql = "SELECT products.product_id, products.product_name AS name, products.description, products.price, products.image 
+FROM favorites JOIN products ON favorites.product_id = products.product_id WHERE favorites.user_id = $user_id";
+
+// Thực hiện truy vấn
 $result = $conn->query($sql);
 
+// Khởi tạo mảng để lưu danh sách sản phẩm yêu thích
 $favorites = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -43,7 +38,6 @@ if ($result->num_rows > 0) {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>

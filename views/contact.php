@@ -1,23 +1,38 @@
 <?php
 include('../config/database.php');
+$successMessage = "";
+$errorMessage = "";
+
+// Kiểm tra xem có dữ liệu gửi từ biểu mẫu không
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $name = $_POST['name'];
+    $email = $_POST['email'];
+    $subject = $_POST['subject'];
+    $message = $_POST['message'];
+    $conn = Database::getConnection();
+    // Thực hiện truy vấn để lưu dữ liệu
+    $sql = "INSERT INTO contacts (name, email, subject, message) VALUES ('$name', '$email', '$subject', '$message')";
+    if ($conn->query($sql) === TRUE) {
+        $successMessage = "Tin nhắn của bạn đã được gửi thành công!";
+    } else {
+        $errorMessage = "Đã xảy ra lỗi: " . $conn->error;
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Liên Hệ - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <!-- Favicon -->
     <link href=" " rel="icon">
-    <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <!-- Libraries Stylesheet -->
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <!-- Customized Bootstrap Stylesheet -->
     <link href="../css/style.css" rel="stylesheet">
+    <style>
+        
+    </style>
 </head>
 
 <body>
@@ -43,32 +58,41 @@ include('../config/database.php');
                     <div class="col-lg-7 mb-5">
                         <div class="contact-form">
                             <div id="success"></div>
-                            <form name="sentMessage" id="contactForm" novalidate="novalidate">
+                            <form name="sentMessage" id="contactForm" method="post" action="">
                                 <div class="control-group">
-                                    <input type="text" class="form-control" id="name" placeholder="Họ và Tên"
+                                    <input type="text" class="form-control" name="name" placeholder="Họ và Tên"
                                         required="required" data-validation-required-message="Vui lòng nhập tên của bạn" />
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="control-group">
-                                    <input type="email" class="form-control" id="email" placeholder="Email của bạn"
+                                    <input type="email" class="form-control" name="email" placeholder="Email của bạn"
                                         required="required" data-validation-required-message="Vui lòng nhập email của bạn" />
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="control-group">
-                                    <input type="text" class="form-control" id="subject" placeholder="Chủ đề"
+                                    <input type="text" class="form-control" name="subject" placeholder="Chủ đề"
                                         required="required" data-validation-required-message="Vui lòng nhập chủ đề" />
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div class="control-group">
-                                    <textarea class="form-control" rows="6" id="message" placeholder="Tin nhắn"
-                                        required="required"
-                                        data-validation-required-message="Vui lòng nhập tin nhắn của bạn"></textarea>
+                                    <textarea class="form-control" rows="6" name="message" placeholder="Tin nhắn"
+                                        required="required" data-validation-required-message="Vui lòng nhập tin nhắn của bạn"></textarea>
                                     <p class="help-block text-danger"></p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-primary py-2 px-4" type="submit" id="sendMessageButton">Gửi Tin Nhắn</button>
+                                    <button class="btn btn-primary py-2 px-4 rounded shadow" type="submit" id="sendMessageButton">
+                                        <i class="fa fa-paper-plane" aria-hidden="true"></i> Gửi Tin Nhắn
+                                    </button>
                                 </div>
                             </form>
+                            <div class="container mt-3">
+                                <?php if (!empty($successMessage)) : ?>
+                                    <div class="alert alert-success"><?php echo $successMessage; ?></div>
+                                <?php endif; ?>
+                                <?php if (!empty($errorMessage)) : ?>
+                                    <div class="alert alert-danger"><?php echo $errorMessage; ?></div>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     </div>
                     <div class="col-lg-5 mb-5">
@@ -77,13 +101,13 @@ include('../config/database.php');
                         <div class="d-flex flex-column mb-3">
                             <h5 class="font-weight-semi-bold mb-3">Cửa Hàng 1</h5>
                             <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>140 Lê Trọng Tấn, Tân Phú, HCM</p>
-                            <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>123@gmail.com</p>
+                            <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>hplfashionvn@gmail.com</p>
                             <p class="mb-2"><i class="fa fa-phone-alt text-primary mr-3"></i>+84 123 456789</p>
                         </div>
                         <div class="d-flex flex-column">
                             <h5 class="font-weight-semi-bold mb-3">Cửa Hàng 2</h5>
                             <p class="mb-2"><i class="fa fa-map-marker-alt text-primary mr-3"></i>61 Tân Hương, Tân Phú, HCM</p>
-                            <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>321@gmail.com</p>
+                            <p class="mb-2"><i class="fa fa-envelope text-primary mr-3"></i>hplfashionvn@gmail.com</p>
                             <p class="mb-0"><i class="fa fa-phone-alt text-primary mr-3"></i>+84 123 456789</p>
                         </div>
                     </div>
@@ -91,16 +115,8 @@ include('../config/database.php');
             </div>
         </div>
     </div>
-    <!-- Footer Start -->
     <?php include '../includes/footer.php'; ?>
-    <!-- Back to Top -->
-    <!-- <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a> -->
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <!-- Template Javascript -->
-    <script src="../js/main.js"></script>
 </body>
 </html>

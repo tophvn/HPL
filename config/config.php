@@ -12,7 +12,7 @@ define('VIEWS_URL', BASE_URL . 'views/');
 define('ASSETS_URL', BASE_URL . 'assets/');
 
 // Đường dẫn đến thư mục "auth"
-define('AUTH_URL', VIEWS_URL . 'auth/');
+define('AUTH_URL', VIEWS_URL . 'auth');
 
 // Đường dẫn đến thư mục "includes"
 define('INCLUDES_URL', BASE_URL . 'includes/');

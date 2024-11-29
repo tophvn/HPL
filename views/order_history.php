@@ -14,9 +14,9 @@ $user_id = $_SESSION['user']['user_id'];
 
 // Lấy danh sách đơn hàng của người dùng
 $query = "SELECT `order`.order_id, `order`.order_date, `order`.order_address, 
+                 `order`.status_id,  -- Lấy status_id từ bảng order
                  order_detail.product_id, order_detail.order_quantity, 
-                 products.product_name, cart_item.price, products.image,
-                 order_detail.status_id 
+                 products.product_name, cart_item.price, products.image
           FROM `order` 
           JOIN order_detail ON `order`.order_id = order_detail.order_id 
           JOIN products ON order_detail.product_id = products.product_id 
@@ -31,7 +31,7 @@ $orders = [];
 while ($row = $result->fetch_assoc()) {
     $orders[$row['order_id']]['order_date'] = $row['order_date'];
     $orders[$row['order_id']]['order_address'] = $row['order_address'];
-    $orders[$row['order_id']]['status_id'] = $row['status_id']; // Lưu status_id
+    $orders[$row['order_id']]['status_id'] = $row['status_id']; // Lưu status_id từ bảng order
     $orders[$row['order_id']]['products'][] = [
         'product_id' => $row['product_id'],
         'product_name' => $row['product_name'],

@@ -77,55 +77,75 @@
         <label class="custom-control-label" for="price4">Trên 2.000.000 VNĐ</label>
     </div>
 
-    <!-- Bộ lọc loại sản phẩm -->
+    <!-- Bộ lọc subcategories sản phẩm -->
     <h6 class="mt-4 mb-3">Loại</h6>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type1" name="type[]" value="Túi" <?= in_array("Túi", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type1">Túi</label>
+        <input type="checkbox" class="custom-control-input" id="type1" name="type[]" value="Áo sơ mi nam" <?= in_array("Áo sơ mi nam", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type1">Áo sơ mi nam</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type2" name="type[]" value="Nón" <?= in_array("Nón", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type2">Nón</label>
+        <input type="checkbox" class="custom-control-input" id="type2" name="type[]" value="Áo thun nam" <?= in_array("Áo thun nam", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type2">Áo thun nam</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type3" name="type[]" value="Blazer" <?= in_array("Blazer", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type3">Blazer</label>
+        <input type="checkbox" class="custom-control-input" id="type3" name="type[]" value="Quần jeans nam" <?= in_array("Quần jeans nam", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type3">Quần jeans nam</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type4" name="type[]" value="Mũ" <?= in_array("Mũ", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type4">Mũ</label>
+        <input type="checkbox" class="custom-control-input" id="type4" name="type[]" value="Váy đầm nữ" <?= in_array("Váy đầm nữ", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type4">Váy đầm nữ</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type5" name="type[]" value="Quần cargo" <?= in_array("Quần cargo", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type5">Quần cargo</label>
+        <input type="checkbox" class="custom-control-input" id="type5" name="type[]" value="Áo thun nữ" <?= in_array("Áo thun nữ", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type5">Áo thun nữ</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type6" name="type[]" value="Áo gile" <?= in_array("Áo gile", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type6">Áo gile</label>
+        <input type="checkbox" class="custom-control-input" id="type6" name="type[]" value="Áo khoác nữ" <?= in_array("Áo khoác nữ", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type6">Áo khoác nữ</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type7" name="type[]" value="Hoodie" <?= in_array("Hoodie", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type7">Hoodie</label>
+        <input type="checkbox" class="custom-control-input" id="type7" name="type[]" value="Giày cao gót" <?= in_array("Giày cao gót", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type7">Giày cao gót</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type8" name="type[]" value="Áo khoác" <?= in_array("Áo khoác", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type8">Áo khoác</label>
+        <input type="checkbox" class="custom-control-input" id="type8" name="type[]" value="Dép sandal" <?= in_array("Dép sandal", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type8">Dép sandal</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type9" name="type[]" value="Jeans" <?= in_array("Jeans", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type9">Jeans</label>
+        <input type="checkbox" class="custom-control-input" id="type9" name="type[]" value="Mũ thời trang" <?= in_array("Mũ thời trang", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type9">Mũ thời trang</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type10" name="type[]" value="Joggers" <?= in_array("Joggers", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type10">Joggers</label>
+        <input type="checkbox" class="custom-control-input" id="type10" name="type[]" value="Kính mát" <?= in_array("Kính mát", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type10">Kính mát</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type11" name="type[]" value="Knitwear" <?= in_array("Knitwear", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type11">Knitwear</label>
+        <input type="checkbox" class="custom-control-input" id="type11" name="type[]" value="Ba lô trẻ em" <?= in_array("Ba lô trẻ em", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type11">Ba lô trẻ em</label>
     </div>
     <div class="custom-control custom-checkbox">
-        <input type="checkbox" class="custom-control-input" id="type12" name="type[]" value="Áo polo" <?= in_array("Áo polo", $type_filter) ? 'checked' : '' ?>>
-        <label class="custom-control-label" for="type12">Áo polo</label>
+        <input type="checkbox" class="custom-control-input" id="type12" name="type[]" value="Quần áo bé trai" <?= in_array("Quần áo bé trai", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type12">Quần áo bé trai</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="type13" name="type[]" value="Quần áo bé gái" <?= in_array("Quần áo bé gái", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type13">Quần áo bé gái</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="type14" name="type[]" value="Thời trang công sở" <?= in_array("Thời trang công sở", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type14">Thời trang công sở</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="type15" name="type[]" value="Thời trang dạo phố" <?= in_array("Thời trang dạo phố", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type15">Thời trang dạo phố</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="type16" name="type[]" value="Phụ kiện độc quyền" <?= in_array("Phụ kiện độc quyền", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type16">Phụ kiện độc quyền</label>
+    </div>
+    <div class="custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="type17" name="type[]" value="Túi xách cao cấp" <?= in_array("Túi xách cao cấp", $type_filter) ? 'checked' : '' ?>>
+        <label class="custom-control-label" for="type17">Túi xách cao cấp</label>
     </div>
 
     <!-- Bộ lọc kích thước -->

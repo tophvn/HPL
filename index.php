@@ -2,7 +2,7 @@
 include('config/database.php');
 session_start();
 
-// thêm sản phẩm vào danh sách yêu thích
+// Thêm sản phẩm vào danh sách yêu thích
 if (isset($_POST['add_to_favorites'])) {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
         echo "<script type='text/javascript'>
@@ -20,24 +20,17 @@ if (isset($_POST['add_to_favorites'])) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <title>TRANG CHỦ - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <!-- Favicon -->
     <link href=" " rel="icon">
-    
-    <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <!-- Libraries Stylesheet -->
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
-    <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-    <style>
-        
-    </style>
 </head>
 
 <body>
@@ -97,7 +90,7 @@ if (isset($_POST['add_to_favorites'])) {
         </div>
     </div>
 
-    <!-- Categories Start -->
+    <!-- Categories -->
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
             <?php
@@ -106,13 +99,12 @@ if (isset($_POST['add_to_favorites'])) {
                         LEFT JOIN products ON categories.category_id = products.category_id
                         GROUP BY categories.category_id"
             );
-
             while ($r1 = $q1->fetch_array()) {
             ?>
                 <div class="col-lg-4 col-md-6 pb-1">
                     <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
                         <p class="text-right"><?php echo $r1['product_count']; ?> Sản Phẩm</p>
-                        <a class="cat-img position-relative overflow-hidden mb-3">
+                        <a class="cat-img position-relative overflow-hidden mb-3" href="views/collection.php?category_id=<?php echo $r1['category_id']; ?>">
                             <img class="img-fluid" src="img/img-collection/<?php echo $r1['category_image']; ?>" alt="">
                         </a>
                         <h5 class="font-weight-semi-bold m-0" style="font-weight: bold;"><?php echo $r1['category_name']; ?></h5>
@@ -124,7 +116,7 @@ if (isset($_POST['add_to_favorites'])) {
         </div>
     </div>
 
-    <!-- Products -->
+    <!-- Sản phẩm -->
     <div class="container-fluid pt-5">
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">SẢN PHẨM MỚI</span></h2>
@@ -190,13 +182,13 @@ if (isset($_POST['add_to_favorites'])) {
             <img class="banner_coll" src="img/banner_coll/banner_coll_3.png" alt="sale" style="flex: 1; width: 100%; max-width: 300px; height: auto;">
         </div>
             <br>
-        <img class="img-fluid" src="img/banner_coll/banner-1.jpg" alt="Banner" style="width: 100%; height: auto;">
+        <img class="img-fluid" src="img/banner_coll/banner-1.jpg" alt="Banner" style="width: 100%; height: auto;">        
     </div>
 
     <!-- Footer-->
+    <?php include 'includes/chatbot.php'; ?>
     <?php include 'includes/footer.php'; ?>
-    <!-- Thư Viện JavaScript -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="assets/lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="js/main.js"></script>

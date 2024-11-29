@@ -91,7 +91,7 @@ if (isset($_SESSION['user'])) {
                 </div>
             </form>
         </div>
-        <div class="col-lg-3 col-6 text-right">
+            <div class="col-lg-3 col-6 text-right">
             <?php if (isset($_SESSION['user'])): ?>
                 <a href="<?php echo VIEWS_URL; ?>favorites.php" class="btn border">
                     <i class="fas fa-heart text-primary"></i>
@@ -100,7 +100,12 @@ if (isset($_SESSION['user'])) {
                 <a href="<?php echo VIEWS_URL; ?>cart.php" class="btn border">
                     <i class="fas fa-shopping-cart text-primary"></i>
                     <span class="badge"><?php echo $cart_count; ?></span> 
-                </a>
+                </a>            
+                <?php if ($_SESSION['user']['roles'] === 'admin'): ?>
+                    <a href="<?php echo BASE_URL; ?>admin/admin.php" class="btn btn-danger">
+                        Admin
+                    </a>
+                <?php endif; ?>
             <?php else: ?>
                 <a href="<?php echo AUTH_URL . '/login.php'; ?>" class="btn border">
                     <i class="fas fa-sign-in-alt text-primary"></i>
