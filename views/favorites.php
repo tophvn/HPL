@@ -8,12 +8,10 @@ if (!isset($_SESSION['user'])) {
 
 $user_id = $_SESSION['user']['user_id'];
 $conn = Database::getConnection();
-
 // Kiểm tra nếu có yêu cầu xóa sản phẩm
 if (isset($_POST['product_id'])) {
     $product_id = intval($_POST['product_id']); // Chuyển đổi ID sản phẩm thành số nguyên
-
-    // Tạo câu lệnh SQL để xóa sản phẩm khỏi danh sách yêu thích
+    // xóa sản phẩm khỏi danh sách yêu thích
     $sql = "DELETE FROM favorites WHERE user_id = $user_id AND product_id = $product_id";
     if ($conn->query($sql)) {
         header("Location: favorites.php");
@@ -23,11 +21,8 @@ if (isset($_POST['product_id'])) {
     }
 }
 
-// Truy vấn để lấy danh sách sản phẩm yêu thích của người dùng
 $sql = "SELECT products.product_id, products.product_name AS name, products.description, products.price, products.image 
 FROM favorites JOIN products ON favorites.product_id = products.product_id WHERE favorites.user_id = $user_id";
-
-// Thực hiện truy vấn
 $result = $conn->query($sql);
 
 // Khởi tạo mảng để lưu danh sách sản phẩm yêu thích
@@ -39,12 +34,12 @@ if ($result->num_rows > 0) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>YÊU THÍCH - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href=" " rel="icon">
+    <link href="../img/HPL-logo.png" rel="icon">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">

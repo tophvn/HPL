@@ -72,7 +72,7 @@
                         <i class="fas fa-user"></i> 
                         <span>
                             <?php if (isset($_SESSION['user'])): ?>
-                                <?= $_SESSION['user']['username'] ?> 
+                                <?= $_SESSION['user']['name'] ?> 
                             <?php endif; ?>
                         </span>
                         <i style="font-size: .8em;" class="fas fa-caret-down"></i>

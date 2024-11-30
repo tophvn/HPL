@@ -28,8 +28,8 @@
     }
 
     .filter-form .btn-primary {
-        background-color: #007bff;
-        border-color: #007bff;
+        background-color: #6610f2;
+        border-color: #6610f2   ;
         color: white;
     }
 
@@ -40,7 +40,7 @@
     }
 
     .custom-control-input:checked ~ .custom-control-label::before {
-        border-color: #007bff;
+        border-color: #6610f2;
     }
 
     /* Responsive */

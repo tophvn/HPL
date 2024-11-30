@@ -87,13 +87,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Sản Phẩm - HPL FASHION</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+    <link href="../img/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <style>
@@ -137,7 +136,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-    <!-- Shop -->
     <div class="container-fluid pt-5">
         <div class="row px-xl-5">
             <!-- Bộ lọc (Ẩn trên mobile) -->
@@ -152,8 +150,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="triggerId">
                         <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=price_asc">Giá thấp đến cao</a>
                         <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=price_desc">Giá cao đến thấp</a>
-                        <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=name_asc">Name A - Z</a>
-                        <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=name_desc">Name Z - A</a>
+                        <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=name_asc">Tên A - Z</a>
+                        <a class="dropdown-item" href="?page=<?php echo $page; ?>&sort_by=name_desc">Tên Z - A</a>
                     </div>
                 </div>
                 <br>
@@ -200,8 +198,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <?php endwhile; ?>
                 </div>
             </div>
-        <!-- Thanh chuyển trang -->
-        <nav aria-label="Page navigation" class="d-flex justify-content-center">
+
+            <nav aria-label="Page navigation" class="d-flex justify-content-center">
             <ul class="pagination">
                 <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                     <li class="page-item <?= $i === $page ? 'active' : '' ?>">
@@ -213,7 +211,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     </div>
 
-    <!-- Footer -->
     <?php include '../includes/footer.php'; ?>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>

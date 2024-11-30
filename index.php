@@ -1,8 +1,7 @@
 <?php
 include('config/database.php');
 session_start();
-
-// Thêm sản phẩm vào danh sách yêu thích
+// add vào danh sách yêu thích
 if (isset($_POST['add_to_favorites'])) {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
         echo "<script type='text/javascript'>
@@ -18,6 +17,7 @@ if (isset($_POST['add_to_favorites'])) {
         exit();
     }
 }
+
 ?>
 
 
@@ -27,7 +27,7 @@ if (isset($_POST['add_to_favorites'])) {
     <meta charset="UTF-8">
     <title>TRANG CHỦ - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href=" " rel="icon">
+    <link href="img/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
@@ -64,7 +64,6 @@ if (isset($_POST['add_to_favorites'])) {
         </div>
     </div>
 
-    <!-- Offer Start -->
     <div class="container-fluid offer pt-5">
         <div class="row px-xl-5">
             <div class="col-md-6 pb-4">
@@ -90,15 +89,11 @@ if (isset($_POST['add_to_favorites'])) {
         </div>
     </div>
 
-    <!-- Categories -->
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
             <?php
-            $q1 = Database::query("SELECT categories.*, COUNT(products.product_id) AS product_count
-                        FROM categories
-                        LEFT JOIN products ON categories.category_id = products.category_id
-                        GROUP BY categories.category_id"
-            );
+            $q1 = Database::query("SELECT categories.*, COUNT(products.product_id) AS product_count FROM categories LEFT JOIN 
+            products ON categories.category_id = products.category_id GROUP BY categories.category_id");
             while ($r1 = $q1->fetch_array()) {
             ?>
                 <div class="col-lg-4 col-md-6 pb-1">
@@ -129,8 +124,7 @@ if (isset($_POST['add_to_favorites'])) {
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     $imagePath = (substr($row['image'], 0, 4) == 'http') ? $row['image'] : 'assets/img_product/' . $row['image'];
-                    // Tính giá sau khuyến mãi
-                    $discount = $row['discount'] ?? 0; // Phần trăm khuyến mãi
+                    $discount = $row['discount'] ?? 0; // % khuyến mãi
                     $discounted_price = $row['price'] * (1 - $discount / 100);
                     ?>
                     <div class="col-lg-3 col-md-6 col-sm-12 pb-1">

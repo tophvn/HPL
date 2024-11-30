@@ -13,7 +13,7 @@ $vnp_Amount = isset($_GET['amount']) ? $_GET['amount'] * 100 : 0;
 
 // Kiểm tra nếu amount là số
 if (!is_numeric($vnp_Amount)) {
-    $vnp_Amount = 0; // Đặt lại về 0 nếu không hợp lệ
+    $vnp_Amount = 0;
 }
 
 $vnp_Locale = 'vn';

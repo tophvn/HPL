@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
-  --blue: #007bff;
+  --blue: #6610f2;
   --indigo: #6610f2;
   --purple: #bd8df8;
   --pink: #e83e8c;
@@ -178,6 +178,7 @@ svg {
 }
 
 table {
+  width: 100%;
   border-collapse: collapse;
 }
 
@@ -2265,7 +2266,7 @@ button.bg-secondary:focus {
 }
 
 .bg-success {
-  background-color: #28a745 !important;
+  background-color: var(--success) !important;
 }
 
 a.bg-success:hover, a.bg-success:focus,
@@ -3495,8 +3496,8 @@ a.text-dark:hover, a.text-dark:focus {
 
 .btn-primary {
   color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #6610f2;
+  border-color: #6610f2;
 }
 
 .btn-danger {
@@ -3507,8 +3508,8 @@ a.text-dark:hover, a.text-dark:focus {
 
 .btn-success {
   color: #fff;
-  background-color: #28a745;
-  border-color: #28a745;
+  background-color: var(--blue);
+  border-color: var(--blue);
 }
 
 /* about */
@@ -3568,7 +3569,7 @@ a.text-dark:hover, a.text-dark:focus {
   font-size: 1.2em;
 }
 .social-icons a:hover {
-  color: #007bff;
+  color: #6610f2;
 }
 
 /* Ẩn bộ lọc khi ở chế độ mobile */
@@ -3641,7 +3642,7 @@ a.text-dark:hover, a.text-dark:focus {
 
 /*Button gửi tin nhắn*/
 #sendMessageButton {
-  background-color: #007bff; /* Màu nền */
+  background-color: #6610f2; /* Màu nền */
   color: white; /* Màu chữ */
   border: none; /* Không có viền */
   border-radius: 5px; /* Bo tròn góc */

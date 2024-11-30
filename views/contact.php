@@ -3,14 +3,12 @@ include('../config/database.php');
 $successMessage = "";
 $errorMessage = "";
 
-// Kiểm tra xem có dữ liệu gửi từ biểu mẫu không
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $subject = $_POST['subject'];
     $message = $_POST['message'];
     $conn = Database::getConnection();
-    // Thực hiện truy vấn để lưu dữ liệu
     $sql = "INSERT INTO contacts (name, email, subject, message) VALUES ('$name', '$email', '$subject', '$message')";
     if ($conn->query($sql) === TRUE) {
         $successMessage = "Tin nhắn của bạn đã được gửi thành công!";
@@ -26,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="utf-8">
     <title>Liên Hệ - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href=" " rel="icon">
+    <link href="../img/HPL-logo.png" rel="icon">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
@@ -47,7 +45,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
-    <!-- Contact -->
     <div class="container-fluid pt-5">
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">LIÊN HỆ</span></h2>

@@ -142,7 +142,7 @@ if (isset($_SESSION['user'])) {
                 <a href="<?php echo VIEWS_URL; ?>checkout.php" class="dropdown-item fw-bold">THANH TOÁN</a>
             </div>
         </div>
-        <a href="<?php echo VIEWS_URL; ?>order_history.php" class="nav-item nav-link fw-bold">LỊCH SỬ MUA HÀNG</a>
+        <a href="<?php echo VIEWS_URL; ?>order_history.php" class="nav-item nav-link fw-bold">ĐƠN HÀNG</a>
         <a href="<?php echo VIEWS_URL; ?>contact.php" class="nav-item nav-link fw-bold">LIÊN HỆ</a>
         <a href="#" class="nav-item nav-link fw-bold">TIN TỨC</a>
     </div>

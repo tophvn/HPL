@@ -16,15 +16,10 @@ $user = $_SESSION['temp_user'];
 $errors = [];
 
 // Lấy secret gốc từ cơ sở dữ liệu
-// Nếu google_auth_secret là đã mã hóa, bạn cần phải sửa đổi cách lưu trữ secret gốc
 $secret = $user['google_auth_secret'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $code = $_POST['code'] ?? '';
-
-    // Kiểm tra mã 2FA
-    // Nếu secret đã mã hóa, bạn không thể kiểm tra mã xác thực
-    // Bạn cần sử dụng secret gốc không mã hóa ở đây
     if ($ga->verifyCode($secret, $code, 2)) {
         // Mã đúng, lưu thông tin vào session
         $_SESSION['user'] = [
@@ -51,8 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Xác thực 2 bước</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Xác Thực</title>
+    <link href="../img/HPL-logo.png" rel="icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="../../css/css-login-register.css">
@@ -85,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
     <a href="../../index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
-        <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
+        <i class="uil uil-estate" style="font-size: 1.5rem; color: #6610f2;"></i>
     </a>
     <script src="../../js/custom.js"></script>
 </body>

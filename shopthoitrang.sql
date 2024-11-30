@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Nov 29, 2024 at 02:05 PM
+-- Generation Time: Nov 30, 2024 at 08:50 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -43,7 +43,15 @@ CREATE TABLE `bills` (
 --
 
 INSERT INTO `bills` (`bill_id`, `user_id`, `bill_date`, `shipping_address`, `shipping_fee`, `total_amount`, `payment_method`, `shipping_method`) VALUES
-(54, 71, '2024-11-29 21:05:30', 'Tân Hương', 0, 346750, 'Thanh toán khi nhận hàng (COD)', 'Fast');
+(54, 71, '2024-11-29 21:05:30', 'Tân Hương', 0, 346750, 'Thanh toán khi nhận hàng (COD)', 'Fast'),
+(55, 71, '2024-11-29 22:23:12', 'Tân Hương', 0, 964250, 'Thanh toán khi nhận hàng (COD)', 'Fast'),
+(56, 73, '2024-11-30 08:52:36', 'Tân Phú, TP. HCM', 50000, 1630000, 'COD', 'Express'),
+(57, 71, '2024-11-30 09:02:43', 'Tân Hương', 0, 964250, 'Bank Transfer', 'Fast'),
+(58, 71, '2024-11-30 09:02:54', 'Tân Hương', 50000, 1014250, 'Bank Transfer', 'Express'),
+(59, 71, '2024-11-30 09:03:59', 'Tân Hương', 0, 964250, 'Bank Transfer', 'Fast'),
+(60, 71, '2024-11-30 09:11:55', 'Tân Hương', 0, 964250, 'Bank Transfer', 'Fast'),
+(61, 73, '2024-11-30 10:12:07', 'Tân Hương', 0, 1580000, 'COD', 'Fast'),
+(62, 73, '2024-11-30 11:28:40', 'Tân Hương', 50000, 4030000, 'COD', 'Express');
 
 -- --------------------------------------------------------
 
@@ -67,7 +75,21 @@ CREATE TABLE `bill_items` (
 --
 
 INSERT INTO `bill_items` (`bill_item_id`, `bill_id`, `product_id`, `product_name`, `quantity`, `original_price`, `discount_price`, `subtotal_price`) VALUES
-(73, 54, 5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 1, 365000, 346750, 346750);
+(73, 54, 5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 1, 365000, 346750, 346750),
+(74, 55, 5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 1, 365000, 346750, 346750),
+(75, 55, 10, 'QUẦN JOGGING STRENGTH', 1, 650000, 617500, 617500),
+(76, 56, 17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 2, 790000, 790000, 1580000),
+(77, 57, 5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 1, 365000, 346750, 346750),
+(78, 57, 10, 'QUẦN JOGGING STRENGTH', 1, 650000, 617500, 617500),
+(79, 58, 5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 1, 365000, 346750, 346750),
+(80, 58, 10, 'QUẦN JOGGING STRENGTH', 1, 650000, 617500, 617500),
+(81, 59, 5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 1, 365000, 346750, 346750),
+(82, 59, 10, 'QUẦN JOGGING STRENGTH', 1, 650000, 617500, 617500),
+(83, 60, 5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 1, 365000, 346750, 346750),
+(84, 60, 10, 'QUẦN JOGGING STRENGTH', 1, 650000, 617500, 617500),
+(85, 61, 17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 2, 790000, 790000, 1580000),
+(86, 62, 17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 2, 790000, 790000, 1580000),
+(87, 62, 2, 'ÁO PHÔNG BOY RACER', 3, 1000000, 800000, 2400000);
 
 -- --------------------------------------------------------
 
@@ -86,7 +108,8 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`cart_id`, `user_id`, `created_at`) VALUES
-(15, 71, '2024-11-29 14:05:01');
+(15, 71, '2024-11-29 14:05:01'),
+(16, 73, '2024-11-30 01:28:25');
 
 -- --------------------------------------------------------
 
@@ -109,7 +132,10 @@ CREATE TABLE `cart_item` (
 --
 
 INSERT INTO `cart_item` (`cart_item_id`, `cart_id`, `product_id`, `quantity`, `size`, `color`, `price`) VALUES
-(67, 15, 5, 1, 'S', 'Black', '346750.00');
+(67, 15, 5, 1, 'S', 'Black', '346750.00'),
+(68, 15, 10, 1, 'XXL', 'White', '617500.00'),
+(69, 16, 17, 2, 'XL', 'Black', '790000.00'),
+(70, 16, 2, 3, '', 'Red', '800000.00');
 
 -- --------------------------------------------------------
 
@@ -163,6 +189,86 @@ CREATE TABLE `favorites` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `favorites`
+--
+
+INSERT INTO `favorites` (`id`, `user_id`, `product_id`, `created_at`) VALUES
+(40, 71, 1, '2024-11-30 02:59:52');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `login_history`
+--
+
+CREATE TABLE `login_history` (
+  `history_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `ip_address` varchar(45) COLLATE utf8mb4_general_ci NOT NULL,
+  `user_agent` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `session_id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `login_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `login_history`
+--
+
+INSERT INTO `login_history` (`history_id`, `user_id`, `ip_address`, `user_agent`, `session_id`, `login_time`) VALUES
+(1, 73, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:02:34'),
+(2, 73, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', '6osrd1bi6n72upia6iov9r1ak6', '2024-11-30 05:03:29'),
+(3, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', '6osrd1bi6n72upia6iov9r1ak6', '2024-11-30 05:04:42'),
+(4, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:05:20'),
+(5, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0', 'jebf9rpk9j8r631r9sp15n3h1v', '2024-11-30 05:06:52'),
+(6, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:16:45'),
+(7, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:17:44'),
+(8, 74, '127.0.0.2', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'gbamjqcdmeov9hk3000udhdgr2', '2024-11-30 05:18:11'),
+(9, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0', 'jebf9rpk9j8r631r9sp15n3h1v', '2024-11-30 05:21:25'),
+(10, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0', 'jebf9rpk9j8r631r9sp15n3h1v', '2024-11-30 05:23:43'),
+(11, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:43:48'),
+(12, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:46:35'),
+(13, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:48:33'),
+(14, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:53:02'),
+(15, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 05:59:36'),
+(16, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:01:09'),
+(17, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:08:14'),
+(18, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:09:31'),
+(19, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:10:32'),
+(20, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:11:15'),
+(21, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-29 23:19:04'),
+(22, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:25:43'),
+(23, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:25:50'),
+(24, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:26:23'),
+(25, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:27:10'),
+(26, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:33:00'),
+(27, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 06:43:21'),
+(28, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:01:41'),
+(29, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:15:34'),
+(30, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:24:37'),
+(31, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:26:58'),
+(32, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:32:55'),
+(33, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:34:36'),
+(34, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:36:14'),
+(35, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:38:49'),
+(36, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:40:36'),
+(37, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:42:09'),
+(38, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:47:17'),
+(39, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:52:47'),
+(40, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 07:57:48'),
+(41, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:01:14'),
+(42, 74, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:03:44'),
+(43, 75, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:05:16'),
+(44, 75, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:05:50'),
+(45, 75, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:08:54'),
+(46, 75, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:09:33'),
+(47, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:09:59'),
+(48, 75, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:12:19'),
+(49, 71, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:12:54'),
+(50, 75, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:13:57'),
+(51, 75, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:14:49'),
+(52, 75, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'c0sbu7ihvkfg6nmmogd5it1l3f', '2024-11-30 08:16:13');
+
 -- --------------------------------------------------------
 
 --
@@ -185,7 +291,15 @@ CREATE TABLE `order` (
 --
 
 INSERT INTO `order` (`order_id`, `user_id`, `status_id`, `order_date`, `order_address`, `payment_method`, `total_amount`, `shipping_method`) VALUES
-(77, 71, 1, '2024-11-29 21:05:30', 'Tân Hương', 'Thanh toán khi nhận hàng (COD)', '346750.00', 'Fast');
+(77, 71, 4, '2024-11-29 21:05:30', 'Tân Hương', 'Thanh toán khi nhận hàng (COD)', '346750.00', 'Fast'),
+(78, 71, 4, '2024-11-29 22:23:12', 'Tân Hương', 'Thanh toán khi nhận hàng (COD)', '964250.00', 'Fast'),
+(79, 73, 4, '2024-11-30 08:52:36', 'Tân Phú, TP. HCM', 'COD', '1630000.00', 'Express'),
+(80, 71, 2, '2024-11-30 09:02:43', 'Tân Hương', 'Bank Transfer', '964250.00', 'Fast'),
+(81, 71, 2, '2024-11-30 09:02:54', 'Tân Hương', 'Bank Transfer', '1014250.00', 'Express'),
+(82, 71, 3, '2024-11-30 09:03:59', 'Tân Hương', 'Bank Transfer', '964250.00', 'Fast'),
+(83, 71, 3, '2024-11-30 09:11:55', 'Tân Hương', 'Bank Transfer', '964250.00', 'Fast'),
+(84, 73, 4, '2024-11-30 10:12:07', 'Tân Hương', 'COD', '1580000.00', 'Fast'),
+(85, 73, 3, '2024-11-30 11:28:40', 'Tân Hương', 'COD', '4030000.00', 'Express');
 
 -- --------------------------------------------------------
 
@@ -205,7 +319,21 @@ CREATE TABLE `order_detail` (
 --
 
 INSERT INTO `order_detail` (`order_detail_id`, `order_id`, `product_id`, `order_quantity`) VALUES
-(146, 77, 5, 1);
+(146, 77, 5, 1),
+(147, 78, 5, 1),
+(148, 78, 10, 1),
+(149, 79, 17, 2),
+(150, 80, 5, 1),
+(151, 80, 10, 1),
+(152, 81, 5, 1),
+(153, 81, 10, 1),
+(154, 82, 5, 1),
+(155, 82, 10, 1),
+(156, 83, 5, 1),
+(157, 83, 10, 1),
+(158, 84, 17, 2),
+(159, 85, 17, 2),
+(160, 85, 2, 3);
 
 -- --------------------------------------------------------
 
@@ -235,8 +363,8 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `product_name`, `price`, `category_id`, `subcategory_id`, `image`, `image2`, `image3`, `description`, `size`, `discount`, `type_id`, `view_count`, `created_at`) VALUES
-(1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 50000, 1, 1, 'image1_1.png', 'image1_2.png', 'image1_3.png', 'Áo sweatshirt kiểu oversized boxy với thêu Boucle cổ điển của Boy London.\n\nTrọng lượng áo T-shirt 400GSM. Màu đen.\n\nChất liệu hoàn thiện mềm mại. Người mẫu cao 6ft và mặc size M.', 'L,M,X,S', 10, NULL, 78, '2024-11-28 17:18:41'),
-(2, 'ÁO PHÔNG BOY RACER', 1000000, 6, 0, 'image2_1.png', 'image2_2.png', 'image2_3.png', 'Áo T-shirt kiểu oversized boxy với logo/slogan lớn ở giữa.\n\nChất liệu hoàn thiện mềm mại.\n\nNgười mẫu cao 6ft và mặc size M.', 'L,S,M', 20, NULL, 28, '2024-11-28 17:18:41'),
+(1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 50000, 1, 1, 'image1_1.png', 'image1_2.png', 'image1_3.png', 'Áo sweatshirt kiểu oversized boxy với thêu Boucle cổ điển của Boy London.\n\nTrọng lượng áo T-shirt 400GSM. Màu đen.\n\nChất liệu hoàn thiện mềm mại. Người mẫu cao 6ft và mặc size M.', 'L,M,X,S', 10, NULL, 82, '2024-11-28 17:18:41'),
+(2, 'ÁO PHÔNG BOY RACER', 1000000, 6, 0, 'image2_1.png', 'image2_2.png', 'image2_3.png', 'Áo T-shirt kiểu oversized boxy với logo/slogan lớn ở giữa.\n\nChất liệu hoàn thiện mềm mại.\n\nNgười mẫu cao 6ft và mặc size M.', 'L,S,M', 20, NULL, 32, '2024-11-28 17:18:41'),
 (3, 'ÁO THUN MOTO STICKER BOMB', 80000, 3, 0, 'image3_1.png', 'image3_2.png', 'image3_3.png', 'Áo T-shirt với đồ họa sticker bomb 360 độ. Trọng lượng áo T-shirt 200GSM. Chất liệu hoàn thiện mềm mại.', 'M,S,XS', 10, NULL, 8, '2024-11-28 17:18:41'),
 (4, 'ÁO THUN STRENGTH', 200000, 4, 0, 'image4_1.png', 'image4_2.png', 'image4_3.png', 'Áo T-shirt kiểu oversized boxy với in và thêu đồ họa ở phía trước.\n\nNhãn da ở viền dưới phía trước.\n\nTrọng lượng áo T-shirt 200GSM.\n\nChất liệu hoàn thiện mềm mại.', 'S,L,XL,XXL', 5, NULL, 0, '2024-11-28 17:18:41'),
 (5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 365000, 1, 0, 'image5_1.png', 'image5_2.png', 'image5_3.png', 'Áo Polo Golf Nam với chất liệu chống nắng, phù hợp cho mọi sân golf.', 'S,M,XL,XXL', 5, NULL, 8, '2024-11-28 17:18:41'),
@@ -244,14 +372,14 @@ INSERT INTO `products` (`product_id`, `product_name`, `price`, `category_id`, `s
 (7, 'ÁO KHOÁC VARSITY BOMBER NỮ MOTO STICKER', 890000, 3, 0, 'image7_1.png', 'image7_2.png', 'image7_3.png', 'Áo khoác varsity bomber nữ với họa tiết sticker moto, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái và thiết kế thời trang phù hợp cho nhiều dịp.', 'L, XL,M,S', 10, NULL, 4, '2024-11-28 17:18:41'),
 (8, 'ÁO T-SHIRT NỮ FUTURE BOY CORE', 390000, 4, 0, 'image8_1.png', 'image8_2.png', 'image8_3.png', 'Áo T-shirt nữ Future Boy Core với thiết kế hiện đại, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái, phù hợp cho cả những ngày thường và các hoạt động ngoài trời.', 'ONE SIZE', 10, NULL, 4, '2024-11-28 17:18:41'),
 (9, 'ÁO T-SHIRT NỮ BOY RACER', 280000, 5, 0, 'image9_1.png', 'image9_2.png', 'image9_3.png', 'Áo T-shirt nữ Boy Racer có thiết kế thể thao và năng động, phù hợp cho những ai yêu thích phong cách trẻ trung.', 'ONE SIZE', 15, NULL, 0, '2024-11-28 17:18:41'),
-(10, 'QUẦN JOGGING STRENGTH', 650000, 6, 0, 'image10_1.png', 'image10_2.png', 'image10_3.png', 'Quần jogging Strength được thiết kế để mang lại sự thoải mái và linh hoạt trong mọi hoạt động.', 'S, XL, XXL,M', 5, NULL, 0, '2024-11-28 17:18:41'),
+(10, 'QUẦN JOGGING STRENGTH', 650000, 6, 0, 'image10_1.png', 'image10_2.png', 'image10_3.png', 'Quần jogging Strength được thiết kế để mang lại sự thoải mái và linh hoạt trong mọi hoạt động.', 'S, XL, XXL,M', 5, NULL, 5, '2024-11-28 17:18:41'),
 (11, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU ĐEN', 300000, 3, 0, 'image11_1.png', 'image11_2.png', 'image11_3.png', 'Áo sweatshirt Boy Eagle Smudge màu đen mang đến phong cách trẻ trung và năng động.', 'M, XS,S', 0, NULL, 4, '2024-11-28 17:18:41'),
 (12, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU XANH WASH', 600000, 1, 0, 'image12_1.png', 'image12_2.png', 'image12_3.png', 'Áo sweatshirt Boy Eagle Smudge màu xanh wash mang đến vẻ ngoài năng động và cá tính.', 'ONE SIZE', 0, NULL, 0, '2024-11-28 17:18:41'),
 (13, 'ÁO SWEATSHIRT BOY EAGLE - MÀU ĐEN/TRẮNG', 245000, 2, 0, 'image13_1.png', 'image13_2.png', 'image13_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', 'S,M,L', 0, NULL, 0, '2024-11-28 17:18:41'),
 (14, 'ÁO JUMPER NỮ CHEEKY DEVIL DOUBLE SLEEVE', 900000, 3, 0, 'image14_1.png', 'image14_2.png', 'image14_3.png', 'Áo jumper nữ Cheeky Devil Double Sleeve mang đến phong cách thú vị và độc đáo.', 'L,XXL,XL,S', 5, NULL, 0, '2024-11-28 17:18:41'),
 (15, 'ÁO FUTURE BOY CORE', 1300000, 3, 0, 'image15_1.png', 'image15_2.png', 'image15_3.png', 'Áo T-shirt Future Boy Core mang đến phong cách hiện đại và trẻ trung.', 'ONE SIZE', 10, NULL, 0, '2024-11-28 17:18:41'),
 (16, 'QUẦN JOGGERS BOY 3D EMB - MÀU ĐEN', 2450000, 6, 0, 'image16_1.png', 'image16_2.png', 'image16_3.png', 'Quần joggers Boy 3D Emb màu đen mang đến phong cách thể thao và hiện đại.', 'L,S,M', 20, NULL, 0, '2024-11-28 17:18:41'),
-(17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 790000, 2, 0, 'image17_1.png', 'image17_2.png', 'image17_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', 'L,XL,XXL', 0, NULL, 0, '2024-11-28 17:18:41'),
+(17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 790000, 2, 0, 'image17_1.png', 'image17_2.png', 'image17_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', 'L,XL,XXL', 0, NULL, 4, '2024-11-28 17:18:41'),
 (18, 'ÁO SWEATSHIRT BOY WAFFLE RUGBY - MÀU OFF WHITE', 95000, 3, 0, 'image18_1.png', 'image18_2.png', 'image18_3.png', 'Áo sweatshirt Boy Waffle Rugby màu off white mang đến phong cách thể thao và hiện đại.', 'M,S', 5, NULL, 0, '2024-11-28 17:18:41'),
 (19, 'ÁO HOODIE BOY MANIA EMBROIDERY - MÀU ĐEN', 5000000, 4, 0, 'image19_1.png', 'image19_2.png', 'image19_3.png', 'Áo hoodie Boy Mania Embroidery màu đen mang đến phong cách trẻ trung và năng động.', 'L,M', 15, NULL, 0, '2024-11-28 17:18:41');
 
@@ -360,7 +488,11 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `phonenumber`, `name`, `email`, `reset_token`, `roles`, `address1`, `address2`, `google_auth_secret`, `2fa_enabled`) VALUES
-(71, '07af039d5d731bd8c6b7f70788fbb26d', 'd0777927705bc852d155e4da9e21fc98', '0793897147', 'Nguyễn Hoàng Hải', 'hoanghai07077@gmail.com', NULL, 'user', 'Tân Hương', 'Tân Phú, TP. HCM', NULL, 0);
+(71, '07af039d5d731bd8c6b7f70788fbb26d', 'd0777927705bc852d155e4da9e21fc98', '0793897147', 'Nguyễn Hoàng Hải', 'hoanghai07077@gmail.com', 'd336cab1d1758e57db82fa4186b7cb77f8f38f48e8fc645aa80a7fb0c6a61274961c308d6ce587d8df912b945f30b877ee22', 'admin', 'Tân Hương', 'Tân Phú, TP. HCM', 'CYQK35ED5WQ2IPMJ', 1),
+(72, '4297f44b13955235245b2497399d7a93', '4297f44b13955235245b2497399d7a93', '07923897147', 'hoang hai', 'hoanghai070727@gmail.com', NULL, 'user', NULL, NULL, NULL, 0),
+(73, '84b6a79fc8dee96bcf9289c0247be0d2', '4297f44b13955235245b2497399d7a93', '07938976647', 'hoang hai', 'hoanghai@gmail.com', NULL, 'user', 'Tân Hương', 'Tân Phú, TP. HCM', NULL, 0),
+(74, '42810cb02db3bb2cbb428af0d8b0376e', '4e390db6b97e8776b7261eee8229dc1c', '0770071006', 'Nguễn Hải', 'hoanghaimcpe@gmail.com', NULL, 'user', NULL, NULL, NULL, 0),
+(75, '70edb49711f5d70d2cd429f264518b40', '4e390db6b97e8776b7261eee8229dc1c', '012345689', 'hoanghai', 'hoanghaitoph@gmail.com', NULL, 'user', NULL, NULL, NULL, 0);
 
 -- --------------------------------------------------------
 
@@ -449,6 +581,13 @@ ALTER TABLE `favorites`
   ADD KEY `product_id` (`product_id`);
 
 --
+-- Indexes for table `login_history`
+--
+ALTER TABLE `login_history`
+  ADD PRIMARY KEY (`history_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
 -- Indexes for table `order`
 --
 ALTER TABLE `order`
@@ -521,25 +660,25 @@ ALTER TABLE `voucher_usage`
 -- AUTO_INCREMENT for table `bills`
 --
 ALTER TABLE `bills`
-  MODIFY `bill_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `bill_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `bill_items`
 --
 ALTER TABLE `bill_items`
-  MODIFY `bill_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74;
+  MODIFY `bill_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `cart_item`
 --
 ALTER TABLE `cart_item`
-  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -557,19 +696,25 @@ ALTER TABLE `contacts`
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+
+--
+-- AUTO_INCREMENT for table `login_history`
+--
+ALTER TABLE `login_history`
+  MODIFY `history_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `order`
 --
 ALTER TABLE `order`
-  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
 
 --
 -- AUTO_INCREMENT for table `order_detail`
 --
 ALTER TABLE `order_detail`
-  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=147;
+  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -593,7 +738,7 @@ ALTER TABLE `subcategories`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=76;
 
 --
 -- AUTO_INCREMENT for table `vouchers`
@@ -637,6 +782,12 @@ ALTER TABLE `cart_item`
 ALTER TABLE `favorites`
   ADD CONSTRAINT `favorites_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
   ADD CONSTRAINT `favorites_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`product_id`);
+
+--
+-- Constraints for table `login_history`
+--
+ALTER TABLE `login_history`
+  ADD CONSTRAINT `login_history_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `order`

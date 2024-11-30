@@ -81,12 +81,12 @@ function formatCurrency($amount) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="utf-8">
     <title>Hóa Đơn</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="../img/HPL-logo.png" rel="icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/css/foundation.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.5.10-0/ionicons.min.js"></script>
     <link rel="stylesheet" href="../css/bill.css">
 </head>
 <body>
@@ -192,6 +192,5 @@ function formatCurrency($amount) {
         </div>
     </main>
 </div>
-
 </body>
 </html>

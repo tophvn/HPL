@@ -28,7 +28,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Lưu token vào cơ sở dữ liệu
         $query = "UPDATE users SET reset_token = '$token' WHERE email = '$email'";
         $conn->query($query);
-        
         // Gửi email
         $mail = new PHPMailer(true);
         try {
@@ -62,7 +61,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
 } 
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

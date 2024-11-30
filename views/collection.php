@@ -1,8 +1,7 @@
 <?php
 include('../config/database.php');
-// Kiểm tra xem category_id có trong URL không
-$category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
 
+$category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
 // Lấy tên danh mục dựa trên category_id
 $category_query = Database::query("SELECT category_name FROM categories WHERE category_id = $category_id");
 $category = $category_query->fetch_array();
@@ -12,7 +11,7 @@ if (!$category) {
     exit();
 }
 
-$category_name = $category['category_name']; // không sử dụng htmlspecialchars
+$category_name = $category['category_name']; 
 
 // Lấy sản phẩm theo category_id
 $product_query = Database::query("SELECT * FROM products WHERE category_id = $category_id");
@@ -20,16 +19,12 @@ $product_query = Database::query("SELECT * FROM products WHERE category_id = $ca
 
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
     <meta charset="UTF-8">
     <title>Bộ Sưu Tập - <?= $category_name ?> - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href=" " rel="icon">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+    <link href="../img/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <style>
         .discount-badge {
@@ -47,7 +42,6 @@ $product_query = Database::query("SELECT * FROM products WHERE category_id = $ca
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
-
     <div class="container-fluid pt-5">
         <h2 class="text-center mb-4">Danh Mục: <?= $category_name ?></h2>
         <div class="row px-xl-5 pb-3">
@@ -101,6 +95,5 @@ $product_query = Database::query("SELECT * FROM products WHERE category_id = $ca
     <?php include '../includes/footer.php'; ?>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/main.js"></script>
 </body>
 </html>

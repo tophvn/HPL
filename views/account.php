@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enable_2fa'])) {
     $conn->query($query);
 
     // Tạo mã QR để người dùng quét
-    $user = $_SESSION['user']['username'];
+    $user = $_SESSION['user']['name'];
     $qrCodeUrl = $ga->getQRCodeGoogleUrl($user, $secret, 'HPL-Fashion');
     $_SESSION['qrCodeUrl'] = $qrCodeUrl;
     $_SESSION['secret'] = $secret; 
@@ -89,11 +89,14 @@ $user = $result->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Tài Khoản - HPL FASHION</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="../img/HPL-logo.png" rel="icon">
+    <title>Tài Khoản - HPL FASHION</title>
     <link href="../css/style.css" rel="stylesheet">
 </head>
 <body>
@@ -192,7 +195,6 @@ $user = $result->fetch_assoc();
                         </div>
                     </div>
                 <?php endif; ?>
-
                 <!-- Xác thực mã -->
                 <!-- <div class="card shadow-sm mb-4">
                     <div class="card-body">
@@ -217,10 +219,8 @@ $user = $result->fetch_assoc();
     $(document).ready(function () {
         // Lấy tab hiện tại từ localStorage
         let currentTab = localStorage.getItem('currentTab') || 'dashboard-tab';
-
         // Hiển thị nội dung tab hiện tại
         showTabContent(currentTab);
-
         // Gán sự kiện click cho từng tab
         $('#address-tab').click(function () {
             localStorage.setItem('currentTab', 'address-tab');
@@ -253,6 +253,5 @@ $user = $result->fetch_assoc();
         }
     });
 </script>
-
 </body>
 </html>

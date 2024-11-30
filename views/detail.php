@@ -1,12 +1,10 @@
 <?php
 include('../config/database.php');
 session_start();
-// Lấy mã sản phẩm từ URL
+
 $product_id = isset($_GET['id']) ? $_GET['id'] : 0;
-// Lấy thông tin sản phẩm từ cơ sở dữ liệu
 $query = "SELECT * FROM products WHERE product_id = $product_id";
 $result = Database::getConnection()->query($query);
-// Kiểm tra nếu không tìm thấy sản phẩm
 if ($result->num_rows === 0) {
     exit; 
 }
@@ -15,14 +13,11 @@ $product = $result->fetch_assoc();
 // Tăng view product
 $conn = Database::getConnection();
 $conn->query("UPDATE products SET view_count = view_count + 1 WHERE product_id = $product_id");
-
 $user_id = $_SESSION['user']['user_id'] ?? 0;
-// Xử lý khi người dùng gửi thông tin giỏ hàng
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user_id === 0) {
         echo "<script>alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');</script>";
     } else {
-        // Lấy số lượng sản phẩm từ form, mặc định là 1
         $quantity = isset($_POST['quantity']) ? intval($_POST['quantity']) : 1;
         $size = $_POST['size'] ?? ''; 
         $color = $_POST['color'] ?? '';
@@ -31,9 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $discounted_price = $product['price'] * (1 - $discount / 100);
         // Chọn kích thước đầu tiên nếu có nhiều lựa chọn
         $size = !empty($size) ? reset($size) : '';
-
         $conn = Database::getConnection();
-
         // Kiểm tra xem người dùng đã có giỏ hàng chưa
         $result = $conn->query("SELECT cart_id FROM cart WHERE user_id = $user_id");
         if ($result->num_rows === 0) {
@@ -62,13 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title><?php echo htmlspecialchars($product['product_name']); ?> - HPL FASHION</title>
+    <title><?php echo $product['product_name']; ?> - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href=" " rel="icon">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet"> 
+    <link href="../img/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
 </head>
 <body>
