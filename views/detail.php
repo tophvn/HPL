@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Kiểm tra xem người dùng đã có giỏ hàng chưa
         $result = $conn->query("SELECT cart_id FROM cart WHERE user_id = $user_id");
         if ($result->num_rows === 0) {
-            // Nếu chưa có giỏ hàng, tạo mới giỏ hàng
             $conn->query("INSERT INTO cart (user_id) VALUES ($user_id)");
             $cart_id = $conn->insert_id;
         } else {
@@ -230,10 +229,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row px-xl-5">
             <?php
             // Lấy 4 sản phẩm ngẫu nhiên
-            $q1 = Database::query("SELECT products.*, categories.category_name 
-                                    FROM products 
-                                    JOIN categories ON products.category_id = categories.category_id 
-                                    ORDER BY RAND() LIMIT 4");
+            $q1 = Database::query("SELECT products.*, categories.category_name FROM products JOIN categories 
+            ON products.category_id = categories.category_id ORDER BY RAND() LIMIT 4");
             // Hiển thị sản phẩm
             while ($r1 = $q1->fetch_array()) {
                 $imagePath = (substr($r1['image'], 0, 4) == 'http') ? $r1['image'] : '../assets/img_product/' . $r1['image'];

@@ -1,13 +1,11 @@
 <?php
 include('../config/database.php');
 session_start();
-
 if (!isset($_SESSION['user'])) {
     header("Location: auth/login.php");
     exit();
 }
 
-// Lấy kết nối từ lớp Database
 $conn = Database::getConnection();
 $user_id = $_SESSION['user']['user_id'];
 
@@ -19,7 +17,6 @@ $user = $user_result->fetch_assoc();
 // Lấy thông tin hóa đơn gần nhất
 $order_query = "SELECT bills.bill_id, bills.total_amount, bills.payment_method, bills.shipping_address, bills.shipping_fee, 
 bills.shipping_method, bills.bill_date FROM bills WHERE bills.user_id = $user_id ORDER BY bills.bill_date DESC LIMIT 1";
-
 $order_result = $conn->query($order_query);
 $order = $order_result->fetch_assoc();
 
@@ -35,7 +32,6 @@ if ($order) {
     // Truy vấn để lấy các sản phẩm trong hóa đơn
     $items_query = "SELECT bill_items.product_name, bill_items.quantity, bill_items.original_price, bill_items.discount_price, 
     bill_items.subtotal_price FROM bill_items WHERE bill_items.bill_id = $bill_id";
-
     $items_result = $conn->query($items_query);
     $products = $items_result->fetch_all(MYSQLI_ASSOC);
 
@@ -58,15 +54,14 @@ $temp_total_amount = array_reduce($products, function($carry, $product) {
     return $carry + $product['subtotal_price'];
 }, 0);
 
-// Tính tổng số tiền cuối (bao gồm phí giao hàng)
 $final_amount = $temp_total_amount + $shipping_fee;
 
-// Cập nhật hoặc lưu lại giá trị tổng cộng vào cơ sở dữ liệu
+// lưu lại giá trị tổng cộng vào cơ sở dữ liệu
 if ($bill_id > 0) {
     $update_query = "UPDATE bills SET total_amount = $final_amount WHERE bill_id = $bill_id";
     $conn->query($update_query);
 } else {
-    // Nếu không có hóa đơn cũ, bạn có thể tạo một hóa đơn mới
+    // Nếu không có hóa đơn cũ thì tạo một hóa đơn mới
     $insert_query = "INSERT INTO bills (user_id, total_amount, shipping_fee, shipping_address, payment_method, shipping_method, bill_date) 
     VALUES ($user_id, $final_amount, $shipping_fee, '$shipping_address', '$payment_method', '$shipping_method', NOW())";
     $conn->query($insert_query);

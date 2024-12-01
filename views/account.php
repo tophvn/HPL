@@ -70,17 +70,17 @@ if (isset($_POST['disable_2fa'])) {
 }
 
 // Xác thực mã nhập vào từ người dùng
-if (isset($_POST['verify_code'])) {
-    $code = $_POST['code'];
-    $secret = $_SESSION['secret'];
+// if (isset($_POST['verify_code'])) {
+//     $code = $_POST['code'];
+//     $secret = $_SESSION['secret'];
 
-    if ($ga->verifyCode($secret, $code, 2)) { // 2 phút đồng bộ
-        echo "Mã xác thực đúng!";
-        // Thực hiện hành động sau khi xác thực thành công
-    } else {
-        echo "Mã xác thực sai!";
-    }
-}
+//     if ($ga->verifyCode($secret, $code, 2)) { // 2 phút đồng bộ
+//         echo "Mã xác thực đúng!";
+//         // Thực hiện hành động sau khi xác thực thành công
+//     } else {
+//         echo "Mã xác thực sai!";
+//     }
+// }
 
 // Lấy thông tin người dùng
 $query = "SELECT * FROM users WHERE user_id = $user_id";

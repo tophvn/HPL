@@ -18,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $role = 'user'; 
-
     if (strlen($phonenumber) > 11) {
         $errors['phonenumber'] = 'Số điện thoại không được vượt quá 11 ký tự!';
     }
@@ -57,7 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         $hashedUsername = md5($username);        
         $hashedPassword = md5($password);
-    
         $sql = "INSERT INTO users (username, password, phonenumber, name, email, roles) 
                 VALUES ('$hashedUsername', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
         if (mysqli_query($conn, $sql)) {
@@ -69,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

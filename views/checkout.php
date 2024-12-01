@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payment_method = $_POST['payment_method'] ?? '';
     $order_address = $_POST['shipping_address'] ?? '';
     $shipping_method = $_POST['shipping_method'] ?? '';
-
     if (empty($order_address)) {
         $show_alert = true; 
     } else {
@@ -60,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $detail_query = "INSERT INTO `order_detail` (order_id, product_id, order_quantity)
                                      VALUES ($order_id, {$product['product_id']}, {$product['quantity']})";
                     $conn->query($detail_query);
-
                     // Chèn vào bảng `bill_items`
                     $subtotal_price = $product['discount_price'] * $product['quantity']; // Tính tổng giá cho sản phẩm
                     $bill_item_query = "INSERT INTO bill_items (bill_id, product_id, product_name, quantity, original_price, discount_price, subtotal_price)
@@ -108,11 +106,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="row justify-content-center">
             <div class="col-lg-8 col-md-10">
                 <div class="row g-4">
-                    <!-- Left Section -->
                     <div class="col-md-6">
                         <div class="border rounded p-4">
                             <form action="" method="POST">
-                                <!-- Shipping Address -->
                                 <div class="mb-4">
                                     <h4 class="font-weight-semi-bold mb-3">Địa Chỉ Giao Hàng</h4>
                                     <div class="form-group">
@@ -132,7 +128,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                 </div>
 
-                                <!-- Shipping Method -->
                                 <div class="mb-4">
                                     <h4 class="font-weight-semi-bold mb-3">Phương Thức Giao Hàng</h4>
                                     <div class="form-check">
@@ -145,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                 </div>
 
-                                <!-- Payment Method -->
                                 <div class="mb-4">
                                     <h4 class="font-weight-semi-bold mb-3">Phương Thức Thanh Toán</h4>
                                     <div class="form-check">
@@ -165,14 +159,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <label class="form-check-label" for="napas">Thẻ nội địa NAPAS</label>
                                     </div>
                                 </div>
-
-                                <!-- Submit Button -->
                                 <button class="btn btn-primary btn-block py-3" type="submit">Đặt Hàng</button>
                             </form>
                         </div>
                     </div>
 
-                    <!-- Right Section -->
                     <div class="col-md-6">
                         <div class="card border-secondary">
                             <div class="card-header bg-secondary text-white">
@@ -211,20 +202,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const shippingMethod = document.querySelector('input[name="shipping_method"]:checked').value;
             const shippingFeeElement = document.getElementById('shipping-fee');
             let shippingFee = 0;
-
             if (shippingMethod === 'Express') {
                 shippingFee = 50000; // Phí giao hàng hỏa tốc
             }
             shippingFeeElement.textContent = shippingFee.toLocaleString() + '₫'; // Cập nhật phí giao hàng
             updateTotalAmount(shippingFee);
         }
-
         function updateTotalAmount(shippingFee) {
             const totalAmountElement = document.getElementById('total-amount');
             const currentTotal = <?= $total ?>; // Tổng tiền trước phí giao hàng
             totalAmountElement.textContent = (currentTotal + shippingFee).toLocaleString() + '₫'; // Cập nhật tổng cộng
         }
-
         window.onload = function() {
             <?php if ($show_alert): ?>
                 alert('Vui lòng chọn địa chỉ giao hàng trước khi đặt hàng.');
