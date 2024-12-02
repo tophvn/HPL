@@ -11,14 +11,12 @@ if (isset($_POST['add_to_favorites'])) {
         $product_id = $_POST['product_id'];
         $user_id = $_SESSION['user']['user_id'];
         $conn = Database::getConnection();
-        $conn->query("INSERT INTO favorites (user_id, product_id) VALUES ($user_id, $product_id)
-                      ON DUPLICATE KEY UPDATE id = id");
+        $conn->query("INSERT INTO favorites (user_id, product_id) VALUES ($user_id, $product_id) ON DUPLICATE KEY UPDATE id = id");
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -160,8 +158,7 @@ if (isset($_POST['add_to_favorites'])) {
                     </div>
                     <?php
                 }
-            } else {
-                echo '<p class="text-center">Không có sản phẩm nào.</p>';
+            } else { echo '<p class="text-center">Không có sản phẩm nào.</p>';
             }
             $conn->close(); 
             ?>
@@ -178,7 +175,6 @@ if (isset($_POST['add_to_favorites'])) {
         <img class="img-fluid" src="img/banner_coll/banner-1.jpg" alt="Banner" style="width: 100%; height: auto;">        
     </div>
 
-    <!-- Footer-->
     <?php include 'includes/chatbot.php'; ?>
     <?php include 'includes/footer.php'; ?>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

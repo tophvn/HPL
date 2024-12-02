@@ -1,14 +1,7 @@
 <?php
 include('../../config/database.php'); 
 include('../../config/config.php'); 
-
-// thư viện PHPMailer
-require "../../PHPMailer/src/PHPMailer.php";
-require "../../PHPMailer/src/SMTP.php";
-require "../../PHPMailer/src/Exception.php";
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+include('../../config/send_email.php');
 
 $errors = [];
 $message = '';
@@ -17,7 +10,6 @@ $message = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $conn = Database::getConnection();
-
     // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
     $query = "SELECT user_id FROM users WHERE email = '$email'";
     $result = $conn->query($query);
@@ -28,33 +20,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Lưu token vào cơ sở dữ liệu
         $query = "UPDATE users SET reset_token = '$token' WHERE email = '$email'";
         $conn->query($query);
-        // Gửi email
-        $mail = new PHPMailer(true);
-        try {
-            $mail->SMTPDebug = 0;
-            $mail->isSMTP();
-            $mail->CharSet = "utf-8";
-            $mail->Host = 'smtp.gmail.com';
-            $mail->SMTPAuth = true;
-            $mail->Username = 'hplfashionvn@gmail.com';
-            $mail->Password = 'nwzh iggi lvum dlqb'; 
-            $mail->SMTPSecure = 'ssl';
-            $mail->Port = 465;
-            $mail->setFrom('hplfashionvn@gmail.com', 'HPL - Fashion');
-            $mail->addAddress($email);
-            $mail->isHTML(true);
-            $mail->Subject = 'Đặt Lại Mật Khẩu';
-            $resetLink = BASE_URL . "views/auth/reset_password.php?token=" . $token;
-            $mail->Body = "
-                <p>Vui lòng nhấp vào nút dưới đây để đặt lại mật khẩu của bạn:</p>
-                <a href='$resetLink' style='display: inline-block; padding: 10px 20px; font-size: 16px; color: #fff; background-color: #007bff; text-decoration: none; border-radius: 5px;'>Đặt Lại Mật Khẩu</a>
-                <p>Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này.</p>
-            ";
-            $mail->send();
-            $message = 'Đã gửi hướng dẫn đặt lại mật khẩu đến email của bạn.';
-        } catch (Exception $e) {
-            $errors[] = 'Lỗi khi gửi email: ' . $mail->ErrorInfo;
-        }
+        send_password_reset_email($email, $token); 
+        $message = 'Thành công! Truy cập Email của bạn để đổi mật khẩu!.';
     } else {
         $errors[] = 'Email không tồn tại trong hệ thống.';
     }
@@ -66,8 +33,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="../../img/HPL-logo.png" rel="icon"> 
     <title>Quên Mật Khẩu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">

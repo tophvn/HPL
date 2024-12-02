@@ -1,17 +1,15 @@
 <?php
 session_start();
+
 include('../../config/database.php');
 include('../../config/config.php');
 require_once '../../GoogleAuthenticator/PHPGangsta/GoogleAuthenticator.php';
-
 $ga = new PHPGangsta_GoogleAuthenticator();
-
 // Lấy thông tin người dùng tạm thời
 if (!isset($_SESSION['temp_user'])) {
     header("Location: login.php"); 
     exit();
 }
-
 $user = $_SESSION['temp_user'];
 $errors = [];
 
@@ -30,7 +28,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'google_auth_secret' => $user['google_auth_secret'],
             '2fa_enabled' => $user['2fa_enabled']
         ];
-
         // Xóa thông tin tạm
         unset($_SESSION['temp_user']);
         header("Location: " . BASE_URL . "index.php"); 
@@ -42,11 +39,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="../../img/HPL-logo.png" rel="icon">
     <title>Xác Thực</title>
     <link href="../img/HPL-logo.png" rel="icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -62,11 +59,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php if (!empty($errors)): ?>
                     <div class="alert alert-danger">
                         <?php foreach ($errors as $error): ?>
-                            <p><?php echo htmlspecialchars($error); ?></p>
+                            <p><?php echo $error; ?></p>
                         <?php endforeach; ?>
                     </div>
                 <?php endif; ?>
-
                 <form method="POST" action="" class="pt-3">
                     <div class="form-floating">
                         <input type="text" class="form-control" name="code" id="code" placeholder="Mã xác thực" required>
@@ -84,5 +80,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <i class="uil uil-estate" style="font-size: 1.5rem; color: #6610f2;"></i>
     </a>
     <script src="../../js/custom.js"></script>
+    <!-- <script>
+        const sessionData = <?php echo json_encode($_SESSION); ?>;
+        // Lưu vào Session Storage
+        sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
+        console.log('Session data đã được lưu:', sessionData);
+    </script> -->
 </body>
 </html>

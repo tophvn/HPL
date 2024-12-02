@@ -50,7 +50,7 @@ $ga = new PHPGangsta_GoogleAuthenticator();
 // Kích hoạt 2FA
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enable_2fa'])) {
     $secret = $ga->createSecret();
-    $hashed_secret = $secret; // Mã hóa MD5
+    $hashed_secret = $secret;
     $query = "UPDATE users SET google_auth_secret='$hashed_secret', 2fa_enabled=TRUE WHERE user_id = $user_id"; 
     $conn->query($query);
 
@@ -110,7 +110,7 @@ $user = $result->fetch_assoc();
                     <li class="list-group-item"><a href="#" id="dashboard-tab">Bảng điều khiển</a></li>
                     <li class="list-group-item"><a href="#" id="address-tab">Cập Nhật</a></li>
                     <li class="list-group-item"><a href="#" id="security-tab">Bảo mật</a></li>
-                    <li class="list-group-item"><a href="favorites.php">Danh sách yêu thích</a></li>
+                    <!-- <li class="list-group-item"><a href="favorites.php">Danh sách yêu thích</a></li> -->
                 </ul>
             </div>
 
@@ -152,19 +152,20 @@ $user = $result->fetch_assoc();
                     <input type="hidden" name="update_address" value="1">
                     <div class="form-group">
                         <label>Địa chỉ 1</label>
-                        <input type="text" class="form-control" name="address1" required>
+                        <input type="text" class="form-control" name="address1" value="<?php echo $user['address1']; ?>" required>
                     </div>
                     <div class="form-group">
                         <label>Địa chỉ 2</label>
-                        <input type="text" class="form-control" name="address2">
+                        <input type="text" class="form-control" name="address2" value="<?php echo $user['address2']; ?>">
                     </div>
                     <div class="form-group">
                         <label>Số Điện Thoại</label>
-                        <input type="text" class="form-control" name="phonenumber" required>
+                        <input type="text" class="form-control" name="phonenumber" value="<?php echo $user['phonenumber']; ?>" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Cập nhật địa chỉ và số điện thoại</button>
                 </form>
             </div>
+
 
             <!-- Bảo mật -->
             <div class="col-md-9" id="security-content" style="display:none;">
@@ -191,7 +192,7 @@ $user = $result->fetch_assoc();
                         <div class="card-body">
                             <h4 class="card-title text-success">Quét mã QR dưới đây:</h4>
                             <img src="<?php echo $_SESSION['qrCodeUrl']; ?>" alt="QR Code" class="img-fluid mb-3">
-                            <p><strong>Mã bí mật:</strong> <?php echo htmlspecialchars($_SESSION['secret']); ?></p>
+                            <p><strong>Mã bí mật:</strong> <?php echo $_SESSION['secret']; ?></p>
                         </div>
                     </div>
                 <?php endif; ?>

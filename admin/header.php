@@ -38,7 +38,7 @@
             </ul>
         </li> -->
         <li>
-            <a href="admin_notify.php"><i class="fas fa-cog"></i> Cài đặt</a>
+            <a href="#"><i class="fas fa-cog"></i> Cài đặt</a>
         </li>
     </ul>
 </nav>

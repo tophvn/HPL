@@ -3,12 +3,7 @@ session_start();
 include('../../config/database.php');
 include('../../config/config.php'); 
 require_once '../../google-api/vendor/autoload.php'; 
-require "../../PHPMailer/src/PHPMailer.php";
-require "../../PHPMailer/src/SMTP.php";
-require "../../PHPMailer/src/Exception.php";
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+include '../../config/send_email.php'; 
 
 // Cấu hình OAuth 2.0
 $clientID = '614640831923-vulhph6ovaq4rbhfb1l4nd2iu5q611go.apps.googleusercontent.com';
@@ -40,7 +35,7 @@ if (isset($_GET['code'])) {
         $google_user_id = $google_account_info->id;
         
         $username_md5 = md5($email); // Mã hóa email để làm username
-        
+
         $query = "SELECT * FROM users WHERE email = '$email'";
         $result = $conn->query($query);        
         
@@ -64,6 +59,7 @@ if (isset($_GET['code'])) {
         
         $historyQuery = "INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
         VALUES ('$user_id', '$ip_address', '$user_agent', '$session_id')";
+        $conn->query($historyQuery);
 
         send_login_notification($email, $ip_address, $user_agent);
 
@@ -97,8 +93,7 @@ if (isset($_GET['code'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login = mysqli_real_escape_string($conn, $_POST['login'] ?? '');  
     $password = $_POST['password'] ?? ''; 
-    $login_md5 = md5($login); // Mã hóa login để so sánh
-
+    $login_md5 = md5($login);
     // Kiểm tra Google reCAPTCHA
     $recaptchaResponse = $_POST['g-recaptcha-response'] ?? '';
     $recaptchaURL = "https://www.google.com/recaptcha/api/siteverify";
@@ -114,18 +109,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Kiểm tra mật khẩu đã được mã hóa
             if (md5($password) === $user['password']) {
+
                 // Lưu thông tin đăng nhập vào login_history
                 $ip_address = $_SERVER['REMOTE_ADDR'];
                 $user_agent = $_SERVER['HTTP_USER_AGENT'];
                 $session_id = session_id();
-
+                
                 $historyQuery = "INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
                 VALUES ('$user[user_id]', '$ip_address', '$user_agent', '$session_id')";
-                send_login_notification($user['email'], $ip_address, $user_agent);
+                $conn->query($historyQuery);
+
+                send_login_notification($user['email'], $ip_address, $user_agent); 
 
                 // Kiểm tra 2FA nếu được bật
                 if ($user['2fa_enabled'] == 1) {
-                    $_SESSION['temp_user'] = $user;
+                    $_SESSION['temp_user'] = [
+                        'user_id' => $user['user_id'],
+                        'username' => $user['username'],  
+                        'name' => $user['name'],
+                        'roles' => $user['roles'],
+                        'google_auth_secret' => $user['google_auth_secret']
+                    ];
                     header("Location: verify_2fa.php");
                     exit();
                 } else {
@@ -147,47 +151,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-
 // Tạo URL đăng nhập Google
 $googleLoginUrl = $client->createAuthUrl();
-
-// Hàm gửi thông báo đăng nhập qua email
-function send_login_notification($email, $ip_address, $user_agent) {
-    $mail = new PHPMailer(true);
-    try {
-        $mail->SMTPDebug = 0; 
-        $mail->isSMTP();
-        $mail->CharSet = "utf-8";
-        $mail->Host = 'smtp.gmail.com';
-        $mail->SMTPAuth = true;
-        $mail->Username = 'hplfashionvn@gmail.com';
-        $mail->Password = 'nwzh iggi lvum dlqb'; 
-        $mail->SMTPSecure = 'ssl';
-        $mail->Port = 465;
-        $mail->setFrom('hplfashionvn@gmail.com', 'HPL - Fashion');
-        $mail->addAddress($email);
-        $mail->isHTML(true);
-        $mail->Subject = 'Thông Báo Đăng Nhập';
-        $mail->Body = "
-            <p>Bạn vừa đăng nhập vào tài khoản của mình.</p>
-            <p>Địa chỉ IP: $ip_address</p>
-            <p>User Agent: $user_agent</p>
-            <p>Nếu bạn không nhận ra đăng nhập này, vui lòng thay đổi mật khẩu ngay lập tức để bảo vệ tài khoản của bạn.</p>
-            <p>Trân trọng,</p>
-            <p>HPL - Fashion</p>
-        ";
-        $mail->send();
-    } catch (Exception $e) {
-        echo 'Lỗi khi gửi email: ' . $mail->ErrorInfo;
-    }
-}
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link href="../../img/HPL-logo.png" rel="icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">

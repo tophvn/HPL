@@ -8,7 +8,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['roles'] != 'admin') {
 
 // Lấy tất cả đơn hàng và chi tiết
 $sql = "SELECT orders.order_id, orders.order_date, orders.order_address, orders.payment_method, orders.total_amount,
-        orders.shipping_method, orders.status_id, status.status_value, status.status_color, users.username
+        orders.shipping_method, orders.status_id, status.status_value, status.status_color, users.name
         FROM `order` AS orders LEFT JOIN `status` AS status ON orders.status_id = status.status_id 
         LEFT JOIN `users` AS users ON orders.user_id = users.user_id"; 
 $orders = Database::query($sql);
@@ -32,8 +32,7 @@ if (isset($_POST['update_status'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
@@ -70,7 +69,7 @@ if (isset($_POST['update_status'])) {
                     <tr>
                         <td><?= $order['order_id'] ?></td>
                         <td><?= date('d/m/Y H:i', strtotime($order['order_date'])) ?></td>
-                        <td><?= $order['username'] ?></td>
+                        <td><?= $order['name'] ?></td>
                         <td><?= $order['order_address'] ?></td>
                         <td><?= $order['payment_method'] ?></td>
                         <td><?= number_format($order['total_amount'], 2) ?> VND</td>
@@ -82,7 +81,7 @@ if (isset($_POST['update_status'])) {
                         </td>
                         <td>
                             <button class="btn btn-info btn-sm view-order-details" data-order-id="<?= $order['order_id'] ?>" 
-                                    data-username="<?= $order['username'] ?>" 
+                                    data-name="<?= $order['name'] ?>" 
                                     data-address="<?= $order['order_address'] ?>" 
                                     data-payment="<?= $order['payment_method'] ?>" 
                                     data-amount="<?= number_format($order['total_amount'], 2) ?>" 
@@ -110,7 +109,7 @@ if (isset($_POST['update_status'])) {
         </div>
     </div>
 
-    <!-- Modal để hiển thị chi tiết đơn hàng -->
+    <!-- Modal hiển thị chi tiết đơn hàng -->
     <div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -134,15 +133,14 @@ if (isset($_POST['update_status'])) {
         $(document).ready(function() {
             $('.view-order-details').on('click', function() {
                 var orderId = $(this).data('order-id');
-                var username = $(this).data('username');
+                var name = $(this).data('name');
                 var address = $(this).data('address');
                 var payment = $(this).data('payment');
                 var amount = $(this).data('amount');
                 var shipping = $(this).data('shipping');
-
                 var details = `
                     <p><strong>ID Đơn Hàng:</strong> ${orderId}</p>
-                    <p><strong>Người Đặt:</strong> ${username}</p>
+                    <p><strong>Người Đặt:</strong> ${name}</p>
                     <p><strong>Địa Chỉ:</strong> ${address}</p>
                     <p><strong>Phương Thức Thanh Toán:</strong> ${payment}</p>
                     <p><strong>Tổng Tiền:</strong> ${amount} VND</p>

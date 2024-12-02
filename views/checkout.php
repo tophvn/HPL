@@ -1,7 +1,7 @@
 <?php
 include('../config/database.php');
+include('../config/send_email.php'); 
 session_start();
-
 if (!isset($_SESSION['user'])) {
     header("Location: auth/login.php");
     exit();
@@ -10,7 +10,7 @@ if (!isset($_SESSION['user'])) {
 $conn = Database::getConnection();
 $user_id = $_SESSION['user']['user_id'];
 
-$user_query = "SELECT address1, address2 FROM users WHERE user_id = $user_id";
+$user_query = "SELECT address1, address2, email, name FROM users WHERE user_id = $user_id";
 $user = $conn->query($user_query)->fetch_assoc();
 
 $product_query = "SELECT products.product_name, products.price AS original_price, cart_item.price AS discount_price, cart_item.quantity, products.product_id 
@@ -35,36 +35,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $total_amount = $total + $shipping_fee;
         if ($payment_method === 'Chuyển khoản ngân hàng') {
-            // Chuyển hướng đến trang thanh toán VNPAY
-            header("Location: online_checkout_vnpay.php?amount=$total_amount&order_type=don_hang");
+            header("Location: momo_qr.php?amount=$total_amount&order_type=don_hang");
             exit();
         }
+
         // Chèn vào bảng `bills` trước để lấy bill_id
         $bill_query = "INSERT INTO bills (user_id, bill_date, shipping_address, shipping_fee, total_amount, payment_method, shipping_method)
-                       VALUES ($user_id, NOW(), '$order_address', $shipping_fee, $total_amount, '$payment_method', '$shipping_method')";
-        
+        VALUES ($user_id, NOW(), '$order_address', $shipping_fee, $total_amount, '$payment_method', '$shipping_method')";
         if ($conn->query($bill_query)) {
             $bill_id = $conn->insert_id; 
 
-            // Chèn vào bảng `order` trước để lấy order_id
+            // Chèn vào bảng `order` để lấy order_id
             $order_query = "INSERT INTO `order` (user_id, order_address, payment_method, total_amount, shipping_method, order_date, status_id)
-                            VALUES ($user_id, '$order_address', '$payment_method', $total_amount, '$shipping_method', NOW(), 1)";
-            
+            VALUES ($user_id, '$order_address', '$payment_method', $total_amount, '$shipping_method', NOW(), 1)";
             if ($conn->query($order_query)) {
                 $order_id = $conn->insert_id;
 
-                // Chèn chi tiết sản phẩm vào bảng `order_detail` và bảng `bill_items`
+                // add sản phẩm vào bảng `order_detail` và bảng `bill_items`
                 foreach ($products as $product) {
-                    // Chèn vào bảng `order_detail`
-                    $detail_query = "INSERT INTO `order_detail` (order_id, product_id, order_quantity)
-                                     VALUES ($order_id, {$product['product_id']}, {$product['quantity']})";
+                    $detail_query = "INSERT INTO `order_detail` (order_id, product_id, order_quantity) VALUES ($order_id, {$product['product_id']}, {$product['quantity']})";
                     $conn->query($detail_query);
-                    // Chèn vào bảng `bill_items`
-                    $subtotal_price = $product['discount_price'] * $product['quantity']; // Tính tổng giá cho sản phẩm
+                    $subtotal_price = $product['discount_price'] * $product['quantity']; 
                     $bill_item_query = "INSERT INTO bill_items (bill_id, product_id, product_name, quantity, original_price, discount_price, subtotal_price)
-                                        VALUES ($bill_id, {$product['product_id']}, '{$product['product_name']}', {$product['quantity']}, {$product['original_price']}, {$product['discount_price']}, $subtotal_price)";
+                    VALUES ($bill_id, {$product['product_id']}, '{$product['product_name']}', {$product['quantity']}, {$product['original_price']}, {$product['discount_price']}, $subtotal_price)";
                     $conn->query($bill_item_query);
                 }
+
+                // Xóa các sản phẩm khỏi giỏ hàng sau khi thanh toán
+                $delete_cart_query = "DELETE FROM cart_item WHERE cart_id = (SELECT cart_id FROM cart WHERE user_id = $user_id)";
+                $conn->query($delete_cart_query);
+
+                // Gửi email hóa đơn
+                $bill_details = [
+                    'bill_id' => $bill_id,
+                    'bill_date' => date('Y-m-d H:i:s'),
+                    'total_amount' => $total_amount,
+                    'items' => $products
+                ];
+                send_invoice_email($user['email'], $user['name'], $bill_details); 
                 header("Location: bill.php?order_id=" . $order_id);
                 exit();
             } else {
@@ -91,17 +99,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <?php include '../includes/header.php'; ?>
-    <!-- <div class="container-fluid bg-secondary mb-5">
-        <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
-            <h1 class="font-weight-semi-bold text-uppercase mb-3">Thanh Toán</h1>
-            <div class="d-inline-flex">
-                <p class="m-0"><a href="../index.php">Trang Chủ</a></p>
-                <p class="m-0 px-2">-</p>
-                <p class="m-0">Thanh Toán</p>
-            </div>
-        </div>
-    </div> -->
-
     <div class="container-fluid py-5">
         <div class="row justify-content-center">
             <div class="col-lg-8 col-md-10">
@@ -147,12 +144,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <label class="form-check-label" for="cod">Thanh toán khi nhận hàng (COD)</label>
                                     </div>
                                     <div class="form-check">
-                                        <input type="radio" class="form-check-input" name="payment_method" value="Credit/Debit Card" id="card">
-                                        <label class="form-check-label" for="card">Thẻ Tín dụng/Ghi nợ</label>
-                                    </div>
-                                    <div class="form-check">
                                         <input type="radio" class="form-check-input" name="payment_method" value="Chuyển khoản ngân hàng" id="bank">
                                         <label class="form-check-label" for="bank">Chuyển khoản ngân hàng</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="radio" class="form-check-input" name="payment_method" value="Credit/Debit Card" id="card">
+                                        <label class="form-check-label" for="card">Thẻ Tín dụng/Ghi nợ</label>
                                     </div>
                                     <div class="form-check">
                                         <input type="radio" class="form-check-input" name="payment_method" value="NAPAS" id="napas">
@@ -217,7 +214,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if ($show_alert): ?>
                 alert('Vui lòng chọn địa chỉ giao hàng trước khi đặt hàng.');
             <?php endif; ?>
-            updateShippingFee(); // Cập nhật phí giao hàng khi tải trang
+            updateShippingFee(); 
         };
     </script>
 </body>

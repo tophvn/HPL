@@ -8,10 +8,8 @@ if (!isset($_GET['token'])) {
 }
 
 $token = $_GET['token'];
-
 $query = "SELECT * FROM users WHERE reset_token = '$token'";
 $result = Database::query($query);
-
 if ($result->num_rows == 0) {
     echo "Mã xác nhận không hợp lệ hoặc đã hết hạn.";
     exit();
@@ -27,10 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($new_password !== $confirm_password) {
         $error = "Mật khẩu xác nhận không khớp.";
     } else {
-        // Sử dụng MD5 để mã hóa mật khẩu mới
         $hashed_password = md5($new_password);
-
-        // Cập nhật mật khẩu vào cơ sở dữ liệu
         $update_query = "UPDATE users SET password = '$hashed_password', reset_token = NULL WHERE email = '$email'";
         Database::query($update_query);
         $success_message = "Mật khẩu của bạn đã được thay đổi thành công.";
@@ -42,8 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="../../img/HPL-logo.png" rel="icon">
     <title>Đặt lại Mật Khẩu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">

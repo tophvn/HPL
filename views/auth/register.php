@@ -1,6 +1,8 @@
 <?php
 include('../../config/database.php'); 
 include('../../config/config.php');
+include '../../config/send_email.php'; 
+session_start();
 
 $errors = [];
 $username = '';
@@ -9,6 +11,8 @@ $email = '';
 $phonenumber = '';
 $password = '';
 $confirm_password = '';
+$otp = '';
+$sent_otp = ''; 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -18,19 +22,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
     $role = 'user'; 
+
+    // Kiểm tra dữ liệu đầu vào
     if (strlen($phonenumber) > 11) {
-        $errors['phonenumber'] = 'Số điện thoại không được vượt quá 11 ký tự!';
+        $errors['phonenumber'] = 'Số điện thoại không hợp lệ!';
     }
     if (!ctype_digit($phonenumber)) {
         $errors['phonenumber'] = 'Số điện thoại chỉ được chứa các ký tự số!';
     }
-    if (preg_match('/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ\s]/i', $username)) {
+    
+    $errors_chars = '/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ\s]/i';
+    if (preg_match($errors_chars, $username)) {
         $errors['username'] = 'Tên đăng nhập không được chứa dấu hoặc khoảng trắng!';
     }
-    if (preg_match('/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ]/i', $password)) {
+    if (preg_match($errors_chars, $password)) {
         $errors['password'] = 'Mật khẩu không được chứa dấu!';
     }
-
+    
     // Kiểm tra mật khẩu
     if ($password !== $confirm_password) {
         $errors['confirm_password'] = 'Mật khẩu không trùng khớp!';
@@ -40,6 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors['password'] = 'Mật khẩu không hợp lệ!';
     }
 
+    // Kết nối đến cơ sở dữ liệu
     $conn = Database::getConnection();
     $username = mysqli_real_escape_string($conn, $username);
     $name = mysqli_real_escape_string($conn, $name);
@@ -53,17 +62,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors['username_email'] = 'Tên đăng nhập, email hoặc số điện thoại đã tồn tại!';
     }
 
-    if (empty($errors)) {
-        $hashedUsername = md5($username);        
-        $hashedPassword = md5($password);
-        $sql = "INSERT INTO users (username, password, phonenumber, name, email, roles) 
-                VALUES ('$hashedUsername', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
-        if (mysqli_query($conn, $sql)) {
-            header("Location: " . BASE_URL . "views/auth/login.php");
-            exit(); 
+    // Kiểm tra mã OTP khi người dùng đã nhập OTP
+    if (isset($_POST['otp'])) {
+        $otp = $_POST['otp'];
+        if ($otp == $_SESSION['otp']) {
+            // Thực hiện đăng ký tài khoản
+            if (empty($errors)) {
+                $hashedUsername = md5($username);        
+                $hashedPassword = md5($password);
+                $sql = "INSERT INTO users (username, password, phonenumber, name, email, roles) 
+                        VALUES ('$hashedUsername', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
+                if (mysqli_query($conn, $sql)) {
+                    header("Location: " . BASE_URL . "views/auth/login.php");
+                    exit(); 
+                } else {
+                    $errors['database'] = 'Đăng ký không thành công!';
+                }
+            }
         } else {
-            $errors['database'] = 'Đăng ký không thành công!';
+            $errors['otp'] = 'Mã OTP không chính xác!';
         }
+    }
+    // Kiểm tra mã OTP khi người dùng nhấn "Đăng Ký"
+    if (isset($_POST['submit'])) {
+        if (empty($sent_otp) || !isset($_POST['otp'])) {
+            $errors['otp'] = 'Bạn cần xác thực mã OTP trước khi đăng ký!';
+        } else {
+            $otp = $_POST['otp'];
+            if ($otp == $_SESSION['otp']) {
+                // Thực hiện đăng ký tài khoản
+                if (empty($errors)) {
+                    $hashedUsername = md5($username);        
+                    $hashedPassword = md5($password);
+                    $sql = "INSERT INTO users (username, password, phonenumber, name, email, roles) 
+                            VALUES ('$hashedUsername', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
+                    if (mysqli_query($conn, $sql)) {
+                        header("Location: " . BASE_URL . "views/auth/login.php");
+                        exit(); 
+                    } else {
+                        $errors['database'] = 'Đăng ký không thành công!';
+                    }
+                }
+            } else {
+                $errors['otp'] = 'Mã OTP không chính xác!';
+            }
+        }
+    }
+    // Nếu không có lỗi và người dùng nhấn "Gửi OTP"
+    if (empty($errors) && isset($_POST['send_otp'])) {
+        $sent_otp = rand(1000, 9999);
+        $_SESSION['otp'] = $sent_otp;
+        send_otp_email($email, $sent_otp); 
+        $otp_success_message = "Mã OTP đã được gửi đến email của bạn!";
     }
 }
 ?>
@@ -72,8 +122,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <link href="../../img/HPL-logo.png" rel="icon">
     <title>Đăng Ký</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
@@ -92,6 +142,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <p><?php echo $error; ?></p>
                         <?php endforeach; ?>
                     </div>
+                <?php endif; ?>
+
+                <?php if (isset($otp_success_message)): ?>
+                <div class="alert alert-success" id="otpSuccessMessage">
+                <?php echo $otp_success_message; ?>
+                </div>
+                    <script>
+                        setTimeout(function() {
+                            document.getElementById('otpSuccessMessage').style.display = 'none';
+                        }, 5000);
+                    </script>
                 <?php endif; ?>
                 <form action="" method="POST" class="pt-3">
                     <div class="form-floating">
@@ -112,22 +173,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <div class="form-floating">
                         <span class="password-show-toggle js-password-show-toggle"><span class="uil"></span></span>
-                        <input type="password" class="form-control" name="password" id="password" placeholder="Mật khẩu" required>
+                        <input type="password" class="form-control" name="password" id="password" placeholder="Mật khẩu" value="<?php echo htmlspecialchars($password); ?>" required>
                         <label for="password">Mật Khẩu</label>
                     </div>
                     <div class="form-floating">
                         <span class="password-show-toggle js-password-show-toggle"><span class="uil"></span></span>
-                        <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Xác Nhận Mật Khẩu" required>
+                        <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Xác Nhận Mật Khẩu" value="<?php echo htmlspecialchars($confirm_password); ?>" required>
                         <label for="confirm_password">Xác Nhận Mật Khẩu</label>
                     </div>
+
+                    <div class="form-floating d-flex mb-4">
+                    <!-- Nút Gửi OTP -->
+                    <button type="submit" class="btn btn-secondary" name="send_otp" id="send_otp" style="width: 150px;">Gửi OTP</button>
+                    
+                    <!-- Trường Nhập Mã OTP (chỉ hiển thị khi đã gửi OTP) -->
+                    <?php if (!empty($sent_otp)): ?>
+                        <input type="text" class="form-control ms-3" name="otp" id="otp" placeholder="Mã OTP" required style="width: 200px;">
+                    <?php endif; ?>
+                </div>
                     <div class="d-flex justify-content-between">
-                        <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" required>
-                            <label for="remember" class="form-check-label">Tôi đồng ý với <a href="#">Điều Khoản Dịch Vụ</a> và <a href="#">Chính Sách Bảo Mật</a></label>
-                        </div>
+                        
+                        <a href="../auth/login.php" class="forget-link">Đã có tài khoản?</a>
                     </div>
                     <div class="d-grid mb-4">
-                        <button type="submit" class="btn btn-primary">Tạo Tài Khoản</button>
+                        <button type="submit" class="btn btn-primary" name="submit">Đăng Ký</button>
                     </div>
                     <div class="mb-2">Đã có tài khoản? <a href="<?php echo BASE_URL; ?>views/auth/login.php">Đăng Nhập</a></div>
                     <div class="social-account-wrap">
@@ -143,10 +212,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </div>
         </div>
     </div>
-    <!-- nút trở về trang chủ -->
     <a href="<?php echo BASE_URL; ?>index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
         <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
     </a>
-    <script src="<?php echo BASE_URL; ?>js/custom.js"></script>
 </body>
 </html>

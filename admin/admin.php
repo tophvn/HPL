@@ -1,4 +1,3 @@
-
 <?php 
 include('../config/database.php');
 session_start();
@@ -242,8 +241,6 @@ $data = array_reverse($data);
     </div>
     
     
-
-
     <script>
         const ctx = document.getElementById('productViewChart').getContext('2d');
         const productViewChart = new Chart(ctx, {

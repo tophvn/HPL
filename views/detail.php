@@ -136,24 +136,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="d-flex mb-4">
                         <p class="text-dark font-weight-medium mb-0 mr-3">Màu sắc:</p>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-1" name="color" value="Black" required>
-                            <label class="custom-control-label" for="color-1">Black</label>
+                            <input type="radio" class="custom-control-input" id="color-1" name="color" value="ĐEN" required>
+                            <label class="custom-control-label" for="color-1">ĐEN</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-2" name="color" value="White">
-                            <label class="custom-control-label" for="color-2">White</label>
+                            <input type="radio" class="custom-control-input" id="color-2" name="color" value="TRẮNG">
+                            <label class="custom-control-label" for="color-2">TRẮNG</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-3" name="color" value="Red">
-                            <label class="custom-control-label" for="color-3">Red</label>
+                            <input type="radio" class="custom-control-input" id="color-3" name="color" value="ĐỎ">
+                            <label class="custom-control-label" for="color-3">ĐỎ</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-4" name="color" value="Blue">
-                            <label class="custom-control-label" for="color-4">Blue</label>
+                            <input type="radio" class="custom-control-input" id="color-4" name="color" value="XANH DA TRỜI">
+                            <label class="custom-control-label" for="color-4">XANH DA TRỜI</label>
                         </div>
                         <div class="custom-control custom-radio custom-control-inline">
-                            <input type="radio" class="custom-control-input" id="color-5" name="color" value="Green">
-                            <label class="custom-control-label" for="color-5">Green</label>
+                            <input type="radio" class="custom-control-input" id="color-5" name="color" value="XANH LÁ">
+                            <label class="custom-control-label" for="color-5">XANH LÁ</label>
                         </div>
                     </div>
 
