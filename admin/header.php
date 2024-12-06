@@ -1,6 +1,6 @@
 <nav id="sidebar" class="active">
     <div class="sidebar-header">
-        <img src="../img/hpl-fashion.png" alt="logo HPL-Fashion" class="app-logo">
+        <img src="../img/logo/hpl-fashion.png" alt="logo HPL-Fashion" class="app-logo">
     </div>
     <ul class="list-unstyled components text-secondary">
         <li>

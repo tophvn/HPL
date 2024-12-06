@@ -5,7 +5,6 @@ if (!isset($_SESSION['user'])) {
     header("Location: auth/login.php");
     exit();
 }
-
 $conn = Database::getConnection();
 $user_id = $_SESSION['user']['user_id'];
 
@@ -14,23 +13,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_address'])) {
     $address1 = $_POST['address1'];
     $address2 = $_POST['address2'];
     $phonenumber = $_POST['phonenumber'];
-
     // Kiểm tra số điện thoại hợp lệ
     if (!preg_match('/^[0-9]{1,12}$/', $phonenumber)) {
         echo "<script>alert('Số điện thoại chỉ được chứa số và không được quá 12 số.');</script>";
     } else {
         // Kiểm tra số điện thoại có trùng không
-        $checkPhoneQuery = "SELECT * FROM users WHERE phonenumber = '$phonenumber' AND user_id != $user_id";
-        $result = $conn->query($checkPhoneQuery);
+        $result = $conn->query("SELECT * FROM users WHERE phonenumber = '$phonenumber' AND user_id != $user_id");
 
         if ($result->num_rows > 0) {
             // Số điện thoại đã tồn tại
             echo "<script>alert('Số điện thoại này đã được sử dụng bởi tài khoản khác!');</script>";
         } else {
             // Cập nhật địa chỉ và số điện thoại
-            $query = "UPDATE users SET address1 = '$address1', address2 = '$address2', phonenumber = '$phonenumber' WHERE user_id = $user_id";
-            $conn->query($query);
-
+            $conn->query("UPDATE users SET address1 = '$address1', address2 = '$address2', phonenumber = '$phonenumber' WHERE user_id = $user_id");
             // Cập nhật session để lưu trạng thái tab
             $_SESSION['active_tab'] = 'address';
             header("Location: account.php");
@@ -40,8 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_address'])) {
 }
 
 // Lấy thông tin người dùng
-$query = "SELECT * FROM users WHERE user_id = $user_id";
-$result = $conn->query($query);
+$result = $conn->query("SELECT * FROM users WHERE user_id = $user_id");
 $user = $result->fetch_assoc();
 
 require_once '../GoogleAuthenticator/PHPGangsta/GoogleAuthenticator.php';
@@ -51,20 +45,18 @@ $ga = new PHPGangsta_GoogleAuthenticator();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enable_2fa'])) {
     $secret = $ga->createSecret();
     $hashed_secret = $secret;
-    $query = "UPDATE users SET google_auth_secret='$hashed_secret', 2fa_enabled=TRUE WHERE user_id = $user_id"; 
-    $conn->query($query);
+    $conn->query("UPDATE users SET google_auth_secret='$hashed_secret', 2fa_enabled=TRUE WHERE user_id = $user_id");
 
     // Tạo mã QR để người dùng quét
     $user = $_SESSION['user']['name'];
     $qrCodeUrl = $ga->getQRCodeGoogleUrl($user, $secret, 'HPL-Fashion');
     $_SESSION['qrCodeUrl'] = $qrCodeUrl;
-    $_SESSION['secret'] = $secret; 
+    $_SESSION['secret'] = $secret;
 }
 
 // Tắt 2FA
 if (isset($_POST['disable_2fa'])) {
-    $query = "UPDATE users SET google_auth_secret=NULL, 2fa_enabled=FALSE WHERE user_id = $user_id";
-    $conn->query($query);
+    $conn->query("UPDATE users SET google_auth_secret=NULL, 2fa_enabled=FALSE WHERE user_id = $user_id");
     unset($_SESSION['qrCodeUrl']);
     unset($_SESSION['secret']);
 }
@@ -83,10 +75,10 @@ if (isset($_POST['disable_2fa'])) {
 // }
 
 // Lấy thông tin người dùng
-$query = "SELECT * FROM users WHERE user_id = $user_id";
-$result = $conn->query($query);
+$result = $conn->query("SELECT * FROM users WHERE user_id = $user_id");
 $user = $result->fetch_assoc();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -95,7 +87,7 @@ $user = $result->fetch_assoc();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
-    <link href="../img/HPL-logo.png" rel="icon">
+    <link href="../img/logo/HPL-logo.png" rel="icon">
     <title>Tài Khoản - HPL FASHION</title>
     <link href="../css/style.css" rel="stylesheet">
 </head>

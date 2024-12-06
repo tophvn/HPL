@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 include('../../config/database.php');
 include('../../config/config.php');
 require_once '../../GoogleAuthenticator/PHPGangsta/GoogleAuthenticator.php';
@@ -12,7 +11,6 @@ if (!isset($_SESSION['temp_user'])) {
 }
 $user = $_SESSION['temp_user'];
 $errors = [];
-
 // Lấy secret gốc từ cơ sở dữ liệu
 $secret = $user['google_auth_secret'];
 
@@ -43,16 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="../../img/HPL-logo.png" rel="icon">
+    <link href="../../img/logo/HPL-logo.png" rel="icon">
     <title>Xác Thực</title>
-    <link href="../img/HPL-logo.png" rel="icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="../../css/css-login-register.css">
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('../../img/back-2fa.jpg')"></div>
+        <div class="bg-img" style="background-image: url('../../img/auth-background/back-2fa.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Xác thực mã</h1>

@@ -29,22 +29,16 @@ if (isset($_GET['code'])) {
     if (empty($token['error'])) {
         $client->setAccessToken($token['access_token']);
         $google_account_info = (new Google_Service_Oauth2($client))->userinfo->get();
-        
         // Lấy thông tin người dùng
         $email = mysqli_real_escape_string($conn, $google_account_info->email);
         $google_user_id = $google_account_info->id;
-        
         $username_md5 = md5($email); // Mã hóa email để làm username
-
-        $query = "SELECT * FROM users WHERE email = '$email'";
-        $result = $conn->query($query);        
-        
+        $result = $conn->query("SELECT * FROM users WHERE email = '$email'");        
         if ($result->num_rows == 0) {
             // Nếu người dùng chưa tồn tại, thêm người dùng mới
             $name = mysqli_real_escape_string($conn, $google_account_info->name);
             $defaultPassword = md5(uniqid()); 
-            $insertQuery = "INSERT INTO users (username, email, name, password, roles) VALUES ('$username_md5', '$email', '$name', '$defaultPassword', 'user')";
-            $conn->query($insertQuery);
+            $conn->query("INSERT INTO users (username, email, name, password, roles) VALUES ('$username_md5', '$email', '$name', '$defaultPassword', 'user')");
             $user_id = $conn->insert_id;
         } else {
             $user = $result->fetch_assoc();
@@ -56,10 +50,8 @@ if (isset($_GET['code'])) {
         $ip_address = $_SERVER['REMOTE_ADDR'];
         $user_agent = $_SERVER['HTTP_USER_AGENT'];
         $session_id = session_id();
-        
-        $historyQuery = "INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
-        VALUES ('$user_id', '$ip_address', '$user_agent', '$session_id')";
-        $conn->query($historyQuery);
+        $conn->query("INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
+        VALUES ('$user_id', '$ip_address', '$user_agent', '$session_id')");
 
         send_login_notification($email, $ip_address, $user_agent);
 
@@ -101,9 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$recaptchaValidation['success']) {
         $errors[] = 'Xác minh reCAPTCHA thất bại. Vui lòng thử lại!';
     } else {
-        $query = "SELECT * FROM users WHERE (username = '$login_md5' OR email = '$login')";
-        $result = $conn->query($query);
-        
+        $result = $conn->query("SELECT * FROM users WHERE (username = '$login_md5' OR email = '$login')");
         if ($result && $result->num_rows > 0) {
             $user = $result->fetch_assoc();
             
@@ -115,9 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $user_agent = $_SERVER['HTTP_USER_AGENT'];
                 $session_id = session_id();
                 
-                $historyQuery = "INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
-                VALUES ('$user[user_id]', '$ip_address', '$user_agent', '$session_id')";
-                $conn->query($historyQuery);
+                $conn->query("INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
+                VALUES ('$user[user_id]', '$ip_address', '$user_agent', '$session_id')");
 
                 send_login_notification($user['email'], $ip_address, $user_agent); 
 
@@ -159,7 +148,7 @@ $googleLoginUrl = $client->createAuthUrl();
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <link href="../../img/HPL-logo.png" rel="icon">
+    <link href="../../img/logo/HPL-logo.png" rel="icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng Nhập</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -170,7 +159,7 @@ $googleLoginUrl = $client->createAuthUrl();
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/back-login.jpg')"></div>
+        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/auth-background/back-login.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Đăng Nhập</h1>

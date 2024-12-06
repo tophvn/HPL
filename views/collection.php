@@ -1,29 +1,25 @@
 <?php
 include('../config/database.php');
-
+$conn = Database::getConnection();
 $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
-// Lấy tên danh mục dựa trên category_id
-$category_query = Database::query("SELECT category_name FROM categories WHERE category_id = $category_id");
-$category = $category_query->fetch_array();
-
+$category_query = $conn->query("SELECT category_name FROM categories WHERE category_id = $category_id");
+$category = $category_query->fetch_assoc();
 if (!$category) {
     echo "Danh mục không tồn tại.";
     exit();
 }
-
 $category_name = $category['category_name']; 
-
-// Lấy sản phẩm theo category_id
-$product_query = Database::query("SELECT * FROM products WHERE category_id = $category_id");
+$product_query = $conn->query("SELECT * FROM products WHERE category_id = $category_id");
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>Bộ Sưu Tập - <?= $category_name ?> - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="../img/HPL-logo.png" rel="icon">
+    <link href="../img/logo/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <style>

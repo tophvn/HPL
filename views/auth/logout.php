@@ -1,7 +1,6 @@
 <?php
 include('../../config/config.php'); 
-session_start(); // Bắt đầu phiên
-// Hủy tất cả các biến phiên
+session_start(); 
 $_SESSION = [];
 // Hủy phiên
 session_destroy();

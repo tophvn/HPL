@@ -24,7 +24,7 @@ if (isset($_GET['query'])) {
     <meta charset="UTF-8">
     <title>Tìm Kiếm - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="../img/HPL-logo.png" rel="icon">
+    <link href="../img/logo/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">

@@ -92,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>Sản Phẩm - HPL FASHION</title>
-    <link href="../img/HPL-logo.png" rel="icon">
+    <link href="../img/logo/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <style>
@@ -160,9 +160,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                             <div class="card product-item border-0">
                                 <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                    <?php $imagePath = (substr($product['image'], 0, 4) == 'http') ? $product['image'] : '../assets/img_product/' . $product['image']; ?>
+                                    <?php $imagePath = '../assets/img_product/' . $product['image']; ?>
                                     <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $product['product_name'] ?>">
-
                                     <?php if ($product['discount'] > 0): ?>
                                         <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
                                             -<?= $product['discount'] ?>%

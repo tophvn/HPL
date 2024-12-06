@@ -1,6 +1,8 @@
 <?php
 include('../../config/database.php');
 include('../../config/config.php'); 
+$conn = Database::getConnection(); 
+
 // Kiểm tra nếu có mã xác nhận từ URL (token)
 if (!isset($_GET['token'])) {
     echo "Mã xác nhận không hợp lệ.";
@@ -9,7 +11,7 @@ if (!isset($_GET['token'])) {
 
 $token = $_GET['token'];
 $query = "SELECT * FROM users WHERE reset_token = '$token'";
-$result = Database::query($query);
+$result = $conn->query($query);
 if ($result->num_rows == 0) {
     echo "Mã xác nhận không hợp lệ hoặc đã hết hạn.";
     exit();
@@ -27,18 +29,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $hashed_password = md5($new_password);
         $update_query = "UPDATE users SET password = '$hashed_password', reset_token = NULL WHERE email = '$email'";
-        Database::query($update_query);
+        $conn->query($update_query);
         $success_message = "Mật khẩu của bạn đã được thay đổi thành công.";
     }
 }
+$conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="../../img/HPL-logo.png" rel="icon">
+    <link href="../../img/logo/HPL-logo.png" rel="icon">
     <title>Đặt lại Mật Khẩu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
@@ -46,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('../../img/back-forgot.jpg')"></div>
+        <div class="bg-img" style="background-image: url('../../img/auth-background/back-forgot.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Đặt Lại Mật Khẩu</h1>
@@ -55,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p><?php echo $error; ?></p>
                     </div>
                 <?php endif; ?>
-
                 <?php if (isset($success_message)): ?>
                     <div class="alert alert-success">
                         <p><?php echo $success_message; ?></p>

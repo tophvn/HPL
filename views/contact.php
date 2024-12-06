@@ -24,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="utf-8">
     <title>Liên Hệ - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="../img/HPL-logo.png" rel="icon">
+    <link href="../img/logo/HPL-logo.png" rel="icon">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">

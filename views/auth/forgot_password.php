@@ -2,7 +2,6 @@
 include('../../config/database.php'); 
 include('../../config/config.php'); 
 include('../../config/send_email.php');
-
 $errors = [];
 $message = '';
 
@@ -10,14 +9,13 @@ $message = '';
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $conn = Database::getConnection();
-    // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu không
+    // Kiểm tra xem email có tồn tại CSDL
     $query = "SELECT user_id FROM users WHERE email = '$email'";
     $result = $conn->query($query);
-
-    if ($result->num_rows > 0) {
-        // Tạo mã đặt lại mật khẩu (token)
+    if ($result->num_rows>0) {
+        // Tạo mã đặt lại mật khẩu
         $token = bin2hex(random_bytes(50));
-        // Lưu token vào cơ sở dữ liệu
+        // Lưu token vào csdl
         $query = "UPDATE users SET reset_token = '$token' WHERE email = '$email'";
         $conn->query($query);
         send_password_reset_email($email, $token); 
@@ -29,12 +27,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 } 
 ?>
 
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="../../img/HPL-logo.png" rel="icon"> 
+    <link href="../../img/logo/HPL-logo.png" rel="icon"> 
     <title>Quên Mật Khẩu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
@@ -42,12 +42,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/back-reset.jpg')"></div>
+        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/auth-background/back-reset.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Quên Mật Khẩu</h1>
                 <p class="caption mb-4">Vui lòng nhập địa chỉ email của bạn để đặt lại mật khẩu.</p>
-
                 <?php if (!empty($errors)): ?>
                     <div class="alert alert-danger">
                         <?php foreach ($errors as $error): ?>

@@ -1,12 +1,10 @@
 <?php
-require __DIR__ . '/../PHPMailer/src/PHPMailer.php';
-require __DIR__ . '/../PHPMailer/src/SMTP.php';
-require __DIR__ . '/../PHPMailer/src/Exception.php';
-
+require __DIR__ .'/../PHPMailer/src/PHPMailer.php';
+require __DIR__ .'/../PHPMailer/src/SMTP.php';
+require __DIR__ .'/../PHPMailer/src/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// CSS chung cho các email
 $common_css = "
     <style>
         body {
@@ -80,6 +78,8 @@ $common_css = "
         }
     </style>
 ";
+
+
 // Hàm gửi email chứa mã OTP
 function send_otp_email($email, $otp) {
     $mail = new PHPMailer(true);
@@ -92,13 +92,12 @@ function send_otp_email($email, $otp) {
         $mail->Username = 'hplfashionvn@gmail.com'; 
         $mail->Password = 'nwzh iggi lvum dlqb'; 
         $mail->SMTPSecure = 'ssl';
-        $mail->Port = 465;
+        $mail->Port=465;
         $mail->setFrom('hplfashionvn@gmail.com', 'HPL - Fashion');
         $mail->addAddress($email);
         $mail->isHTML(true);
-        $mail->Subject = 'Mã OTP xác thực';
+        $mail->Subject = 'XÁC THỰC TÀI KHOẢN';
         $mail->Body = "Mã OTP của bạn là: <strong>$otp</strong>";
-
         $mail->send();
     } catch (Exception $e) {
         echo 'Lỗi khi gửi email: ' . $mail->ErrorInfo;
@@ -124,21 +123,21 @@ function send_login_notification($email, $ip_address, $user_agent) {
         $mail->isHTML(true);
         $mail->Subject = 'Thông Báo Đăng Nhập';
         $mail->Body = "
-            <html>
-            <head>
-                $common_css
-            </head>
-            <body>
-                <div class='container'>
-                    <p>Bạn vừa đăng nhập vào tài khoản của mình.</p>
-                    <p>Địa chỉ IP: $ip_address</p>
-                    <p>User Agent: $user_agent</p>
-                    <p>Nếu bạn không nhận ra đăng nhập này, vui lòng thay đổi mật khẩu ngay lập tức để bảo vệ tài khoản của bạn.</p>
-                    <p>Trân trọng,</p>
-                    <p>HPL - Fashion</p>
-                </div>
-            </body>
-            </html>";
+        <html>
+        <head>
+            $common_css
+        </head>
+        <body>
+            <div class='container'>
+                <p>Bạn vừa đăng nhập vào tài khoản của mình.</p>
+                <p>Địa chỉ IP: $ip_address</p>
+                <p>User Agent: $user_agent</p>
+                <p>Nếu bạn không nhận ra đăng nhập này, vui lòng thay đổi mật khẩu ngay lập tức để bảo vệ tài khoản của bạn.</p>
+                <p>Trân trọng,</p>
+                <p>HPL - Fashion</p>
+        </div>
+        </body>
+        </html>";
         $mail->send();
     } catch (Exception $e) {
         echo 'Lỗi khi gửi email: ' . $mail->ErrorInfo;
@@ -187,7 +186,7 @@ function send_password_reset_email($email, $token) {
         ";
         $mail->send();
     } catch (Exception $e) {
-        echo 'Lỗi khi gửi email: ' . $mail->ErrorInfo;
+        echo 'Lỗi khi gửi email: ' .$mail->ErrorInfo;
     }
 }
 

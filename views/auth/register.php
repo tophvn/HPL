@@ -11,8 +11,6 @@ $email = '';
 $phonenumber = '';
 $password = '';
 $confirm_password = '';
-$otp = '';
-$sent_otp = ''; 
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
@@ -23,14 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $confirm_password = $_POST['confirm_password'];
     $role = 'user'; 
 
-    // Kiểm tra dữ liệu đầu vào
+    // Kiểm tra dữ liệu input
     if (strlen($phonenumber) > 11) {
         $errors['phonenumber'] = 'Số điện thoại không hợp lệ!';
     }
     if (!ctype_digit($phonenumber)) {
         $errors['phonenumber'] = 'Số điện thoại chỉ được chứa các ký tự số!';
     }
-    
     $errors_chars = '/[áàảãạăắằẳẵặâấầẩẫậéèẻẽẹêếềểễệíìỉĩịóòỏõọôốồổỗộơớờởỡợúùủũụưứừửữựýỳỷỹỵđ\s]/i';
     if (preg_match($errors_chars, $username)) {
         $errors['username'] = 'Tên đăng nhập không được chứa dấu hoặc khoảng trắng!';
@@ -48,31 +45,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors['password'] = 'Mật khẩu không hợp lệ!';
     }
 
-    // Kết nối đến cơ sở dữ liệu
+    // Kết nối đến csdl
     $conn = Database::getConnection();
-    $username = mysqli_real_escape_string($conn, $username);
-    $name = mysqli_real_escape_string($conn, $name);
-    $email = mysqli_real_escape_string($conn, $email);
-    $phonenumber = mysqli_real_escape_string($conn, $phonenumber);
+    $username = $conn->real_escape_string($username);
+    $name = $conn->real_escape_string($name);
+    $email = $conn->real_escape_string($email);
+    $phonenumber = $conn->real_escape_string($phonenumber);
 
     // Kiểm tra tồn tại tên đăng nhập, email hoặc số điện thoại
     $sql = "SELECT * FROM users WHERE username = '$username' OR email = '$email' OR phonenumber = '$phonenumber'";
-    $result = mysqli_query($conn, $sql);
-    if (mysqli_num_rows($result) > 0) {
+    $result = $conn->query($sql);
+    if ($result->num_rows > 0) {
         $errors['username_email'] = 'Tên đăng nhập, email hoặc số điện thoại đã tồn tại!';
     }
 
-    // Kiểm tra mã OTP khi người dùng đã nhập OTP
-    if (isset($_POST['otp'])) {
-        $otp = $_POST['otp'];
-        if ($otp == $_SESSION['otp']) {
-            // Thực hiện đăng ký tài khoản
+    // Nếu không có lỗi và người dùng nhấn "Gửi OTP"
+    if (empty($errors) && isset($_POST['send_otp'])) {
+        $sent_otp = rand(1000, 9999);
+        $_SESSION['otp'] = md5($sent_otp);
+        send_otp_email($email, $sent_otp); 
+        
+        $otp_success_message = "Mã OTP đã được gửi đến email của bạn!";
+    }
+    
+
+    // Kiểm tra mã OTP khi người dùng đã nhập OTP và nhấn nút đăng ký
+    if (isset($_POST['submit'])) {
+        $otp = $_POST['otp'] ?? '';
+        // Mã hóa lại OTP người dùng nhập vào
+        if (md5($otp) == $_SESSION['otp']) {
+            // OTP chính xác, tiếp tục đăng ký
             if (empty($errors)) {
                 $hashedUsername = md5($username);        
                 $hashedPassword = md5($password);
                 $sql = "INSERT INTO users (username, password, phonenumber, name, email, roles) 
-                        VALUES ('$hashedUsername', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
-                if (mysqli_query($conn, $sql)) {
+                VALUES ('$hashedUsername', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
+                if ($conn->query($sql) === TRUE) {
                     header("Location: " . BASE_URL . "views/auth/login.php");
                     exit(); 
                 } else {
@@ -82,48 +90,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $errors['otp'] = 'Mã OTP không chính xác!';
         }
-    }
-    // Kiểm tra mã OTP khi người dùng nhấn "Đăng Ký"
-    if (isset($_POST['submit'])) {
-        if (empty($sent_otp) || !isset($_POST['otp'])) {
-            $errors['otp'] = 'Bạn cần xác thực mã OTP trước khi đăng ký!';
-        } else {
-            $otp = $_POST['otp'];
-            if ($otp == $_SESSION['otp']) {
-                // Thực hiện đăng ký tài khoản
-                if (empty($errors)) {
-                    $hashedUsername = md5($username);        
-                    $hashedPassword = md5($password);
-                    $sql = "INSERT INTO users (username, password, phonenumber, name, email, roles) 
-                            VALUES ('$hashedUsername', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
-                    if (mysqli_query($conn, $sql)) {
-                        header("Location: " . BASE_URL . "views/auth/login.php");
-                        exit(); 
-                    } else {
-                        $errors['database'] = 'Đăng ký không thành công!';
-                    }
-                }
-            } else {
-                $errors['otp'] = 'Mã OTP không chính xác!';
-            }
-        }
-    }
-    // Nếu không có lỗi và người dùng nhấn "Gửi OTP"
-    if (empty($errors) && isset($_POST['send_otp'])) {
-        $sent_otp = rand(1000, 9999);
-        $_SESSION['otp'] = $sent_otp;
-        send_otp_email($email, $sent_otp); 
-        $otp_success_message = "Mã OTP đã được gửi đến email của bạn!";
-    }
+    }    
+    $conn->close();
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="../../img/HPL-logo.png" rel="icon">
+    <link href="../../img/logo/HPL-logo.png" rel="icon">
     <title>Đăng Ký</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
@@ -131,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/back-regis.jpg')"></div>
+        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/auth-background/back-regis.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Đăng Ký</h1>
@@ -144,6 +123,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                 <?php endif; ?>
 
+                <!-- <?php
+                    if (isset($otp_success_message)) {
+                        echo "<p>$otp_success_message</p>";
+                    }
+                    echo "<p>Mã OTP Mã hóa: " . $_SESSION['otp'] . "</p>";
+                    echo "<p>Mã OTP gốc: $sent_otp</p>";
+                    ?> -->
+                
                 <?php if (isset($otp_success_message)): ?>
                 <div class="alert alert-success" id="otpSuccessMessage">
                 <?php echo $otp_success_message; ?>

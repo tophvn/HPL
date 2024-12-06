@@ -9,19 +9,16 @@ if (!isset($_SESSION['user'])) {
 
 $conn = Database::getConnection();
 $user_id = $_SESSION['user']['user_id'];
-
 // Xử lý yêu cầu hủy đơn hàng
 if (isset($_POST['cancel_order_id'])) {
     $cancel_order_id = $_POST['cancel_order_id'];
     // Cập nhật trạng thái đơn hàng thành 'Đã hủy' (status_id = 4)
-    $cancel_query = "UPDATE `order` SET status_id = 4 WHERE order_id = ?";
-    $stmt = $conn->prepare($cancel_query);
-    $stmt->bind_param("i", $cancel_order_id);
-    $stmt->execute();
-    $stmt->close();
-
-    // Thông báo cho người dùng
-    echo "<script>alert('Đơn hàng đã được hủy thành công.');</script>";
+    $cancel_query = "UPDATE `order` SET status_id = 4 WHERE order_id = $cancel_order_id";
+    if ($conn->query($cancel_query) === TRUE) {
+        echo "<script>alert('Đơn hàng đã được hủy thành công.');</script>";
+    } else {
+        echo "<script>alert('Lỗi khi hủy đơn hàng: " . $conn->error . "');</script>";
+    }
 }
 
 // chuyen trang
@@ -31,11 +28,9 @@ $offset = ($page - 1) * $limit;
 
 // Lấy danh sách đơn hàng của người dùng với phân trang
 $query = "SELECT `order`.order_id, `order`.order_date, `order`.order_address, `order`.status_id FROM `order` 
-WHERE `order`.user_id = $user_id ORDER BY `order`.order_date DESC 
-          LIMIT $limit OFFSET $offset";
+WHERE `order`.user_id = $user_id ORDER BY `order`.order_date DESC LIMIT $limit OFFSET $offset";
 
 $result = $conn->query($query);
-
 // Tổ chức dữ liệu đơn hàng
 $orders = [];
 while ($row = $result->fetch_assoc()) {
@@ -47,7 +42,7 @@ $total_orders_query = "SELECT COUNT(*) AS total FROM `order` WHERE user_id = $us
 $total_orders_result = $conn->query($total_orders_query);
 $total_orders_row = $total_orders_result->fetch_assoc();
 $total_orders = $total_orders_row['total'];
-$total_pages = ceil($total_orders / $limit);
+$total_pages = ceil($total_orders/$limit);
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +51,7 @@ $total_pages = ceil($total_orders / $limit);
     <meta charset="utf-8">
     <title>Lịch Sử - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="../img/HPL-logo.png" rel="icon">
+    <link href="../img/logo/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <style>

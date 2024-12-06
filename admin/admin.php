@@ -1,30 +1,29 @@
-<?php 
+<?php
 include('../config/database.php');
 session_start();
 if (!isset($_SESSION['user']) || $_SESSION['user']['roles'] != 'admin') {
     header("Location: ../index.php");
     exit();
 }
+$conn = Database::getConnection();
 
 // Truy vấn số lượng đơn hàng mới
 $sql_orders = "SELECT COUNT(*) as new_orders FROM `order` WHERE status_id = 1"; 
-$result_orders = Database::query($sql_orders);
+$result_orders = $conn->query($sql_orders);
 $row_orders = $result_orders->fetch_assoc();
 $new_orders = $row_orders['new_orders'];
 
 // Truy vấn tổng doanh thu
 $sql_revenue = "SELECT SUM(total_amount) as total_revenue FROM `order`";
-$result_revenue = Database::query($sql_revenue);
+$result_revenue = $conn->query($sql_revenue);
 $row_revenue = $result_revenue->fetch_assoc();
-$total_revenue = $row_revenue['total_revenue'];
+$total_revenue = $row_revenue['total_revenue'] ?? 0;
 
-// Truy vấn sản phẩm có lượt xem cao nhất
+// views san pham
 $sql_products = "SELECT product_name, view_count FROM products ORDER BY view_count DESC LIMIT 10"; 
-$result_products = Database::query($sql_products);
-
+$result_products = $conn->query($sql_products);
 $labels = [];
 $data = [];
-
 while ($row = $result_products->fetch_assoc()) {
     $labels[] = $row['product_name'];
     $data[] = $row['view_count'];
@@ -32,15 +31,12 @@ while ($row = $result_products->fetch_assoc()) {
 
 // Truy vấn đếm số yêu cầu hỗ trợ
 $sql_support_requests = "SELECT COUNT(*) as support_requests FROM contacts"; 
-$result_support_requests = Database::query($sql_support_requests);
+$result_support_requests = $conn->query($sql_support_requests);
 $row_support_requests = $result_support_requests->fetch_assoc();
 $support_requests = $row_support_requests['support_requests'];
-
-
-
-
 $data = array_reverse($data);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -193,7 +189,7 @@ $data = array_reverse($data);
                                     GROUP BY bi.product_name
                                     ORDER BY total_quantity DESC
                                     LIMIT 5"; // Lấy 5 sản phẩm bán chạy nhất
-                                $result_best_selling_products = Database::query($sql_best_selling_products);
+                                $result_best_selling_products = $conn->query($sql_best_selling_products);
 
                                 while ($row = $result_best_selling_products->fetch_assoc()) { ?>
                                     <tr>
@@ -223,8 +219,8 @@ $data = array_reverse($data);
                                     JOIN users u ON b.user_id = u.user_id
                                     GROUP BY b.user_id
                                     ORDER BY total_products DESC
-                                    LIMIT 5"; // Lấy 5 người dùng mua nhiều nhất
-                                $result_top_buying_users = Database::query($sql_top_buying_users);
+                                    LIMIT 5"; 
+                                    $result_top_buying_users = $conn->query($sql_top_buying_users);
 
                                 while ($row = $result_top_buying_users->fetch_assoc()) { ?>
                                     <tr>

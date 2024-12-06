@@ -6,14 +6,14 @@ if (isset($_POST['add_to_favorites'])) {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
         echo "<script type='text/javascript'>
                 alert('Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.');
-              </script>";
+        </script>";
     } else {
-        $product_id = $_POST['product_id'];
+        $product_id =$_POST['product_id'];
         $user_id = $_SESSION['user']['user_id'];
-        $conn = Database::getConnection();
+        $conn=Database::getConnection();
         $conn->query("INSERT INTO favorites (user_id, product_id) VALUES ($user_id, $product_id) ON DUPLICATE KEY UPDATE id = id");
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
+        header("Location: " . $_SERVER['REQUEST_URI']);
+    exit();
     }
 }
 ?>
@@ -24,10 +24,14 @@ if (isset($_POST['add_to_favorites'])) {
     <meta charset="UTF-8">
     <title>TRANG CHỦ - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <link href="img/HPL-logo.png" rel="icon">
+    <link href="img/logo/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <style>
+
+
+    </style>
 </head>
 
 <body>
@@ -64,22 +68,22 @@ if (isset($_POST['add_to_favorites'])) {
     <div class="container-fluid offer pt-5">
         <div class="row px-xl-5">
             <div class="col-md-6 pb-4">
-                <div class="position-relative bg-secondary text-center text-md-right text-white mb-2 py-5 px-5">
+                <div class="position-relative bg-secondary text-right text-md-right mb-2 py-5 px-5">
                     <img src="img/offer-1.png" alt="">
                     <div class="position-relative" style="z-index: 1;">
-                        <h5 class="text-uppercase text-primary mb-3">Giảm 20% cho</h5>
+                        <h5 class="text-primary mb-3">GIẢM 20% CHO</h5>
                         <h1 class="mb-4 font-weight-semi-bold">PHỤ KIỆN</h1>
-                        <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3" style="font-weight: bold;">Mua Ngay</a>
+                        <a href="views/shop.php" class="btn btn-outline-primary py-md-2 px-md-3" style="font-weight: bold;">Mua Ngay</a>
                     </div>
                 </div>
             </div>
             <div class="col-md-6 pb-4">
-                <div class="position-relative bg-secondary text-center text-md-left text-white mb-2 py-5 px-5">
+                <div class="position-relative bg-secondary text-md-left mb-2 py-5 px-5">
                     <img src="img/offer-2.png" alt="">
                     <div class="position-relative" style="z-index: 1;">
-                        <h5 class="text-uppercase text-primary mb-3">Giảm 20% cho</h5>
+                        <h5 class="text-primary mb-3">GIẢM 10% CHO</h5>
                         <h1 class="mb-4 font-weight-semi-bold">ÁO OWEN</h1>
-                        <a href="shop.php" class="btn btn-outline-primary py-md-2 px-md-3" style="font-weight: bold;">Mua Ngay</a>
+                        <a href="views/shop.php" class="btn btn-outline-primary py-md-2 px-md-3" style="font-weight: bold;">Mua Ngay</a>
                     </div>
                 </div>
             </div>
@@ -89,22 +93,21 @@ if (isset($_POST['add_to_favorites'])) {
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
             <?php
-            $q1 = Database::query("SELECT categories.*, COUNT(products.product_id) AS product_count FROM categories LEFT JOIN 
+            $sql = $conn->query("SELECT categories.*, COUNT(products.product_id) AS product_count FROM categories LEFT JOIN 
             products ON categories.category_id = products.category_id GROUP BY categories.category_id");
-            while ($r1 = $q1->fetch_array()) {
-            ?>
+            while ($category = $sql->fetch_array()) {?>
                 <div class="col-lg-4 col-md-6 pb-1">
                     <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
-                        <p class="text-right"><?php echo $r1['product_count']; ?> Sản Phẩm</p>
-                        <a class="cat-img position-relative overflow-hidden mb-3" href="views/collection.php?category_id=<?php echo $r1['category_id']; ?>">
-                            <img class="img-fluid" src="img/img-collection/<?php echo $r1['category_image']; ?>" alt="">
+                        <p class="text-right"><?php echo $category['product_count']; ?> Sản Phẩm</p>
+                        <a class="cat-img position-relative overflow-hidden mb-3" href="views/collection.php?category_id=<?php echo $category['category_id']; ?>">
+                            <img class="img-fluid" src="img/img-collection/<?php echo $category['category_image']; ?>" alt="">
                         </a>
-                        <h5 class="font-weight-semi-bold m-0" style="font-weight: bold;"><?php echo $r1['category_name']; ?></h5>
+                        <h5 class="font-weight-semi-bold m-0" style="font-weight: bold;"><?php echo $category['category_name']; ?></h5>
                     </div>
                 </div>
             <?php
             }
-            ?>
+            ?>            
         </div>
     </div>
 
@@ -116,19 +119,19 @@ if (isset($_POST['add_to_favorites'])) {
         <div class="row px-xl-5 pb-3">
             <?php
             $conn = Database::getConnection(); 
-            $sql = "SELECT * FROM products LIMIT 8"; 
+            $sql = "SELECT*FROM products LIMIT 8"; 
             $result = $conn->query($sql);
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    $imagePath = (substr($row['image'], 0, 4) == 'http') ? $row['image'] : 'assets/img_product/' . $row['image'];
-                    $discount = $row['discount'] ?? 0; // % khuyến mãi
-                    $discounted_price = $row['price'] * (1 - $discount / 100);
+                    $imagePath = 'assets/img_product/' . $row['image'];
+                    $discount = $row['discount'] ?? 0;
+                    $discounted_price = $row['price'] * (1-$discount/100);
                     ?>
                     <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                         <div class="card product-item border-0 mb-4">
                             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
                                 <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $row['product_name']; ?>">
-                                <?php if ($discount > 0): ?>
+                                <?php if ($discount>0): ?>
                                     <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
                                         -<?= $discount ?>%
                                     </div>
@@ -163,16 +166,56 @@ if (isset($_POST['add_to_favorites'])) {
             $conn->close(); 
             ?>
         </div>
-        <div class="text-center mb-4">
+
+        <div class="px-1 py-5 mx-auto row justify-content-center">
+            <div class="card1 full-width pl-4 pl-md-5 pr-3">
+                <div class="row">
+                    <div class="left-side col-md-6">
+                        <br>
+                        <h2 class="mb-0"><strong>KHUYẾN MÃI SẬP SÀN THÁNG 12</strong></h2>
+                        <button class="btn btn-pink mb-5">XEM NGAY &nbsp;&nbsp;<div class="fa fa-angle-right"></div></button>
+                    </div>
+                    <div class="right-side col-md-6 row justify-content-center">
+                        <div class="d-flex">
+                            <img class="girl-img fit-image" src="img/offer-4.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card2 full-width pl-4 pl-md-5 pr-3">
+                <div class="row px-3">
+                    <div class="col-md-12">
+                        <div class="blocks row d-flex">
+                            <div class="d-flex flex-column">
+                                <img class="fit-image img-block" src="img/Nike.jpg">
+                                <small class="text-center">Nike</small>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <img class="fit-image img-block" src="img/Adidas.jpg">
+                                <small class="text-center">Adidas</small>
+                            </div>
+                            <div class="d-flex flex-column">
+                                <img class="fit-image img-block" src="img/Puma.jpg">
+                                <small class="text-center">Puma</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        
+        <!-- <div class="text-center mb-4">
             <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
         </div>
         <div class="image-row" style="display: flex; justify-content: center; padding: 20px; gap: 40px;">
             <img class="banner_coll" src="img/banner_coll/banner_coll_1.png" alt="new" style="flex: 1; width: 100%; max-width: 300px; height: auto;">
             <img class="banner_coll" src="img/banner_coll/banner_coll_2.png" alt="top" style="flex: 1; width: 100%; max-width: 300px; height: auto;">
             <img class="banner_coll" src="img/banner_coll/banner_coll_3.png" alt="sale" style="flex: 1; width: 100%; max-width: 300px; height: auto;">
-        </div>
+        </div> -->
             <br>
-        <img class="img-fluid" src="img/banner_coll/banner-1.jpg" alt="Banner" style="width: 100%; height: auto;">        
+        <!-- <img class="img-fluid" src="img/banner_coll/banner-1.jpg" alt="Banner" style="width: 100%; height: auto;">         -->
     </div>
 
     <?php include 'includes/chatbot.php'; ?>
