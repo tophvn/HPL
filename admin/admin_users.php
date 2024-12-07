@@ -6,6 +6,10 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['roles'] != 'admin') {
     exit();
 }
 
+$limit = 5;
+$page = max(1, (int)($_GET['page'] ?? 1)); // Trang hiện tại
+$offset = ($page - 1) * $limit; 
+
 $sql = "SELECT user_id, username, name, email, phonenumber, roles FROM users";
 $result = Database::query($sql); 
 $bills_result = [];
@@ -21,7 +25,7 @@ if (isset($_GET['user_id'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">

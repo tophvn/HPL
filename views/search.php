@@ -1,19 +1,29 @@
 <?php
 include('../config/database.php');
 session_start();
-$conn = Database::getConnection();
-
-// Kiểm tra xem có truy vấn tìm kiếm không
 $searchResults = [];
 $query = ''; 
-
 if (isset($_GET['query'])) {
     $query = trim($_GET['query']);
     // Truy vấn trực tiếp với LIKE
     $searchQuery = "SELECT * FROM products WHERE product_name LIKE '%$query%'";
-    $result = $conn->query($searchQuery);
+    $result = Database::query($searchQuery);
     if ($result) {
         $searchResults = $result->fetch_all(MYSQLI_ASSOC);
+    }
+}
+// add vào yêu thích
+if (isset($_POST['add_to_favorites'])) {
+    if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
+        echo "<script type='text/javascript'>
+                alert('Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.');
+        </script>";
+    } else {
+        $product_id = $_POST['product_id'];
+        $user_id = $_SESSION['user']['user_id'];
+        Database::addToFavorites($user_id, $product_id);
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
     }
 }
 ?>
@@ -21,7 +31,7 @@ if (isset($_GET['query'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>Tìm Kiếm - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="../img/logo/HPL-logo.png" rel="icon">
@@ -49,34 +59,7 @@ if (isset($_GET['query'])) {
             <div class="row">
                 <?php if (count($searchResults) > 0): ?>
                     <?php foreach ($searchResults as $product): ?>
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                            <div class="card product-item border-0">
-                                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                    <?php $imagePath = (substr($product['image'], 0, 4) == 'http') ? $product['image'] : '../assets/img_product/' . $product['image']; ?>
-                                    <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $product['product_name']; ?>">
-                                </div>
-                                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                    <h6 class="text-truncate mb-3"><?= $product['product_name']; ?></h6>
-                                    <div class="d-flex justify-content-center">
-                                        <h6><?= number_format($product['price'], 0, ',', '.') ?> VNĐ</h6>
-                                        <?php if (isset($product['old_price'])): ?>
-                                            <h6 class="text-muted ml-2"><del><?= number_format($product['old_price'], 0, ',', '.') ?> VNĐ</del></h6>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="card-footer d-flex justify-content-between bg-light border">
-                                    <a href="detail.php?id=<?= $product['product_id'] ?>" class="btn btn-sm text-dark p-0">
-                                        <i class="fas fa-eye text-primary mr-1"></i>CHI TIẾT
-                                    </a>
-                                    <form method="POST" action="" class="d-flex align-items-center">
-                                        <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
-                                        <button type="submit" name="add_to_favorites" class="btn btn-sm text-dark p-0 bg-white">
-                                            <i class="fas fa-heart text-primary mr-1"></i>YÊU THÍCH
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        <?php include 'product_item.php'; ?>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <p>Không tìm thấy sản phẩm nào phù hợp.</p>

@@ -8,10 +8,11 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$conn = Database::getConnection(); 
 $user_id = $_SESSION['user']['user_id']; 
+
+// Lấy dữ liệu người dùng từ cơ sở dữ liệu
 $user_query = "SELECT address1, address2, email, name FROM users WHERE user_id = $user_id"; 
-$user = $conn->query($user_query)->fetch_assoc();
+$user = Database::query($user_query)->fetch_assoc();
 
 // Truy vấn sản phẩm trong giỏ hàng của người dùng
 $product_query = "SELECT product_name, products.price AS original_price, cart_item.price AS discount_price, cart_item.quantity, cart_item.size, cart_item.color, products.product_id 
@@ -19,7 +20,7 @@ FROM products
 JOIN cart_item ON products.product_id = cart_item.product_id 
 JOIN cart ON cart_item.cart_id = cart.cart_id 
 WHERE user_id = $user_id";
-$result = $conn->query($product_query);
+$result = Database::query($product_query);
 $products = $result->fetch_all(MYSQLI_ASSOC); // Lấy tất cả sản phẩm trong giỏ
 $total = array_reduce($products, fn($carry, $item) => $carry + $item['discount_price'] * $item['quantity'], 0); 
 
@@ -49,25 +50,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Chèn vào bảng `bills` để lấy bill_id
         $bill_query = "INSERT INTO bills (user_id, bill_date, shipping_address, shipping_fee, total_amount, payment_method, shipping_method)
         VALUES ($user_id, NOW(), '$order_address', $shipping_fee, $total_amount, '$payment_method', '$shipping_method')";
-        if ($conn->query($bill_query)) {
-            $bill_id = $conn->insert_id; // Lấy ID hóa đơn
+        if (Database::query($bill_query)) {
+            $bill_id_query = Database::query("SELECT LAST_INSERT_ID() AS bill_id");
+            $bill_id = $bill_id_query->fetch_assoc()['bill_id']; // Lấy ID hóa đơn
 
             // Chèn vào bảng `order` để lấy order_id
             $order_query = "INSERT INTO `order` (user_id, order_address, payment_method, total_amount, shipping_method, order_date, status_id)
             VALUES ($user_id, '$order_address', '$payment_method', $total_amount, '$shipping_method', NOW(), 1)";
-            if ($conn->query($order_query)) {
-                $order_id = $conn->insert_id; // Lấy ID đơn hàng
+            if (Database::query($order_query)) {
+                $order_id_query = Database::query("SELECT LAST_INSERT_ID() AS order_id");
+                $order_id = $order_id_query->fetch_assoc()['order_id']; // Lấy ID đơn hàng
                 // Thêm sản phẩm vào bảng `order_detail` và `bill_items`
                 foreach ($products as $product) {
                     $detail_query = "INSERT INTO order_detail (order_id, product_id, order_quantity) VALUES ($order_id, {$product['product_id']}, {$product['quantity']})";
-                    $conn->query($detail_query);
+                    Database::query($detail_query);
                     $subtotal_price = $product['discount_price'] * $product['quantity']; 
                     $bill_item_query = "INSERT INTO bill_items (bill_id, product_id, product_name, quantity, original_price, discount_price, subtotal_price, size, color)
                     VALUES ($bill_id, {$product['product_id']}, '{$product['product_name']}', {$product['quantity']}, {$product['original_price']}, {$product['discount_price']}, $subtotal_price, '{$product['size']}', '{$product['color']}')";
-                    $conn->query($bill_item_query);
+                    Database::query($bill_item_query);
                 }
                 // Xóa sản phẩm khỏi giỏ hàng
-                $conn->query("DELETE FROM cart_item WHERE cart_id = (SELECT cart_id FROM cart WHERE user_id = $user_id)");
+                Database::query("DELETE FROM cart_item WHERE cart_id = (SELECT cart_id FROM cart WHERE user_id = $user_id)");
                 $bill_details = [
                     'bill_id' => $bill_id,
                     'bill_date' => date('Y-m-d H:i:s'),
@@ -78,14 +81,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: bill.php?order_id=" . $order_id);
                 exit();
             } else {
-                echo "Error: " . $conn->error; 
+                echo "Error: Không thể thực hiện truy vấn.";
             }
         } else {
-            echo "Error: " . $conn->error; 
+            echo "Error: Không thể thực hiện truy vấn.";
         }
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

@@ -8,24 +8,24 @@ $message = '';
 // Kiểm tra nếu biểu mẫu đã được gửi
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
-    $conn = Database::getConnection();
-    // Kiểm tra xem email có tồn tại CSDL
     $query = "SELECT user_id FROM users WHERE email = '$email'";
-    $result = $conn->query($query);
-    if ($result->num_rows>0) {
+    $result = Database::query($query);
+    if ($result->num_rows > 0) {
         // Tạo mã đặt lại mật khẩu
         $token = bin2hex(random_bytes(50));
-        // Lưu token vào csdl
-        $query = "UPDATE users SET reset_token = '$token' WHERE email = '$email'";
-        $conn->query($query);
-        send_password_reset_email($email, $token); 
-        $message = 'Thành công! Truy cập Email của bạn để đổi mật khẩu!.';
+        $update_query = "UPDATE users SET reset_token = '$token' WHERE email = '$email'";
+        if (Database::query($update_query) === TRUE) {
+            send_password_reset_email($email, $token);
+            $message = 'Thành công! Truy cập Email của bạn để đổi mật khẩu!';
+        } else {
+            $errors[] = 'Lỗi khi cập nhật token đặt lại mật khẩu.';
+        }
     } else {
         $errors[] = 'Email không tồn tại trong hệ thống.';
     }
-    $conn->close();
-} 
+}
 ?>
+
 
 
 

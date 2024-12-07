@@ -45,17 +45,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $errors['password'] = 'Mật khẩu không hợp lệ!';
     }
 
-    // Kết nối đến csdl
-    $conn = Database::getConnection();
-    $username = $conn->real_escape_string($username);
-    $name = $conn->real_escape_string($name);
-    $email = $conn->real_escape_string($email);
-    $phonenumber = $conn->real_escape_string($phonenumber);
-
     // Kiểm tra tồn tại tên đăng nhập, email hoặc số điện thoại
-    $sql = "SELECT * FROM users WHERE username = '$username' OR email = '$email' OR phonenumber = '$phonenumber'";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
+    $username_query = "SELECT * FROM users WHERE username = '$username'";
+    $email_query = "SELECT * FROM users WHERE email = '$email'";
+    $phonenumber_query = "SELECT * FROM users WHERE phonenumber = '$phonenumber'";
+    $username_result = Database::query($username_query);
+    $email_result = Database::query($email_query);
+    $phonenumber_result = Database::query($phonenumber_query);
+
+    if ($username_result->num_rows > 0 || $email_result->num_rows > 0 || $phonenumber_result->num_rows > 0) {
         $errors['username_email'] = 'Tên đăng nhập, email hoặc số điện thoại đã tồn tại!';
     }
 
@@ -80,7 +78,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $hashedPassword = md5($password);
                 $sql = "INSERT INTO users (username, password, phonenumber, name, email, roles) 
                 VALUES ('$hashedUsername', '$hashedPassword', '$phonenumber', '$name', '$email', '$role')";
-                if ($conn->query($sql) === TRUE) {
+                if (Database::query($sql) === TRUE) {
                     header("Location: " . BASE_URL . "views/auth/login.php");
                     exit(); 
                 } else {
@@ -90,10 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         } else {
             $errors['otp'] = 'Mã OTP không chính xác!';
         }
-    }    
-    $conn->close();
+    }
 }
 ?>
+
 
 
 

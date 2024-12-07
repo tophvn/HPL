@@ -28,14 +28,13 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$conn = Database::getConnection();
 $user_id = $_SESSION['user']['user_id'];
 
 // Truy vấn để lấy sản phẩm từ giỏ hàng và tính tổng tiền
 $product_query = "SELECT products.price AS discount_price, cart_item.quantity 
 FROM products JOIN cart_item ON products.product_id = cart_item.product_id 
 JOIN cart ON cart_item.cart_id = cart.cart_id WHERE cart.user_id = $user_id";
-$result = $conn->query($product_query);
+$result = Database::query($product_query);
 
 $products = $result->fetch_all(MYSQLI_ASSOC);
 $total = array_reduce($products, fn($carry, $item) => $carry + $item['discount_price'] * $item['quantity'], 0);

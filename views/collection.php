@@ -1,17 +1,31 @@
 <?php
 include('../config/database.php');
-$conn = Database::getConnection();
+session_start();
+
 $category_id = isset($_GET['category_id']) ? (int)$_GET['category_id'] : 0;
-$category_query = $conn->query("SELECT category_name FROM categories WHERE category_id = $category_id");
+$category_query = Database::query("SELECT category_name FROM categories WHERE category_id = $category_id");
 $category = $category_query->fetch_assoc();
 if (!$category) {
     echo "Danh mục không tồn tại.";
     exit();
 }
 $category_name = $category['category_name']; 
-$product_query = $conn->query("SELECT * FROM products WHERE category_id = $category_id");
+$product_query = Database::query("SELECT * FROM products WHERE category_id = $category_id");
+// add vào yêu thích
+if (isset($_POST['add_to_favorites'])) {
+    if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
+        echo "<script type='text/javascript'>
+                alert('Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.');
+        </script>";
+    } else {
+        $product_id = $_POST['product_id'];
+        $user_id = $_SESSION['user']['user_id'];
+        Database::addToFavorites($user_id, $product_id);
+        header("Location: " . $_SERVER['REQUEST_URI']);
+        exit();
+    }
+}
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,19 +36,6 @@ $product_query = $conn->query("SELECT * FROM products WHERE category_id = $categ
     <link href="../img/logo/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
-    <style>
-        .discount-badge {
-            top: 10px;
-            right: 10px;
-            background-color: red; 
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 50%; 
-            z-index: 10; 
-        }
-    </style>
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
@@ -43,44 +44,10 @@ $product_query = $conn->query("SELECT * FROM products WHERE category_id = $categ
         <div class="row px-xl-5 pb-3">
             <?php if ($product_query->num_rows > 0): ?>
                 <?php while ($product = $product_query->fetch_assoc()): ?>
-                    <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <?php $imagePath = (substr($product['image'], 0, 4) == 'http') ? $product['image'] : '../assets/img_product/' . $product['image']; ?>
-                                <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $product['product_name'] ?>">
-
-                                <?php if ($product['discount'] > 0): ?>
-                                    <div class="discount-badge position-absolute">
-                                        -<?= $product['discount'] ?>%
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3"><?= $product['product_name'] ?></h6>
-                                <div class="d-flex justify-content-center">
-                                    <?php 
-                                    $discount = $product['discount']; 
-                                    $discounted_price = $product['price'] * (1 - $discount / 100);
-                                    ?>
-                                    <h6 class="text-danger"><?= number_format($discounted_price) ?> VNĐ</h6>
-                                    <?php if ($discount > 0): ?>
-                                        <h6 class="text-muted ml-2"><del><?= number_format($product['price']) ?> VNĐ</del></h6>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="detail.php?id=<?= $product['product_id'] ?>" class="btn btn-sm text-dark p-0">
-                                    <i class="fas fa-eye text-primary mr-1"></i>XEM CHI TIẾT
-                                </a>
-                                <form method="POST" action="" class="d-flex align-items-center">
-                                    <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
-                                    <button type="submit" name="add_to_favorites" class="btn btn-sm text-dark p-0 bg-white">
-                                        <i class="fas fa-heart text-primary mr-1"></i>THÊM YÊU THÍCH
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
+                    <?php 
+                        // Include the product item template for each product
+                        include 'product_item.php';
+                    ?>
                 <?php endwhile; ?>
             <?php else: ?>
                 <p class="text-center">Không có sản phẩm nào trong danh mục này.</p>

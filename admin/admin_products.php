@@ -1,29 +1,26 @@
 <?php 
 include('../config/database.php');
 session_start();
-
-// Check if user is logged in and is an admin
 if (!isset($_SESSION['user']) || $_SESSION['user']['roles'] != 'admin') {
     header("Location: ../index.php");
     exit();
 }
 
-// Pagination setup
-$limit = 15; // Số sản phẩm trên mỗi trang
+$limit = 15;
 $page = max(1, (int)($_GET['page'] ?? 1)); // Trang hiện tại
-$offset = ($page - 1) * $limit; // Tính toán offset
+$offset = ($page - 1) * $limit; 
 
-$total_sql = "SELECT COUNT(*) AS total FROM products"; // Truy vấn tổng số sản phẩm
+$total_sql = "SELECT COUNT(*) AS total FROM products"; 
 $total_result = Database::query($total_sql);
 $total_row = mysqli_fetch_assoc($total_result);
-$total_products = $total_row['total']; // Tổng số sản phẩm
+$total_products = $total_row['total']; 
 
-$sql = "SELECT * FROM products LIMIT $limit OFFSET $offset"; // Truy vấn sản phẩm cho trang hiện tại
+$sql = "SELECT * FROM products LIMIT $limit OFFSET $offset"; 
 $result = Database::query($sql); 
 ?>
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -105,11 +102,11 @@ $result = Database::query($sql);
                                                 <div class="col-md-6">
                                                     <h3>Thông Tin Sản Phẩm</h3>
                                                     <p><strong>Giá: </strong><?php echo number_format($product['price'], 0, ',', '.') . ' VNĐ'; ?></p>
-                                                    <p><strong>Mô tả: </strong><?php echo nl2br(htmlspecialchars($product['description'])); ?></p>
-                                                    <p><strong>Size: </strong><?php echo htmlspecialchars($product['size']); ?></p>
-                                                    <p><strong>Màu sắc: </strong><?php echo nl2br(htmlspecialchars($product['color'])); ?></p>
-                                                    <p><strong>Giảm giá: </strong><?php echo $product['discount'] > 0 ? htmlspecialchars($product['discount']) . '%' : 'Không có'; ?></p>
-                                                    <p><strong>Số lượt xem: </strong><?php echo htmlspecialchars($product['view_count']); ?></p>
+                                                    <p><strong>Mô tả: </strong><?php echo nl2br($product['description']); ?></p>
+                                                    <p><strong>Size: </strong><?php echo $product['size']; ?></p>
+                                                    <p><strong>Màu sắc: </strong><?php echo nl2br($product['color']); ?></p>
+                                                    <p><strong>Giảm giá: </strong><?php echo $product['discount'] > 0 ? $product['discount'] . '%' : 'Không có'; ?></p>
+                                                    <p><strong>Số lượt xem: </strong><?php echo $product['view_count']; ?></p>
                                                     <p><strong>Ngày tạo: </strong><?php echo date('d/m/Y', strtotime($product['created_at'])); ?></p>
                                                 </div>
                                             </div>

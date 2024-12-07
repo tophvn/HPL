@@ -8,7 +8,6 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['roles'] != 'admin') {
 }
 
 $product_id = null;
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $product_id = isset($_POST['product_id']) ? intval($_POST['product_id']) : null;
     $product_name = $_POST['product_name'];
@@ -20,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $category_id = $_POST['category_id'];
     $subcategory_id = $_POST['subcategory_id'];
     $brand_id = $_POST['brand_id'];
-
     $image = $_FILES['image']['name'] ?? "";
     $image2 = $_FILES['image2']['name'] ?? "";
     $image3 = $_FILES['image3']['name'] ?? "";
@@ -28,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($price < 0) {
         $errorMessage = "Giá phải là một số hợp lệ và lớn hơn hoặc bằng 0.";
     } else {
-        $conn = Database::getConnection();
         // Cập nhật sản phẩm
         if ($product_id) {
             $sql = "UPDATE products SET product_name = '$product_name', price = '$price', description = '$description', 
@@ -44,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             VALUES ('$product_name', '$price', '$description', '$size', '$color', '$discount', '$category_id', '$subcategory_id', '$brand_id', '$image', '$image2', '$image3')";
         }
 
-        if ($conn->query($sql) === false) {
-            $errorMessage = $conn->error;
+        if (Database::query($sql) === false) {
+            $errorMessage = "Lỗi: Không thể thực hiện truy vấn.";
         } else {
             $successMessage = $product_id ? "Sản phẩm đã được cập nhật thành công!" : "Sản phẩm đã được thêm thành công!";
         }
@@ -59,20 +56,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Xóa sản phẩm
 if (isset($_GET['delete_id'])) {
     $delete_id = intval($_GET['delete_id']);
-    $conn = Database::getConnection();
     $sql = "DELETE FROM products WHERE product_id = $delete_id";
-    if ($conn->query($sql) === false) {
-        $errorMessage = $conn->error;
+    if (Database::query($sql) === false) {
+        $errorMessage = "Lỗi: Không thể thực hiện truy vấn.";
     } else {
         $successMessage = "Sản phẩm đã được xóa thành công!";
         header("Location: admin_edit_product.php");
         exit();
     }
 }
-
 $products = Database::query("SELECT * FROM products ORDER BY created_at DESC");
 $brands = Database::query("SELECT * FROM brands");
 ?>
+
 
 
 <!DOCTYPE html>

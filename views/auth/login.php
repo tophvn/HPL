@@ -19,7 +19,6 @@ $client->addScope("email");
 $client->addScope("profile");
 
 $errors = [];
-$conn = Database::getConnection(); 
 
 // Secret key của Google reCAPTCHA
 $recaptchaSecretKey = '6LdMRIwqAAAAAACZCDqKm0LlTYnQjz2OsUaNCh95';
@@ -30,16 +29,16 @@ if (isset($_GET['code'])) {
         $client->setAccessToken($token['access_token']);
         $google_account_info = (new Google_Service_Oauth2($client))->userinfo->get();
         // Lấy thông tin người dùng
-        $email = mysqli_real_escape_string($conn, $google_account_info->email);
+        $email = $google_account_info->email;
         $google_user_id = $google_account_info->id;
         $username_md5 = md5($email); // Mã hóa email để làm username
-        $result = $conn->query("SELECT * FROM users WHERE email = '$email'");        
+        $result = Database::query("SELECT * FROM users WHERE email = '$email'");        
         if ($result->num_rows == 0) {
             // Nếu người dùng chưa tồn tại, thêm người dùng mới
-            $name = mysqli_real_escape_string($conn, $google_account_info->name);
+            $name = $google_account_info->name;
             $defaultPassword = md5(uniqid()); 
-            $conn->query("INSERT INTO users (username, email, name, password, roles) VALUES ('$username_md5', '$email', '$name', '$defaultPassword', 'user')");
-            $user_id = $conn->insert_id;
+            Database::query("INSERT INTO users (username, email, name, password, roles) VALUES ('$username_md5', '$email', '$name', '$defaultPassword', 'user')");
+            $user_id = Database::$conn->insert_id; // Lấy ID người dùng mới
         } else {
             $user = $result->fetch_assoc();
             $user_id = $user['user_id'];
@@ -50,7 +49,7 @@ if (isset($_GET['code'])) {
         $ip_address = $_SERVER['REMOTE_ADDR'];
         $user_agent = $_SERVER['HTTP_USER_AGENT'];
         $session_id = session_id();
-        $conn->query("INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
+        Database::query("INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
         VALUES ('$user_id', '$ip_address', '$user_agent', '$session_id')");
 
         send_login_notification($email, $ip_address, $user_agent);
@@ -83,7 +82,7 @@ if (isset($_GET['code'])) {
 
 // Xử lý đăng nhập thông thường
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $login = mysqli_real_escape_string($conn, $_POST['login'] ?? '');  
+    $login = $_POST['login'] ?? '';  
     $password = $_POST['password'] ?? ''; 
     $login_md5 = md5($login);
     // Kiểm tra Google reCAPTCHA
@@ -93,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$recaptchaValidation['success']) {
         $errors[] = 'Xác minh reCAPTCHA thất bại. Vui lòng thử lại!';
     } else {
-        $result = $conn->query("SELECT * FROM users WHERE (username = '$login_md5' OR email = '$login')");
+        $result = Database::query("SELECT * FROM users WHERE (username = '$login_md5' OR email = '$login')");
         if ($result && $result->num_rows > 0) {
             $user = $result->fetch_assoc();
             
@@ -105,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $user_agent = $_SERVER['HTTP_USER_AGENT'];
                 $session_id = session_id();
                 
-                $conn->query("INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
+                Database::query("INSERT INTO login_history (user_id, ip_address, user_agent, session_id) 
                 VALUES ('$user[user_id]', '$ip_address', '$user_agent', '$session_id')");
 
                 send_login_notification($user['email'], $ip_address, $user_agent); 

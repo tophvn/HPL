@@ -1,19 +1,19 @@
 <?php
 include('config/database.php');
 session_start();
-// add vào danh sách yêu thích
+
+// add vào yêu thích
 if (isset($_POST['add_to_favorites'])) {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
         echo "<script type='text/javascript'>
                 alert('Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.');
         </script>";
     } else {
-        $product_id =$_POST['product_id'];
+        $product_id = $_POST['product_id'];
         $user_id = $_SESSION['user']['user_id'];
-        $conn=Database::getConnection();
-        $conn->query("INSERT INTO favorites (user_id, product_id) VALUES ($user_id, $product_id) ON DUPLICATE KEY UPDATE id = id");
+        Database::addToFavorites($user_id, $product_id);
         header("Location: " . $_SERVER['REQUEST_URI']);
-    exit();
+        exit();
     }
 }
 ?>
@@ -93,8 +93,7 @@ if (isset($_POST['add_to_favorites'])) {
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
             <?php
-            $sql = $conn->query("SELECT categories.*, COUNT(products.product_id) AS product_count FROM categories LEFT JOIN 
-            products ON categories.category_id = products.category_id GROUP BY categories.category_id");
+            $sql = Database::query("SELECT categories.*, COUNT(products.product_id) AS product_count FROM categories LEFT JOIN products ON categories.category_id = products.category_id GROUP BY categories.category_id");
             while ($category = $sql->fetch_array()) {?>
                 <div class="col-lg-4 col-md-6 pb-1">
                     <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
@@ -111,27 +110,28 @@ if (isset($_POST['add_to_favorites'])) {
         </div>
     </div>
 
+
     <!-- Sản phẩm -->
     <div class="container-fluid pt-5">
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">SẢN PHẨM MỚI</span></h2>
         </div>
         <div class="row px-xl-5 pb-3">
-            <?php
-            $conn = Database::getConnection(); 
-            $sql = "SELECT*FROM products LIMIT 8"; 
-            $result = $conn->query($sql);
-            if ($result->num_rows > 0) {
+        <?php
+            $result = Database::query("SELECT * FROM products LIMIT 8");
+            if ($result && $result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
                     $imagePath = 'assets/img_product/' . $row['image'];
                     $discount = $row['discount'] ?? 0;
-                    $discounted_price = $row['price'] * (1-$discount/100);
+                    $discounted_price = $row['price'] * (1 - $discount / 100);
                     ?>
                     <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                         <div class="card product-item border-0 mb-4">
                             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                            <a href="views/detail.php?id=<?= $row['product_id']; ?>">
                                 <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $row['product_name']; ?>">
-                                <?php if ($discount>0): ?>
+                            </a>
+                                <?php if ($discount > 0): ?>
                                     <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
                                         -<?= $discount ?>%
                                     </div>
@@ -161,11 +161,12 @@ if (isset($_POST['add_to_favorites'])) {
                     </div>
                     <?php
                 }
-            } else { echo '<p class="text-center">Không có sản phẩm nào.</p>';
+            } else {
+                echo '<p class="text-center">Không có sản phẩm nào.</p>';
             }
-            $conn->close(); 
             ?>
         </div>
+
 
         <div class="px-1 py-5 mx-auto row justify-content-center">
             <div class="card1 full-width pl-4 pl-md-5 pr-3">

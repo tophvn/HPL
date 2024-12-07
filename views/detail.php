@@ -2,15 +2,14 @@
 include('../config/database.php');
 session_start();
 $product_id = $_GET['id'] ?? 0;
-$conn = Database::getConnection();
 $query = "SELECT * FROM products WHERE product_id = $product_id";
-$result = $conn->query($query);
+$result = Database::query($query);
 if ($result->num_rows === 0) {
-    exit; 
+    exit;
 }
 
 $product = $result->fetch_assoc();
-$conn->query("UPDATE products SET view_count = view_count + 1 WHERE product_id = $product_id");
+Database::query("UPDATE products SET view_count = view_count + 1 WHERE product_id = $product_id");
 
 $user_id = $_SESSION['user']['user_id'] ?? 0;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -20,32 +19,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $quantity = intval($_POST['quantity'] ?? 1);
         $size = $_POST['size'] ?? '';
         $color = $_POST['color'] ?? '';
-        
         // Tính giá sau khi giảm giá
-        $discount = $product['discount'] ?? 0; 
+        $discount = $product['discount'] ?? 0;
         $discounted_price = $product['price'] * (1 - $discount / 100);
         $size = !empty($size) ? reset($size) : '';
-
         // Kiểm tra xem người dùng đã có giỏ hàng chưa
-        $result = $conn->query("SELECT cart_id FROM cart WHERE user_id = $user_id");
+        $result = Database::query("SELECT cart_id FROM cart WHERE user_id = $user_id");
         if ($result->num_rows === 0) {
-            $conn->query("INSERT INTO cart (user_id) VALUES ($user_id)");
-            $cart_id = $conn->insert_id;
+            Database::query("INSERT INTO cart (user_id) VALUES ($user_id)");
+            $cart_id_query = Database::query("SELECT LAST_INSERT_ID() AS cart_id");
+            $cart_id = $cart_id_query->fetch_assoc()['cart_id'];
         } else {
             $cart_id = $result->fetch_assoc()['cart_id'];
         }
-
         // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
-        $result = $conn->query("SELECT * FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
+        $result = Database::query("SELECT * FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
         if ($result->num_rows > 0) {
-            $conn->query("UPDATE cart_item SET quantity = quantity + $quantity WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
+            Database::query("UPDATE cart_item SET quantity = quantity + $quantity WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
         } else {
-            $conn->query("INSERT INTO cart_item (cart_id, product_id, quantity, size, color, price) VALUES ($cart_id, $product_id, $quantity, '$size', '$color', $discounted_price)");
+            Database::query("INSERT INTO cart_item (cart_id, product_id, quantity, size, color, price) VALUES ($cart_id, $product_id, $quantity, '$size', '$color', $discounted_price)");
         }
         echo "<script>alert('Sản phẩm đã được thêm vào giỏ hàng!');</script>";
     }
 }
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -210,40 +209,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="row px-xl-5">
             <?php
-            $sql = $conn->query("SELECT products.*, categories.category_name FROM products JOIN categories 
-            ON products.category_id = categories.category_id ORDER BY RAND() LIMIT 4");
+            $sql = Database::query("SELECT products.*,categories.category_name FROM products JOIN categories ON products.category_id = categories.category_id ORDER BY RAND() LIMIT 4");
             while ($row = $sql->fetch_array()) {
-                $imagePath = '../assets/img_product/' . $row['image'];
-                $discount = $row['discount']; 
-                $discounted_price = $row['price']*(1-$discount/100);
-            ?>
-                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                    <div class="card product-item border-0">
-                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $row['product_name'] ?>">
-                            <?php if ($discount > 0): ?>
-                                <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
-                                    -<?= $discount ?>%
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                            <h6 class="text-truncate mb-3"><?= $row['product_name'] ?></h6>
-                            <div class="d-flex justify-content-center">
-                                <h6 class="text-danger"><?= number_format($discounted_price) ?> VNĐ</h6>
-                                <?php if ($discount > 0): ?>
-                                    <h6 class="text-muted ml-2"><del><?= number_format($row['price']) ?> VNĐ</del></h6>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                        <div class="card-footer d-flex justify-content-center bg-light border">
-                            <a href="detail.php?id=<?= $row['product_id'] ?>" class="btn btn-sm text-dark p-0">
-                                <i class="fas fa-eye text-primary mr-1"></i>Xem Chi Tiết
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            <?php } ?>
+                $product = $row; 
+                include('product_item.php');
+            }?>
         </div>
     </div>
 

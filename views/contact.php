@@ -2,21 +2,20 @@
 include('../config/database.php');
 $successMessage = "";
 $errorMessage = "";
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $subject = $_POST['subject'];
     $message = $_POST['message'];
-    $conn = Database::getConnection();
     $sql = "INSERT INTO contacts (name, email, subject, message) VALUES ('$name', '$email', '$subject', '$message')";
-    if ($conn->query($sql) === TRUE) {
+    if (Database::query($sql) === TRUE) {
         $successMessage = "Tin nhắn của bạn đã được gửi thành công!";
     } else {
-        $errorMessage = "Đã xảy ra lỗi: " . $conn->error;
+        $errorMessage = "Đã xảy ra lỗi: Không thể thực hiện.";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

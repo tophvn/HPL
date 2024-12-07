@@ -1,31 +1,25 @@
 <?php
 include('../config/database.php');
 session_start();
-if (!isset($_SESSION['user'])) {
-    header("Location: auth/login.php");
-    exit();
+if (!isset($_SESSION['user'])) { header("Location: auth/login.php");
+exit();
 }
-$conn = Database::getConnection();
-$user_id = $_SESSION['user']['user_id'];
 
+$user_id = $_SESSION['user']['user_id'];
 // Xử lý khi người dùng cập nhật địa chỉ và số điện thoại
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_address'])) {
     $address1 = $_POST['address1'];
     $address2 = $_POST['address2'];
     $phonenumber = $_POST['phonenumber'];
-    // Kiểm tra số điện thoại hợp lệ
     if (!preg_match('/^[0-9]{1,12}$/', $phonenumber)) {
         echo "<script>alert('Số điện thoại chỉ được chứa số và không được quá 12 số.');</script>";
     } else {
         // Kiểm tra số điện thoại có trùng không
-        $result = $conn->query("SELECT * FROM users WHERE phonenumber = '$phonenumber' AND user_id != $user_id");
-
+        $result = Database::query("SELECT * FROM users WHERE phonenumber = '$phonenumber' AND user_id != $user_id");
         if ($result->num_rows > 0) {
-            // Số điện thoại đã tồn tại
             echo "<script>alert('Số điện thoại này đã được sử dụng bởi tài khoản khác!');</script>";
         } else {
-            // Cập nhật địa chỉ và số điện thoại
-            $conn->query("UPDATE users SET address1 = '$address1', address2 = '$address2', phonenumber = '$phonenumber' WHERE user_id = $user_id");
+            Database::query("UPDATE users SET address1 = '$address1', address2 = '$address2', phonenumber = '$phonenumber' WHERE user_id = $user_id");
             // Cập nhật session để lưu trạng thái tab
             $_SESSION['active_tab'] = 'address';
             header("Location: account.php");
@@ -34,8 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_address'])) {
     }
 }
 
-// Lấy thông tin người dùng
-$result = $conn->query("SELECT * FROM users WHERE user_id = $user_id");
+$result = Database::query("SELECT * FROM users WHERE user_id = $user_id");
 $user = $result->fetch_assoc();
 
 require_once '../GoogleAuthenticator/PHPGangsta/GoogleAuthenticator.php';
@@ -45,8 +38,7 @@ $ga = new PHPGangsta_GoogleAuthenticator();
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enable_2fa'])) {
     $secret = $ga->createSecret();
     $hashed_secret = $secret;
-    $conn->query("UPDATE users SET google_auth_secret='$hashed_secret', 2fa_enabled=TRUE WHERE user_id = $user_id");
-
+    Database::query("UPDATE users SET google_auth_secret='$hashed_secret', 2fa_enabled=TRUE WHERE user_id = $user_id");
     // Tạo mã QR để người dùng quét
     $user = $_SESSION['user']['name'];
     $qrCodeUrl = $ga->getQRCodeGoogleUrl($user, $secret, 'HPL-Fashion');
@@ -56,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['enable_2fa'])) {
 
 // Tắt 2FA
 if (isset($_POST['disable_2fa'])) {
-    $conn->query("UPDATE users SET google_auth_secret=NULL, 2fa_enabled=FALSE WHERE user_id = $user_id");
+    Database::query("UPDATE users SET google_auth_secret=NULL, 2fa_enabled=FALSE WHERE user_id = $user_id");
     unset($_SESSION['qrCodeUrl']);
     unset($_SESSION['secret']);
 }
@@ -75,10 +67,9 @@ if (isset($_POST['disable_2fa'])) {
 // }
 
 // Lấy thông tin người dùng
-$result = $conn->query("SELECT * FROM users WHERE user_id = $user_id");
+$result = Database::query("SELECT * FROM users WHERE user_id = $user_id");
 $user = $result->fetch_assoc();
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -93,7 +84,6 @@ $user = $result->fetch_assoc();
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
-    
     <div class="container">
         <h2 class="text-center">TÀI KHOẢN</h2>
         <div class="row">
@@ -159,6 +149,7 @@ $user = $result->fetch_assoc();
             </div>
 
 
+
             <!-- Bảo mật -->
             <div class="col-md-9" id="security-content" style="display:none;">
                 <div class="card shadow-sm mb-4">
@@ -178,7 +169,6 @@ $user = $result->fetch_assoc();
                         <?php endif; ?>
                     </div>
                 </div>
-
                 <?php if (isset($_SESSION['qrCodeUrl'])): ?>
                     <div class="card shadow-sm mb-4">
                         <div class="card-body">
@@ -219,17 +209,14 @@ $user = $result->fetch_assoc();
             localStorage.setItem('currentTab', 'address-tab');
             showTabContent('address-tab');
         });
-
         $('#dashboard-tab').click(function () {
             localStorage.setItem('currentTab', 'dashboard-tab');
             showTabContent('dashboard-tab');
         });
-
         $('#security-tab').click(function () {
             localStorage.setItem('currentTab', 'security-tab');
             showTabContent('security-tab');
         });
-
         // Hàm hiển thị nội dung tab
         function showTabContent(tabId) {
             $('#dashboard-content').hide();

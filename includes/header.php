@@ -5,54 +5,46 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 } 
 
-// Kết nối đến cơ sở dữ liệu
-$conn = Database::getConnection();
-$q1 = $conn->query("SELECT * FROM categories");
+$sql = Database::query("SELECT * FROM categories");
 $isIndexPage = basename($_SERVER['PHP_SELF']) === 'index.php';
 
 if (isset($_SESSION['user'])) {
     $user_id = $_SESSION['user']['user_id'];
     // Lấy số lượng sản phẩm trong giỏ
-    $cart_result = $conn->query("SELECT SUM(quantity) AS total_quantity FROM cart_item JOIN cart ON cart_item.cart_id = cart.cart_id WHERE user_id = $user_id");
+    $cart_result = Database::query("SELECT SUM(quantity) AS total_quantity FROM cart_item JOIN cart ON cart_item.cart_id = cart.cart_id WHERE user_id = $user_id");
     $row = $cart_result->fetch_assoc();
     $cart_count = $row['total_quantity'] ? $row['total_quantity'] : 0; // Đặt về 0 nếu không có sản phẩm
 
     // Lấy số lượng sản phẩm yêu thích
-    $favorites_result = $conn->query("SELECT COUNT(*) AS favorite_count FROM favorites WHERE user_id = $user_id");
+    $favorites_result = Database::query("SELECT COUNT(*) AS favorite_count FROM favorites WHERE user_id = $user_id");
     $favorite_row = $favorites_result->fetch_assoc();
     $favorite_count = $favorite_row['favorite_count'] ? $favorite_row['favorite_count'] : 0; // Đặt về 0 nếu không có sản phẩm yêu thích
 
     // Lấy sản phẩm trong giỏ hàng
-    $cart_items_result = $conn->query("
-        SELECT cart_item.*, products.product_name, products.image 
-        FROM cart_item 
-        JOIN cart ON cart_item.cart_id = cart.cart_id 
-        JOIN products ON cart_item.product_id = products.product_id 
-        WHERE cart.user_id = $user_id
+    $cart_items_result = Database::query(" SELECT cart_item.*, products.product_name, products.image FROM cart_item JOIN cart ON cart_item.cart_id = cart.cart_id 
+        JOIN products ON cart_item.product_id = products.product_id  WHERE cart.user_id = $user_id
     ");
     
     $cart_items = [];
     while ($item = $cart_items_result->fetch_assoc()) {
-        $cart_items[] = $item; // Thêm sản phẩm vào mảng
+        $cart_items[] = $item; 
     }
 } else {
     $cart_count = 0; 
     $favorite_count = 0; 
 }
+
 if (isset($_POST['remove_from_cart'])) {
     $product_id = intval($_POST['product_id']);
     $user_id = $_SESSION['user']['user_id'];
-
-    // Lấy cart_id của người dùng
-    $cart_result = $conn->query("SELECT cart_id FROM cart WHERE user_id = $user_id");
+    $cart_result = Database::query("SELECT cart_id FROM cart WHERE user_id = $user_id");
     if ($cart_result->num_rows > 0) {
         $cart_id = $cart_result->fetch_assoc()['cart_id'];
-
-        // Xóa sản phẩm khỏi giỏ hàng
-        $conn->query("DELETE FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id");
+        Database::query("DELETE FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id");
     }
 }
 ?>
+
 
 <style>
     /* Hiệu ứng dropdown chỉ hiện ra khi hover vào nút */

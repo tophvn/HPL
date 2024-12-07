@@ -5,23 +5,22 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['roles'] != 'admin') {
     header("Location: ../index.php");
     exit();
 }
-$conn = Database::getConnection();
 
 // Truy vấn số lượng đơn hàng mới
 $sql_orders = "SELECT COUNT(*) as new_orders FROM `order` WHERE status_id = 1"; 
-$result_orders = $conn->query($sql_orders);
+$result_orders = Database::query($sql_orders);
 $row_orders = $result_orders->fetch_assoc();
 $new_orders = $row_orders['new_orders'];
 
 // Truy vấn tổng doanh thu
 $sql_revenue = "SELECT SUM(total_amount) as total_revenue FROM `order`";
-$result_revenue = $conn->query($sql_revenue);
+$result_revenue = Database::query($sql_revenue);
 $row_revenue = $result_revenue->fetch_assoc();
 $total_revenue = $row_revenue['total_revenue'] ?? 0;
 
-// views san pham
+// Truy vấn views sản phẩm
 $sql_products = "SELECT product_name, view_count FROM products ORDER BY view_count DESC LIMIT 10"; 
-$result_products = $conn->query($sql_products);
+$result_products = Database::query($sql_products);
 $labels = [];
 $data = [];
 while ($row = $result_products->fetch_assoc()) {
@@ -31,12 +30,12 @@ while ($row = $result_products->fetch_assoc()) {
 
 // Truy vấn đếm số yêu cầu hỗ trợ
 $sql_support_requests = "SELECT COUNT(*) as support_requests FROM contacts"; 
-$result_support_requests = $conn->query($sql_support_requests);
+$result_support_requests = Database::query($sql_support_requests);
 $row_support_requests = $result_support_requests->fetch_assoc();
 $support_requests = $row_support_requests['support_requests'];
+
 $data = array_reverse($data);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -181,15 +180,11 @@ $data = array_reverse($data);
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
+                            <?php 
                                 // Truy vấn sản phẩm bán chạy nhất
-                                $sql_best_selling_products = "
-                                    SELECT bi.product_name, SUM(bi.quantity) AS total_quantity
-                                    FROM bill_items bi
-                                    GROUP BY bi.product_name
-                                    ORDER BY total_quantity DESC
-                                    LIMIT 5"; // Lấy 5 sản phẩm bán chạy nhất
-                                $result_best_selling_products = $conn->query($sql_best_selling_products);
+                                $sql_best_selling_products = "SELECT bi.product_name, SUM(bi.quantity) AS total_quantity
+                                    FROM bill_items bi GROUP BY bi.product_name ORDER BY total_quantity DESC LIMIT 5"; 
+                                $result_best_selling_products = Database::query($sql_best_selling_products);
 
                                 while ($row = $result_best_selling_products->fetch_assoc()) { ?>
                                     <tr>
@@ -197,6 +192,7 @@ $data = array_reverse($data);
                                         <td><?php echo number_format($row['total_quantity']); ?></td>
                                     </tr>
                                 <?php } ?>
+
                             </tbody>
                         </table>
                     </div>
@@ -210,24 +206,20 @@ $data = array_reverse($data);
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php 
+                            <?php 
                                 // Truy vấn người dùng mua nhiều nhất
-                                $sql_top_buying_users = "
-                                    SELECT b.user_id, u.name, SUM(bi.quantity) AS total_products
-                                    FROM bills b
-                                    JOIN bill_items bi ON b.bill_id = bi.bill_id
-                                    JOIN users u ON b.user_id = u.user_id
-                                    GROUP BY b.user_id
-                                    ORDER BY total_products DESC
-                                    LIMIT 5"; 
-                                    $result_top_buying_users = $conn->query($sql_top_buying_users);
+                                $sql_top_buying_users = " SELECT b.user_id, u.name, SUM(bi.quantity) AS total_products FROM bills b
+                                    JOIN bill_items bi ON b.bill_id = bi.bill_id JOIN users u ON b.user_id = u.user_id
+                                    GROUP BY b.user_id ORDER BY total_products DESC LIMIT 5"; 
 
+                                $result_top_buying_users = Database::query($sql_top_buying_users);
                                 while ($row = $result_top_buying_users->fetch_assoc()) { ?>
                                     <tr>
                                         <td><?php echo $row['name']; ?></td>
                                         <td><?php echo number_format($row['total_products']); ?></td>
                                     </tr>
                                 <?php } ?>
+
                             </tbody>
                         </table>
                     </div>
@@ -235,7 +227,6 @@ $data = array_reverse($data);
             </div>
         </div>
     </div>
-    
     
     <script>
         const ctx = document.getElementById('productViewChart').getContext('2d');
@@ -262,7 +253,7 @@ $data = array_reverse($data);
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 10 // Tùy chỉnh khoảng cách giữa các giá trị trên trục Y
+                            stepSize: 10
                         }
                     }
                 }

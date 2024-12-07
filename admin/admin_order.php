@@ -6,13 +6,34 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['roles'] != 'admin') {
     exit();
 }
 
-// Lấy tất cả đơn hàng và chi tiết
+// Thiết lập số lượng đơn hàng hiển thị mỗi trang
+$limit = 6;
+
+// Xác định trang hiện tại (nếu không có thì mặc định là trang 1)
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+if ($page < 1) $page = 1;
+
+// Tính toán vị trí bắt đầu của dữ liệu
+$start = ($page - 1) * $limit;
+
+// Lấy tổng số đơn hàng
+$total_orders_sql = "SELECT COUNT(*) AS total FROM `order`";
+$total_orders_result = Database::query($total_orders_sql);
+$total_orders_row = $total_orders_result->fetch_assoc();
+$total_orders = $total_orders_row['total'];
+
+// Lấy dữ liệu đơn hàng với phân trang và sắp xếp
 $sql = "SELECT orders.order_id, orders.order_date, orders.order_address, orders.payment_method, orders.total_amount,
         orders.shipping_method, orders.status_id, status.status_value, status.status_color, users.name
-        FROM `order` AS orders LEFT JOIN `status` AS status ON orders.status_id = status.status_id 
-        LEFT JOIN `users` AS users ON orders.user_id = users.user_id"; 
+        FROM `order` AS orders 
+        LEFT JOIN `status` AS status ON orders.status_id = status.status_id 
+        LEFT JOIN `users` AS users ON orders.user_id = users.user_id
+        ORDER BY orders.order_date DESC
+        LIMIT $start, $limit";
+
 $orders = Database::query($sql);
 
+// Lấy danh sách trạng thái
 $status_sql = "SELECT * FROM status";
 $statuses = Database::query($status_sql);
 
@@ -21,9 +42,8 @@ if (isset($_POST['update_status'])) {
     $order_id = $_POST['order_id'];
     $status_id = $_POST['status_id'];
 
-    $conn = Database::getConnection();
     $update_sql = "UPDATE `order` SET status_id = $status_id WHERE order_id = $order_id";
-    $conn->query($update_sql);
+    Database::query($update_sql);
     header("Location: admin_order.php");
     exit();
 }
@@ -106,6 +126,25 @@ if (isset($_POST['update_status'])) {
                 <?php endwhile; ?>
                 </tbody>
             </table>
+
+            <!-- Hiển thị nút phân trang -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item <?php if ($page <= 1) echo 'disabled'; ?>">
+                        <a class="page-link" href="?page=<?php echo $page - 1; ?>">Trước</a>
+                    </li>
+                    <?php
+                    $total_pages = ceil($total_orders / $limit);
+                    for ($i = 1; $i <= $total_pages; $i++): ?>
+                        <li class="page-item <?php if ($i === $page) echo 'active'; ?>">
+                            <a class="page-link" href="?page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                        </li>
+                    <?php endfor; ?>
+                    <li class="page-item <?php if ($page >= $total_pages) echo 'disabled'; ?>">
+                        <a class="page-link" href="?page=<?php echo $page + 1; ?>">Tiếp theo</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 
@@ -119,16 +158,13 @@ if (isset($_POST['update_status'])) {
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="orderDetailsContent">
-                </div>
+                <div class="modal-body" id="orderDetailsContent"></div>
             </div>
         </div>
     </div>
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/script.js"></script>
     <script>
         $(document).ready(function() {
             $('.view-order-details').on('click', function() {

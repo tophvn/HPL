@@ -6,15 +6,13 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-$conn = Database::getConnection();
 $user_id = $_SESSION['user']['user_id'];
-
 // Lấy dữ liệu người dùng từ cơ sở dữ liệu
-$user_result = $conn->query("SELECT address1, address2 FROM users WHERE user_id = $user_id");
+$user_result = Database::query("SELECT address1, address2 FROM users WHERE user_id = $user_id");
 $user = $user_result->fetch_assoc();
 
 // Lấy thông tin hóa đơn gần nhất
-$order_result = $conn->query("SELECT bill_id, total_amount, payment_method, shipping_address, shipping_fee, 
+$order_result = Database::query("SELECT bill_id, total_amount, payment_method, shipping_address, shipping_fee, 
 shipping_method, bill_date FROM bills WHERE user_id = $user_id ORDER BY bill_date DESC LIMIT 1");
 $order = $order_result->fetch_assoc();
 
@@ -28,37 +26,38 @@ if ($order) {
     $bill_id = $order['bill_id'] ?? 0;
 
     // Truy vấn để lấy các sản phẩm trong hóa đơn
-    $items_result = $conn->query("SELECT product_name, quantity, original_price, discount_price, 
+    $items_result = Database::query("SELECT product_name, quantity, original_price, discount_price, 
     subtotal_price FROM bill_items WHERE bill_id = $bill_id");
     $products = $items_result->fetch_all(MYSQLI_ASSOC);
     // Định dạng ngày hóa đơn
     $order_date = date('F d, Y H:i:s', strtotime($order['bill_date']));  // Ngày và giờ hiện tại
-    } else {
-        // Nếu không có hóa đơn, khởi tạo biến với giá trị mặc định
-        $total_amount = 0;
-        $payment_method = 'Chưa xác định';
-        $shipping_address = 'Chưa xác định';
-        $shipping_fee = 0;
-        $shipping_method = 'Chưa xác định';
-        $bill_id = 0;
-        $order_date = 'Chưa có dữ liệu';
-        $products = [];
-    }
-    // Tính tổng số tiền cho các sản phẩm (không bao gồm phí giao hàng)
-    $temp_total_amount = array_reduce($products, function($carry, $product) {
-        return $carry + $product['subtotal_price'];
+} else {
+    // Nếu không có hóa đơn, khởi tạo biến với giá trị mặc định
+    $total_amount = 0;
+    $payment_method = 'Chưa xác định';
+    $shipping_address = 'Chưa xác định';
+    $shipping_fee = 0;
+    $shipping_method = 'Chưa xác định';
+    $bill_id = 0;
+    $order_date = 'Chưa có dữ liệu';
+    $products = [];
+}
+// Tính tổng số tiền cho các sản phẩm (không bao gồm phí giao hàng)
+$temp_total_amount = array_reduce($products, function($carry, $product) {
+    return $carry + $product['subtotal_price'];
 }, 0);
 
 $final_amount = $temp_total_amount + $shipping_fee;
 
 // Lưu lại giá trị tổng cộng vào cơ sở dữ liệu
 if ($bill_id > 0) {
-    $conn->query("UPDATE bills SET total_amount = $final_amount WHERE bill_id = $bill_id");
+    Database::query("UPDATE bills SET total_amount = $final_amount WHERE bill_id = $bill_id");
 } else {
-    // Nếu không có hóa đơn cũ thì tạo một hóa đơn mới
-    $conn->query("INSERT INTO bills (user_id, total_amount, shipping_fee, shipping_address, payment_method, shipping_method, bill_date) 
+    // Nếu không có hóa đơn cũ thì tạo hóa đơn mới
+    Database::query("INSERT INTO bills (user_id, total_amount, shipping_fee, shipping_address, payment_method, shipping_method, bill_date) 
     VALUES ($user_id, $final_amount, $shipping_fee, '$shipping_address', '$payment_method', '$shipping_method', NOW())");
 }
+
 // Định dạng tiền
 function formatCurrency($amount) {
     return number_format($amount, 0, ',', '.') . '₫';
@@ -72,7 +71,6 @@ function formatCurrency($amount) {
     <meta charset="utf-8">
     <title>Hóa Đơn</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="../img/logo/HPL-logo.png" rel="icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.3/css/foundation.min.css">
     <link rel="stylesheet" href="../css/bill.css">

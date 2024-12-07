@@ -5,10 +5,9 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['roles'] != 'admin') {
     header("Location: ../index.php");
     exit();
 }
-
-$sql = "SELECT * FROM contacts ORDER BY created_at DESC";
-$result = Database::query($sql);
+$result = Database::query("SELECT * FROM contacts ORDER BY created_at DESC");
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -53,7 +52,6 @@ $result = Database::query($sql);
             </table>
         </div>
     </div>
-    
     <script src="assets/vendor/jquery/jquery.min.js"></script>
     <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/script.js"></script>

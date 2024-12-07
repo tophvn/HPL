@@ -24,7 +24,6 @@ include('../config/database.php');
     <section class="team-section">
         <div class="container">
             <div class="row">
-                <!-- Thành viên 1 -->
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="team-member">
                         <img src="https://cdn-icons-png.flaticon.com/512/219/219986.png" alt="Thành viên 1">
@@ -66,8 +65,6 @@ include('../config/database.php');
     </section>
 
     <?php include '../includes/footer.php'; ?>
-
-    <!-- JavaScript và thư viện -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="../js/main.js"></script>

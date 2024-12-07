@@ -1,8 +1,6 @@
 <?php
 include('../../config/database.php');
 include('../../config/config.php'); 
-$conn = Database::getConnection(); 
-
 // Kiểm tra nếu có mã xác nhận từ URL (token)
 if (!isset($_GET['token'])) {
     echo "Mã xác nhận không hợp lệ.";
@@ -11,7 +9,7 @@ if (!isset($_GET['token'])) {
 
 $token = $_GET['token'];
 $query = "SELECT * FROM users WHERE reset_token = '$token'";
-$result = $conn->query($query);
+$result = Database::query($query);
 if ($result->num_rows == 0) {
     echo "Mã xác nhận không hợp lệ hoặc đã hết hạn.";
     exit();
@@ -19,7 +17,6 @@ if ($result->num_rows == 0) {
 
 $row = $result->fetch_assoc();
 $email = $row['email'];
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_password = $_POST['new_password'];
     $confirm_password = $_POST['confirm_password'];
@@ -27,13 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($new_password !== $confirm_password) {
         $error = "Mật khẩu xác nhận không khớp.";
     } else {
+        // Băm mật khẩu mới
         $hashed_password = md5($new_password);
         $update_query = "UPDATE users SET password = '$hashed_password', reset_token = NULL WHERE email = '$email'";
-        $conn->query($update_query);
+        Database::query($update_query);
         $success_message = "Mật khẩu của bạn đã được thay đổi thành công.";
     }
 }
-$conn->close();
 ?>
 
 

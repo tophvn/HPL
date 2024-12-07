@@ -1,8 +1,8 @@
 <?php
-include('../config/database.php');
+include_once('../config/database.php');
 session_start();
 
-$limit = 14;
+$limit = 16;
 $page = max(1, (int)($_GET['page'] ?? 1));
 $offset = ($page - 1) * $limit;
 
@@ -16,13 +16,15 @@ if (!empty($price_filter)) {
     if (in_array("4", $price_filter)) $conditions[] = "(price > 2000000)";
 }
 
-$type_filter = $_GET['type'] ?? []; 
+// Nhận dữ liệu bộ lọc loại sản phẩm
+$type_filter = $_GET['type'] ?? [];
 if (!empty($type_filter)) {
     foreach ($type_filter as $t) {
-        $conditions[] = "type_id = '$t'";
+        $conditions[] = "subcategory_id = '$t'"; // Sử dụng subcategory_id
     }
 }
 
+// Nhận dữ liệu bộ lọc kích thước
 $size_filter = $_GET['size'] ?? [];
 if (!empty($size_filter)) {
     foreach ($size_filter as $s) {
@@ -56,28 +58,13 @@ $result = Database::query("SELECT * FROM products $whereClause $orderClause LIMI
 $totalProducts = Database::query("SELECT COUNT(*) as total FROM products $whereClause")->fetch_assoc()['total'];
 $totalPages = ceil($totalProducts / $limit);
 
-// Xử lý thêm sản phẩm vào giỏ hàng
+// Xử lý thêm sản phẩm vào danh sách yêu thích
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $product_id = $_POST['product_id'];
     $user_id = $_SESSION['user']['user_id'] ?? 0;
 
-    if (isset($_POST['add_to_cart'])) {
-        $quantity = $_POST['quantity'] ?? 1;
-        $conn = Database::getConnection();
-        $cart_id = $conn->query("SELECT cart_id FROM cart WHERE user_id = $user_id")->fetch_assoc()['cart_id'] ?? null;
-        if (!$cart_id) {
-            $conn->query("INSERT INTO cart (user_id) VALUES ($user_id)");
-            $cart_id = $conn->insert_id;
-        }
-        $conn->query("INSERT INTO cart_item (cart_id, product_id, quantity) VALUES ($cart_id, $product_id, $quantity)
-                      ON DUPLICATE KEY UPDATE quantity = quantity + $quantity");
-        header("Location: " . $_SERVER['PHP_SELF'] . "?page=$page");
-        exit();
-    }
-
     if (isset($_POST['add_to_favorites']) && isset($_SESSION['user']['user_id'])) {
-        Database::getConnection()->query("INSERT INTO favorites (user_id, product_id) VALUES ($user_id, $product_id)
-                      ON DUPLICATE KEY UPDATE id = id");
+        Database::addToFavorites($user_id, $product_id);
         header("Location: " . $_SERVER['PHP_SELF'] . "?page=$page");
         exit();
     } else {
@@ -85,6 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -95,36 +83,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="../img/logo/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
-    <style>
-        nav[aria-label="Page navigation"] {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-        .pagination {
-            margin: 0;
-        }
-        .discount-badge {
-            top: 10px;
-            right: 10px;
-            background-color: red; 
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 5px 10px;
-            border-radius: 50%; 
-            z-index: 10; 
-        }
-    </style>
 </head>
 
 <body>
     <?php include '../includes/header.php'; ?>
-    <!-- bộ lọc -->
+    <!-- Bộ lọc -->
     <div class="filter-toggle d-lg-none">
         <i class="fas fa-bars" style="font-size: 30px; color: #333;"></i>
     </div>
-
     <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">Sản Phẩm</h1>
@@ -138,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div class="container-fluid pt-5">
         <div class="row px-xl-5">
-            <!-- Bộ lọc (Ẩn trên mobile) -->
+            <!-- Bộ lọc trên mobile -->
             <div class="col-lg-3 col-md-12 filter-container">
                 <?php include '../includes/filter.php'; ?>
             </div>
@@ -157,60 +123,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <br>
                 <div class="row">
                     <?php while ($product = $result->fetch_assoc()): ?>
-                        <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                            <div class="card product-item border-0">
-                                <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                    <?php $imagePath = '../assets/img_product/' . $product['image']; ?>
-                                    <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $product['product_name'] ?>">
-                                    <?php if ($product['discount'] > 0): ?>
-                                        <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
-                                            -<?= $product['discount'] ?>%
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                    <h6 class="text-truncate mb-3" style="font-weight: bold;"><?= $product['product_name'] ?></h6>
-                                    <div class="d-flex justify-content-center">
-                                        <?php 
-                                        $discount = $product['discount']; 
-                                        $discounted_price = $product['price'] * (1 - $discount / 100);
-                                        ?>
-                                        <h6 class="text-danger"><?= number_format($discounted_price) ?> VNĐ</h6>
-                                        <?php if ($discount > 0): ?>
-                                            <h6 class="text-muted ml-2"><del><?= number_format($product['price']) ?> VNĐ</del></h6>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                <div class="card-footer d-flex justify-content-between bg-light border">
-                                    <a href="detail.php?id=<?= $product['product_id'] ?>" class="btn btn-sm text-dark p-0">
-                                        <i class="fas fa-eye text-primary mr-1"></i><span class="fw-bold">CHI TIẾT</span>
-                                    </a>
-                                    <form method="POST" action="" class="d-flex align-items-center">
-                                        <input type="hidden" name="product_id" value="<?= $product['product_id'] ?>">
-                                        <button type="submit" name="add_to_favorites" class="btn btn-sm text-dark p-0 bg-white">
-                                            <i class="fas fa-heart text-primary mr-1"></i><span class="fw-bold">YÊU THÍCH</span>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                        <?php include 'product_item.php'; ?>
                     <?php endwhile; ?>
                 </div>
+
+                <div class="col-12 d-flex justify-content-center">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination">
+                            <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
+                                <a class="page-link" href="?page=<?= $page - 1 ?>" aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+                            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+                                <li class="page-item <?= $i == $page ? 'active' : '' ?>">
+                                    <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
+                                </li>
+                            <?php endfor; ?>
+                            <li class="page-item <?= $page >= $totalPages ? 'disabled' : '' ?>">
+                                <a class="page-link" href="?page=<?= $page + 1 ?>" aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             </div>
+        </div>
 
-            <nav aria-label="Page navigation" class="d-flex justify-content-center">
-            <ul class="pagination">
-                <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-                    <li class="page-item <?= $i === $page ? 'active' : '' ?>">
-                        <a class="page-link" href="?page=<?= $i ?>"><?= $i ?></a>
-                    </li>
-                <?php endfor; ?>
-            </ul>
-        </nav>
-
-    </div>
-
-    <?php include '../includes/footer.php'; ?>
+        <?php include '../includes/footer.php'; ?>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script>
