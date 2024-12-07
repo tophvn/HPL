@@ -165,6 +165,8 @@ if (isset($_POST['update_status'])) {
 
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="assets/js/script.js"></script>
+
     <script>
         $(document).ready(function() {
             $('.view-order-details').on('click', function() {
