@@ -17,7 +17,6 @@ $client->setClientSecret($clientSecret);
 $client->setRedirectUri($redirectUri);
 $client->addScope("email");
 $client->addScope("profile");
-
 $errors = [];
 
 // Secret key của Google reCAPTCHA
@@ -34,11 +33,10 @@ if (isset($_GET['code'])) {
         $username_md5 = md5($email); // Mã hóa email để làm username
         $result = Database::query("SELECT * FROM users WHERE email = '$email'");        
         if ($result->num_rows == 0) {
-            // Nếu người dùng chưa tồn tại, thêm người dùng mới
             $name = $google_account_info->name;
-            $defaultPassword = md5(uniqid()); 
+            $defaultPassword = md5(uniqid());
             Database::query("INSERT INTO users (username, email, name, password, roles) VALUES ('$username_md5', '$email', '$name', '$defaultPassword', 'user')");
-            $user_id = Database::$conn->insert_id; // Lấy ID người dùng mới
+            // $user_id = Database::$conn->insert_id;
         } else {
             $user = $result->fetch_assoc();
             $user_id = $user['user_id'];
@@ -84,7 +82,6 @@ if (isset($_GET['code'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login = $_POST['login'] ?? '';  
     $password = $_POST['password'] ?? ''; 
-    $login_md5 = md5($login);
     // Kiểm tra Google reCAPTCHA
     $recaptchaResponse = $_POST['g-recaptcha-response'] ?? '';
     $recaptchaURL = "https://www.google.com/recaptcha/api/siteverify";
@@ -92,8 +89,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$recaptchaValidation['success']) {
         $errors[] = 'Xác minh reCAPTCHA thất bại. Vui lòng thử lại!';
     } else {
-        $result = Database::query("SELECT * FROM users WHERE (username = '$login_md5' OR email = '$login')");
-        if ($result && $result->num_rows > 0) {
+        $result = Database::query("SELECT * FROM users WHERE (username = '$login' OR email = '$login')");
+        if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
             
             // Kiểm tra mật khẩu đã được mã hóa
@@ -152,13 +149,13 @@ $googleLoginUrl = $client->createAuthUrl();
     <title>Đăng Nhập</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/css-login-register.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <link rel="stylesheet" href="../../css/css-login-register.css">
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/auth-background/back-login.jpg')"></div>
+        <div class="bg-img" style="background-image: url('../../img/auth-background/back-login.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Đăng Nhập</h1>
@@ -195,18 +192,18 @@ $googleLoginUrl = $client->createAuthUrl();
                     <div class="social-account-wrap">
                         <h4 class="mb-4"><span>hoặc tiếp tục với</span></h4>
                         <ul class="list-unstyled social-account d-flex justify-content-between">
-                            <li><a href="<?php echo $googleLoginUrl; ?>"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
+                            <li><a href="<?php echo $googleLoginUrl; ?>"><img src="../../assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
+                            <li><a href="#"><img src="../../assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
+                            <li><a href="#"><img src="../../assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
+                            <li><a href="#"><img src="../../assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
                         </ul>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <script src="<?php echo BASE_URL; ?>js/custom.js"></script>
-    <a href="<?php echo BASE_URL; ?>index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
+    <script src="../../js/custom.js"></script>
+    <a href="../../index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
         <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
     </a>
     <script>

@@ -62,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sent_otp = rand(1000, 9999);
         $_SESSION['otp'] = md5($sent_otp);
         send_otp_email($email, $sent_otp); 
-        
         $otp_success_message = "Mã OTP đã được gửi đến email của bạn!";
     }
     
@@ -70,7 +69,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Kiểm tra mã OTP khi người dùng đã nhập OTP và nhấn nút đăng ký
     if (isset($_POST['submit'])) {
         $otp = $_POST['otp'] ?? '';
-        // Mã hóa lại OTP người dùng nhập vào
         if (md5($otp) == $_SESSION['otp']) {
             // OTP chính xác, tiếp tục đăng ký
             if (empty($errors)) {
@@ -94,7 +92,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -104,11 +101,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Đăng Ký</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/css-login-register.css">
+    <link rel="stylesheet" href="../../css/css-login-register.css">
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/auth-background/back-regis.jpg')"></div>
+        <div class="bg-img" style="background-image: url('../../img/auth-background/back-regis.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Đăng Ký</h1>
@@ -168,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
 
                     <div class="form-floating d-flex mb-4">
-                    <!-- Nút Gửi OTP -->
+
                     <button type="submit" class="btn btn-secondary" name="send_otp" id="send_otp" style="width: 150px;">Gửi OTP</button>
                     
                     <!-- Trường Nhập Mã OTP (chỉ hiển thị khi đã gửi OTP) -->
@@ -176,28 +173,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <input type="text" class="form-control ms-3" name="otp" id="otp" placeholder="Mã OTP" required style="width: 200px;">
                     <?php endif; ?>
                 </div>
-                    <div class="d-flex justify-content-between">
-                        
-                        <a href="../auth/login.php" class="forget-link">Đã có tài khoản?</a>
-                    </div>
+                    
                     <div class="d-grid mb-4">
                         <button type="submit" class="btn btn-primary" name="submit">Đăng Ký</button>
                     </div>
-                    <div class="mb-2">Đã có tài khoản? <a href="<?php echo BASE_URL; ?>views/auth/login.php">Đăng Nhập</a></div>
+                    <div class="mb-2">Đã có tài khoản? <a href="../auth/login.php">Đăng Nhập</a></div>
                     <div class="social-account-wrap">
                         <h4 class="mb-4"><span>hoặc tiếp tục với</span></h4>
                         <ul class="list-unstyled social-account d-flex justify-content-between">
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
-                            <li><a href="#"><img src="<?php echo BASE_URL; ?>assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
+                            <li><a href="#"><img src="../../assets/Icon/icon-google.svg" alt="Logo Google"></a></li>
+                            <li><a href="#"><img src="../../assets/Icon/icon-facebook.svg" alt="Logo Facebook"></a></li>
+                            <li><a href="#"><img src="../../assets/Icon/icon-apple.svg" alt="Logo Apple"></a></li>
+                            <li><a href="#"><img src="../../assets/Icon/icon-twitter.svg" alt="Logo Twitter"></a></li>
                         </ul>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <a href="<?php echo BASE_URL; ?>index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
+    <a href="../../index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
         <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
     </a>
 </body>

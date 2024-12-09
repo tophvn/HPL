@@ -3,8 +3,8 @@ include_once('../config/database.php');
 session_start();
 
 $limit = 16;
-$page = max(1, (int)($_GET['page'] ?? 1));
-$offset = ($page - 1) * $limit;
+$page = max(1,(int)($_GET['page'] ?? 1));
+$offset = ($page-1)*$limit;
 
 // Nhận dữ liệu từ bộ lọc
 $conditions = [];
@@ -20,7 +20,7 @@ if (!empty($price_filter)) {
 $type_filter = $_GET['type'] ?? [];
 if (!empty($type_filter)) {
     foreach ($type_filter as $t) {
-        $conditions[] = "subcategory_id = '$t'"; // Sử dụng subcategory_id
+        $conditions[] = "subcategory_id = '$t'";
     }
 }
 
@@ -31,44 +31,43 @@ if (!empty($size_filter)) {
         $conditions[] = "size LIKE '%$s%'";
     }
 }
-
-$whereClause = $conditions ? "WHERE " . implode(" AND ", $conditions) : "";
+$sqlConditions = $conditions ? "WHERE " . implode("AND", $conditions) : "";
 
 // Xử lý sắp xếp
 $sort_by = $_GET['sort_by'] ?? '';
 switch ($sort_by) {
     case 'price_asc':
-        $orderClause = "ORDER BY price ASC";
+        $order = "ORDER BY price ASC";
         break;
     case 'price_desc':
-        $orderClause = "ORDER BY price DESC";
+        $order = "ORDER BY price DESC";
         break;
     case 'name_asc':
-        $orderClause = "ORDER BY product_name ASC";
+        $order = "ORDER BY product_name ASC";
         break;
     case 'name_desc':
-        $orderClause = "ORDER BY product_name DESC";
+        $order = "ORDER BY product_name DESC";
         break;
     default:
-        $orderClause = "ORDER BY product_id ASC"; // Sắp xếp mặc định
+        $order= "ORDER BY product_id ASC"; // Sắp xếp mặc định
 }
 
 // Truy vấn sản phẩm và tổng số sản phẩm
-$result = Database::query("SELECT * FROM products $whereClause $orderClause LIMIT $limit OFFSET $offset");
-$totalProducts = Database::query("SELECT COUNT(*) as total FROM products $whereClause")->fetch_assoc()['total'];
+$result = Database::query("SELECT * FROM products $sqlConditions $order LIMIT $limit OFFSET $offset");
+$totalProducts = Database::query("SELECT COUNT(*) as total FROM products $sqlConditions")->fetch_assoc()['total'];
 $totalPages = ceil($totalProducts / $limit);
 
-// Xử lý thêm sản phẩm vào danh sách yêu thích
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $product_id = $_POST['product_id'];
-    $user_id = $_SESSION['user']['user_id'] ?? 0;
-
-    if (isset($_POST['add_to_favorites']) && isset($_SESSION['user']['user_id'])) {
-        Database::addToFavorites($user_id, $product_id);
-        header("Location: " . $_SERVER['PHP_SELF'] . "?page=$page");
-        exit();
+// Thêm sản phẩm vào yêu thích
+if (isset($_POST['add_to_favorites'])) {
+    if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
+        $_SESSION['message'] = 'Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.';
+        $_SESSION['message_type'] = 'danger'; 
     } else {
-        echo "<script>alert('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.');</script>";
+        $product_id = $_POST['product_id'];
+        $user_id = $_SESSION['user']['user_id'];
+        Database::addToFavorites($user_id, $product_id);
+        $_SESSION['message'] = 'Sản phẩm đã được thêm vào yêu thích!';
+        $_SESSION['message_type'] = 'success'; 
     }
 }
 ?>
@@ -87,6 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
     <?php include '../includes/header.php'; ?>
+    <?php include('../includes/notification.php'); ?>
     <!-- Bộ lọc -->
     <div class="filter-toggle d-lg-none">
         <i class="fas fa-bars" style="font-size: 30px; color: #333;"></i>
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <nav aria-label="Page navigation">
                         <ul class="pagination">
                             <li class="page-item <?= $page <= 1 ? 'disabled' : '' ?>">
-                                <a class="page-link" href="?page=<?= $page - 1 ?>" aria-label="Previous">
+                                <a class="page-link" href="?page=<?= $page-1 ?>" aria-label="Previous">
                                     <span aria-hidden="true">&laquo;</span>
                                 </a>
                             </li>

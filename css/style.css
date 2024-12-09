@@ -3661,7 +3661,6 @@ a.text-dark:hover, a.text-dark:focus {
   border-top-right-radius: 10px;
   background: linear-gradient(135deg, #f8b195, #f67280);
   padding-top: 20px;
-  font-family: 'Arial', sans-serif;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease-in-out;
   width: 95%; 
@@ -3864,4 +3863,9 @@ a.text-dark:hover, a.text-dark:focus {
   font-size: 18px;
   border-top: 1px solid #ddd;
   padding-top: 10px;
+}
+
+.fixed-img {
+  height: 400px; /* Hoặc chiều cao mong muốn */
+  object-fit: cover; /* Giữ nguyên tỷ lệ và cắt bớt nếu cần */
 }

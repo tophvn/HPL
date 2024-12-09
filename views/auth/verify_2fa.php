@@ -11,7 +11,7 @@ if (!isset($_SESSION['temp_user'])) {
 }
 $user = $_SESSION['temp_user'];
 $errors = [];
-// Lấy secret gốc từ cơ sở dữ liệu
+// Lấy secret
 $secret = $user['google_auth_secret'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
         // Xóa thông tin tạm
         unset($_SESSION['temp_user']);
-        header("Location: " . BASE_URL . "index.php"); 
+        header("Location: ../../index.php"); 
         exit();
     } else {
         $errors[] = "Mã xác thực không chính xác!";

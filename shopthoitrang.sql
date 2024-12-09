@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 06, 2024 at 10:31 AM
+-- Generation Time: Dec 09, 2024 at 04:46 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -51,7 +51,8 @@ INSERT INTO `bills` (`bill_id`, `user_id`, `bill_date`, `shipping_address`, `shi
 (96, 83, '2024-12-06 11:34:28', 'Tân Hương 2', 50000, 320000, 'COD', 'Express'),
 (97, 83, '2024-12-06 11:38:40', 'Tân Hương 2', 0, 0, 'COD', 'Fast'),
 (98, 83, '2024-12-06 11:42:13', 'Tân Hương 2', 0, 800000, 'COD', 'Fast'),
-(99, 83, '2024-12-06 13:10:53', 'Tân Hương 2', 0, 283000, 'COD', 'Fast');
+(99, 83, '2024-12-06 13:10:53', 'Tân Hương 2', 0, 283000, 'COD', 'Fast'),
+(101, 88, '2024-12-07 23:40:20', '62 tân hương', 50000, 4823000, 'COD', 'Express');
 
 -- --------------------------------------------------------
 
@@ -90,7 +91,9 @@ INSERT INTO `bill_items` (`bill_item_id`, `bill_id`, `product_id`, `product_name
 (131, 96, 1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 6, 'M', 'ĐỎ', 50000, 45000, 270000),
 (132, 98, 2, 'ÁO PHÔNG BOY RACER', 1, 'S', 'TRẮNG', 1000000, 800000, 800000),
 (133, 99, 1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 1, 'M', 'ĐỎ', 50000, 45000, 45000),
-(134, 99, 9, 'ÁO T-SHIRT NỮ BOY RACER', 1, 'ONE SIZE', 'TRẮNG', 280000, 238000, 238000);
+(134, 99, 9, 'ÁO T-SHIRT NỮ BOY RACER', 1, 'ONE SIZE', 'TRẮNG', 280000, 238000, 238000),
+(137, 101, 7, 'ÁO KHOÁC VARSITY BOMBER NỮ MOTO STICKER', 3, 'XL', 'ĐEN', 890000, 801000, 2403000),
+(138, 101, 17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 3, 'XXL', 'TRẮNG', 790000, 790000, 2370000);
 
 -- --------------------------------------------------------
 
@@ -121,7 +124,7 @@ INSERT INTO `brands` (`brand_id`, `brand_name`) VALUES
 (11, 'Skechers'),
 (12, 'Fila'),
 (13, 'Champion'),
-(14, 'Levi\'s'),
+(14, 'Long Dreagon'),
 (15, 'Tommy Hilfiger'),
 (16, 'Ralph Lauren'),
 (17, 'Lacoste'),
@@ -157,7 +160,8 @@ CREATE TABLE `cart` (
 --
 
 INSERT INTO `cart` (`cart_id`, `user_id`, `created_at`) VALUES
-(21, 83, '2024-12-03 01:36:37');
+(21, 83, '2024-12-03 01:36:37'),
+(22, 88, '2024-12-07 15:37:43');
 
 -- --------------------------------------------------------
 
@@ -174,6 +178,14 @@ CREATE TABLE `cart_item` (
   `color` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `price` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cart_item`
+--
+
+INSERT INTO `cart_item` (`cart_item_id`, `cart_id`, `product_id`, `quantity`, `size`, `color`, `price`) VALUES
+(134, 21, 162, 1, 'S', 'ĐEN', 285000),
+(135, 21, 163, 1, 'M', 'XANH RÊU', 712500);
 
 -- --------------------------------------------------------
 
@@ -214,6 +226,14 @@ CREATE TABLE `contacts` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `contacts`
+--
+
+INSERT INTO `contacts` (`contacts_id`, `name`, `email`, `subject`, `message`, `created_at`) VALUES
+(8, 'hoang hai', 'hoanghai07077@gmail.com', 'lỗi ', '123', '2024-12-07 15:21:06'),
+(9, 'hoang hai', 'hoanghai07077@gmail.com', '2', 'ok', '2024-12-07 16:07:56');
+
 -- --------------------------------------------------------
 
 --
@@ -226,14 +246,6 @@ CREATE TABLE `favorites` (
   `product_id` int NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `favorites`
---
-
-INSERT INTO `favorites` (`id`, `user_id`, `product_id`, `created_at`) VALUES
-(46, 84, 8, '2024-12-02 12:33:18'),
-(50, 83, 3, '2024-12-03 03:27:42');
 
 -- --------------------------------------------------------
 
@@ -249,39 +261,6 @@ CREATE TABLE `login_history` (
   `session_id` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
   `login_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `login_history`
---
-
-INSERT INTO `login_history` (`history_id`, `user_id`, `ip_address`, `user_agent`, `session_id`, `login_time`) VALUES
-(83, 84, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 's79gb168d9lonar6k1m20kqkeg', '2024-12-02 12:16:57'),
-(84, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-02 14:47:19'),
-(85, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-02 14:49:51'),
-(86, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 02:41:01'),
-(87, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 03:04:09'),
-(88, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 03:04:47'),
-(89, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 03:07:21'),
-(90, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'thnjh8knmhm1v0s2qoce1k0l1v', '2024-12-03 03:24:58'),
-(91, 88, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'o1l434hf3n33bachjm465k9nej', '2024-12-03 03:34:44'),
-(92, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 07:46:29'),
-(93, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 08:07:47'),
-(94, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 08:32:15'),
-(95, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 08:34:31'),
-(96, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 08:36:03'),
-(97, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 08:36:23'),
-(98, 89, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'm5oq2rf9p2hobqn78dsu4q2s8v', '2024-12-03 08:41:09'),
-(99, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'usjp378fbqsd33757r76qrup4l', '2024-12-05 10:11:43'),
-(100, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'usjp378fbqsd33757r76qrup4l', '2024-12-05 10:37:30'),
-(101, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'usjp378fbqsd33757r76qrup4l', '2024-12-05 14:47:24'),
-(102, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'usjp378fbqsd33757r76qrup4l', '2024-12-06 02:17:47'),
-(103, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'vds72cp4gvcenetl38u7lbhoip', '2024-12-06 02:33:55'),
-(104, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'vds72cp4gvcenetl38u7lbhoip', '2024-12-06 03:50:46'),
-(105, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'a9jf8vvsv4k4cd5l4jov3c0ojg', '2024-12-06 03:51:34'),
-(106, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'vds72cp4gvcenetl38u7lbhoip', '2024-12-06 05:32:24'),
-(107, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'vds72cp4gvcenetl38u7lbhoip', '2024-12-06 05:58:43'),
-(108, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'vds72cp4gvcenetl38u7lbhoip', '2024-12-06 05:59:04'),
-(109, 83, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'vds72cp4gvcenetl38u7lbhoip', '2024-12-06 08:47:28');
 
 -- --------------------------------------------------------
 
@@ -300,21 +279,6 @@ CREATE TABLE `order` (
   `shipping_method` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `order`
---
-
-INSERT INTO `order` (`order_id`, `user_id`, `status_id`, `order_date`, `order_address`, `payment_method`, `total_amount`, `shipping_method`) VALUES
-(112, 83, 4, '2024-12-03 09:18:17', 'Tân Hương', 'COD', '1120000.00', 'Express'),
-(113, 83, 1, '2024-12-03 10:14:02', 'Tân Hương', 'COD', '295000.00', 'Express'),
-(114, 83, 4, '2024-12-03 10:33:29', 'Tân Hương', 'Credit/Debit Card', '790000.00', 'Fast'),
-(115, 83, 1, '2024-12-03 15:38:55', 'Tân Hương 2', 'COD', '845000.00', 'Fast'),
-(116, 83, 1, '2024-12-05 19:22:54', 'Tân Hương 2', 'COD', '1717000.00', 'Fast'),
-(117, 83, 1, '2024-12-06 11:34:28', 'Tân Hương 2', 'COD', '320000.00', 'Express'),
-(118, 83, 1, '2024-12-06 11:38:40', 'Tân Hương 2', 'COD', '0.00', 'Fast'),
-(119, 83, 1, '2024-12-06 11:42:13', 'Tân Hương 2', 'COD', '800000.00', 'Fast'),
-(120, 83, 1, '2024-12-06 13:10:53', 'Tân Hương 2', 'COD', '283000.00', 'Fast');
-
 -- --------------------------------------------------------
 
 --
@@ -327,26 +291,6 @@ CREATE TABLE `order_detail` (
   `product_id` int DEFAULT NULL,
   `order_quantity` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `order_detail`
---
-
-INSERT INTO `order_detail` (`order_detail_id`, `order_id`, `product_id`, `order_quantity`) VALUES
-(194, 112, 1, 4),
-(195, 112, 1, 2),
-(196, 112, 2, 1),
-(197, 113, 13, 1),
-(198, 114, 17, 1),
-(199, 115, 2, 1),
-(200, 115, 1, 1),
-(201, 116, 2, 2),
-(202, 116, 3, 1),
-(203, 116, 1, 1),
-(204, 117, 1, 6),
-(205, 119, 2, 1),
-(206, 120, 1, 1),
-(207, 120, 9, 1);
 
 -- --------------------------------------------------------
 
@@ -377,26 +321,39 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `product_name`, `price`, `category_id`, `subcategory_id`, `image`, `image2`, `image3`, `description`, `brand_id`, `size`, `color`, `discount`, `view_count`, `created_at`) VALUES
-(1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 50000, 1, 1, 'image1_1.png', 'image1_2.png', 'image1_3.png', '', 31, 'L,M,X,S', 'ĐEN,ĐỎ', 10, 154, '2024-11-28 17:18:41'),
-(2, 'ÁO PHÔNG BOY RACER', 1000000, 6, 2, 'image2_1.png', 'image2_2.png', 'image2_3.png', 'Áo T-shirt kiểu oversized boxy với logo/slogan lớn ở giữa.\r\n\r\nChất liệu hoàn thiện mềm mại.\r\n\r\nNgười mẫu cao 6ft và mặc size M.', 31, 'L,S,M', 'TRẮNG', 20, 115, '2024-11-28 17:18:41'),
-(3, 'ÁO THUN MOTO STICKER BOMB', 80000, 6, 2, 'image3_1.png', 'image3_2.png', 'image3_3.png', 'Áo T-shirt với đồ họa sticker bomb 360 độ. Trọng lượng áo T-shirt 200GSM. Chất liệu hoàn thiện mềm mại.', 31, 'M,S,XS', 'ĐEN, TRẮNG', 10, 21, '2024-11-28 17:18:41'),
-(4, 'ÁO THUN STRENGTH', 200000, 4, 2, 'image4_1.png', 'image4_2.png', 'image4_3.png', 'Áo T-shirt kiểu oversized boxy với in và thêu đồ họa ở phía trước.\r\n\r\nNhãn da ở viền dưới phía trước.\r\n\r\nTrọng lượng áo T-shirt 200GSM.\r\n\r\nChất liệu hoàn thiện mềm mại.', 14, 'S,L,XL,XXL', 'ĐEN', 5, 150, '2024-11-28 17:18:41'),
-(5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 365000, 1, 5, 'image5_1.png', 'image5_2.png', 'image5_3.png', 'Áo Polo Golf Nam với chất liệu chống nắng, phù hợp cho mọi sân golf.', 6, 'S,M,XL,XXL', 'ĐỎ', 5, 8, '2024-11-28 17:18:41'),
-(6, 'ÁO VARSITY DENIM MOTO', 450000, 2, 6, 'image6_1.png', 'image6_2.png', 'image6_3.png', 'Áo varsity denim moto kết hợp phong cách thể thao với chất liệu denim, tạo nên vẻ ngoài năng động và cá tính.', 10, 'XXL', 'ĐEN', 5, 11, '2024-11-28 17:18:41'),
-(7, 'ÁO KHOÁC VARSITY BOMBER NỮ MOTO STICKER', 890000, 4, 6, 'image7_1.png', 'image7_2.png', 'image7_3.png', 'Áo khoác varsity bomber nữ với họa tiết sticker moto, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái và thiết kế thời trang phù hợp cho nhiều dịp.', 31, 'L, XL,M,S', 'XÁM,ĐEN', 10, 7, '2024-11-28 17:18:41'),
-(8, 'ÁO T-SHIRT NỮ FUTURE BOY CORE', 390000, 4, 5, 'image8_1.png', 'image8_2.png', 'image8_3.png', 'Áo T-shirt nữ Future Boy Core với thiết kế hiện đại, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái, phù hợp cho cả những ngày thường và các hoạt động ngoài trời.', 27, 'ONE SIZE', 'TRẮNG', 10, 5, '2024-11-28 17:18:41'),
+(1, 'ÁO KHOÁC BOMBER MOTO STICKER VARSITY', 50000, 1, 1, 'image1_1.png', 'image1_2.png', 'image1_3.png', '', 31, 'L,M,X,S', 'ĐEN,ĐỎ', 10, 158, '2024-11-28 17:18:41'),
+(2, 'ÁO PHÔNG BOY RACER', 1000000, 6, 2, 'image2_1.png', 'image2_2.png', 'image2_3.png', 'Áo T-shirt kiểu oversized boxy với logo/slogan lớn ở giữa.\r\n\r\nChất liệu hoàn thiện mềm mại.\r\n\r\nNgười mẫu cao 6ft và mặc size M.', 31, 'L,S,M', 'TRẮNG', 20, 142, '2024-11-28 17:18:41'),
+(3, 'ÁO THUN MOTO STICKER BOMB', 80000, 6, 2, 'image3_1.png', 'image3_2.png', 'image3_3.png', 'Áo T-shirt với đồ họa sticker bomb 360 độ. Trọng lượng áo T-shirt 200GSM. Chất liệu hoàn thiện mềm mại.', 31, 'M,S,XS', 'ĐEN, TRẮNG', 10, 34, '2024-11-28 17:18:41'),
+(4, 'ÁO THUN STRENGTH', 200000, 6, 2, 'image4_1.png', 'image4_2.png', 'image4_3.png', 'Áo T-shirt kiểu oversized boxy với in và thêu đồ họa ở phía trước.\r\n\r\nNhãn da ở viền dưới phía trước.\r\n\r\nTrọng lượng áo T-shirt 200GSM.\r\n\r\nChất liệu hoàn thiện mềm mại.', 14, 'S,L,XL,XXL', 'ĐEN', 5, 165, '2024-11-28 17:18:41'),
+(5, 'ÁO LEN TAY ĐÔI CHEEKY DEVIL', 365000, 1, 5, 'image5_1.png', 'image5_2.png', 'image5_3.png', 'Áo Polo Golf Nam với chất liệu chống nắng, phù hợp cho mọi sân golf.', 15, 'S,M,XL,XXL', 'ĐỎ', 5, 10, '2024-11-28 17:18:41'),
+(6, 'ÁO VARSITY DENIM MOTO', 450000, 2, 6, 'image6_1.png', 'image6_2.png', 'image6_3.png', 'Áo varsity denim moto kết hợp phong cách thể thao với chất liệu denim, tạo nên vẻ ngoài năng động và cá tính.', 10, 'XXL', 'ĐEN', 5, 14, '2024-11-28 17:18:41'),
+(7, 'ÁO KHOÁC VARSITY BOMBER NỮ MOTO STICKER', 890000, 4, 6, 'image7_1.png', 'image7_2.png', 'image7_3.png', 'Áo khoác varsity bomber nữ với họa tiết sticker moto, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái và thiết kế thời trang phù hợp cho nhiều dịp.', 31, 'L, XL,M,S', 'XÁM,ĐEN', 10, 16, '2024-11-28 17:18:41'),
+(8, 'ÁO T-SHIRT NỮ FUTURE BOY CORE', 390000, 4, 5, 'image8_1.png', 'image8_2.png', 'image8_3.png', 'Áo T-shirt nữ Future Boy Core với thiết kế hiện đại, mang lại phong cách trẻ trung và năng động. Chất liệu thoải mái, phù hợp cho cả những ngày thường và các hoạt động ngoài trời.', 27, 'ONE SIZE', 'TRẮNG', 10, 8, '2024-11-28 17:18:41'),
 (9, 'ÁO T-SHIRT NỮ BOY RACER', 280000, 4, 5, 'image9_1.png', 'image9_2.png', 'image9_3.png', 'Áo T-shirt nữ Boy Racer có thiết kế thể thao và năng động, phù hợp cho những ai yêu thích phong cách trẻ trung.', 16, 'ONE SIZE', 'ĐEN, TRẮNG', 15, 3, '2024-11-28 17:18:41'),
-(10, 'QUẦN JOGGING STRENGTH', 650000, 6, 0, 'image10_1.png', 'image10_2.png', 'image10_3.png', 'Quần jogging Strength được thiết kế để mang lại sự thoải mái và linh hoạt trong mọi hoạt động.', NULL, 'S, XL, XXL,M', NULL, 5, 5, '2024-11-28 17:18:41'),
-(11, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU ĐEN', 300000, 3, 15, 'image11_1.png', 'image11_2.png', 'image11_3.png', 'Áo sweatshirt Boy Eagle Smudge màu đen mang đến phong cách trẻ trung và năng động.', 31, 'M, XS,S', 'ĐEN', 0, 4, '2024-11-28 17:18:41'),
-(12, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU XANH WASH', 600000, 1, 0, 'image12_1.png', 'image12_2.png', 'image12_3.png', 'Áo sweatshirt Boy Eagle Smudge màu xanh wash mang đến vẻ ngoài năng động và cá tính.', NULL, 'ONE SIZE', NULL, 0, 1, '2024-11-28 17:18:41'),
+(10, 'QUẦN JOGGING STRENGTH', 650000, 6, 2, 'image10_1.png', 'image10_2.png', 'image10_3.png', 'Quần jogging Strength được thiết kế để mang lại sự thoải mái và linh hoạt trong mọi hoạt động.', 25, 'S, XL, XXL,M', 'XÁM', 5, 8, '2024-11-28 17:18:41'),
+(11, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU ĐEN', 300000, 6, 15, 'image11_1.png', 'image11_2.png', 'image11_3.png', 'Áo sweatshirt Boy Eagle Smudge màu đen mang đến phong cách trẻ trung và năng động.', 31, 'M, XS,S', 'ĐEN', 0, 4, '2024-11-28 17:18:41'),
+(12, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU XANH WASH', 600000, 1, 2, 'image12_1.png', 'image12_2.png', 'image12_3.png', 'Áo sweatshirt Boy Eagle Smudge màu xanh wash mang đến vẻ ngoài năng động và cá tính.', 31, 'ONE SIZE', 'XÁM XANH', 0, 5, '2024-11-28 17:18:41'),
 (13, 'ÁO SWEATSHIRT BOY EAGLE - MÀU ĐEN/TRẮNG', 245000, 6, 5, 'image13_1.png', 'image13_2.png', 'image13_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', 29, 'S,M,L', 'ĐEN', 0, 6, '2024-11-28 17:18:41'),
-(14, 'ÁO JUMPER NỮ CHEEKY DEVIL DOUBLE SLEEVE', 900000, 3, 0, 'image14_1.png', 'image14_2.png', 'image14_3.png', 'Áo jumper nữ Cheeky Devil Double Sleeve mang đến phong cách thú vị và độc đáo.', NULL, 'L,XXL,XL,S', NULL, 5, 2, '2024-11-28 17:18:41'),
-(15, 'ÁO FUTURE BOY CORE', 1300000, 3, 2, 'image15_1.png', 'image15_2.png', 'image15_3.png', 'Áo T-shirt Future Boy Core mang đến phong cách hiện đại và trẻ trung.', 31, 'ONE SIZE', 'ĐEN, TRẮNG', 10, 0, '2024-11-28 17:18:41'),
-(16, 'QUẦN JOGGERS BOY 3D EMB - MÀU ĐEN', 2450000, 6, 3, 'image16_1.png', 'image16_2.png', 'image16_3.png', 'Quần joggers Boy 3D Emb màu đen mang đến phong cách thể thao và hiện đại.', 30, 'L,S,M', 'ĐEN, XÁM', 20, 0, '2024-11-28 17:18:41'),
-(17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 790000, 2, 2, 'image17_1.png', 'image17_2.png', 'image17_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', 8, 'L,XL,XXL', 'TRẮNG', 0, 6, '2024-11-28 17:18:41'),
-(18, 'ÁO SWEATSHIRT BOY WAFFLE RUGBY - MÀU OFF WHITE', 95000, 1, 5, 'image18_1.png', 'image18_2.png', 'image18_3.png', 'Áo sweatshirt Boy Waffle Rugby màu off white mang đến phong cách thể thao và hiện đại.', 31, 'M,S', 'TRẮNG', 5, 0, '2024-11-28 17:18:41'),
-(19, 'ÁO HOODIE BOY MANIA EMBROIDERY - MÀU ĐEN', 5000000, 4, 5, 'image19_1.png', 'image19_2.png', 'image19_3.png', 'Áo hoodie Boy Mania Embroidery màu đen mang đến phong cách trẻ trung và năng động.', 12, 'L,M', 'ĐEN', 15, 0, '2024-11-28 17:18:41'),
-(161, 'ÁO PHÔNG FUTURE BOY - MÀU TÍM SƯƠNG', 890000, 6, 2, 'FUTURE-BOY-T-SHIRT-PURPLE-FOG-2.png', 'FUTURE-BOY-T-SHIRT-PURPLE-FOG-3.png', 'FUTURE-BOY-T-SHIRT-PURPLE-FOG-4.png', '', 31, 'M,S,XS', 'TÍM', 5, 1, '2024-12-06 11:05:23');
+(14, 'ÁO JUMPER NỮ CHEEKY DEVIL DOUBLE SLEEVE', 900000, 4, 15, 'image14_1.png', 'image14_2.png', 'image14_3.png', 'Áo jumper nữ Cheeky Devil Double Sleeve mang đến phong cách thú vị và độc đáo.', 16, 'L,XXL,XL,S', '', 5, 2, '2024-11-28 17:18:41'),
+(15, 'ÁO FUTURE BOY CORE', 1300000, 1, 2, 'image15_1.png', 'image15_2.png', 'image15_3.png', 'Áo T-shirt Future Boy Core mang đến phong cách hiện đại và trẻ trung.', 31, 'ONE SIZE', 'ĐEN, TRẮNG', 10, 1, '2024-11-28 17:18:41'),
+(16, 'QUẦN JOGGERS BOY 3D EMB - MÀU ĐEN', 2450000, 6, 3, 'image16_1.png', 'image16_2.png', 'image16_3.png', 'Quần joggers Boy 3D Emb màu đen mang đến phong cách thể thao và hiện đại.', 30, 'L,S,M', 'ĐEN, XÁM', 20, 3, '2024-11-28 17:18:41'),
+(17, 'ÁO SWEATSHIRT BOY EAGLE SMUDGE - MÀU TRẮNG', 790000, 2, 2, 'image17_1.png', 'image17_2.png', 'image17_3.png', 'Áo sweatshirt này là lựa chọn hoàn hảo cho những ngày lạnh, giúp bạn vừa thoải mái vừa thời trang.', 8, 'L,XL,XXL', 'TRẮNG', 0, 13, '2024-11-28 17:18:41'),
+(18, 'ÁO SWEATSHIRT BOY WAFFLE RUGBY - MÀU OFF WHITE', 95000, 6, 2, 'image18_1.png', 'image18_2.png', 'image18_3.png', 'Áo sweatshirt Boy Waffle Rugby màu off white mang đến phong cách thể thao và hiện đại.', 31, 'M,S', 'TRẮNG', 5, 3, '2024-11-28 17:18:41'),
+(19, 'ÁO HOODIE BOY MANIA EMBROIDERY - MÀU ĐEN', 5000000, 6, 5, 'image19_1.png', 'image19_2.png', 'image19_3.png', 'Áo hoodie Boy Mania Embroidery màu đen mang đến phong cách trẻ trung và năng động.', 12, 'L,M', 'ĐEN', 15, 0, '2024-11-28 17:18:41'),
+(161, 'ÁO PHÔNG FUTURE BOY - MÀU TÍM SƯƠNG', 890000, 6, 2, 'FUTURE-BOY-T-SHIRT-PURPLE-FOG-2.png', 'FUTURE-BOY-T-SHIRT-PURPLE-FOG-3.png', 'FUTURE-BOY-T-SHIRT-PURPLE-FOG-4.png', '', 31, 'M,S,XS', 'TÍM', 5, 1, '2024-12-06 11:05:23'),
+(162, 'Áo Phông dài tay giữ nhiệt basic FWTL001', 300000, 6, 15, 'image2.png', 'image1.png', 'image3.png', '📍Tên sản phẩm: Áo Phông dài tay giữ nhiệt TORANO basic FWTL001\r\n\r\n📍Chất liệu: 92% Cotton + 8% Spandex\r\n\r\n📍Phom dáng: Slimfit hơi ôm\r\n\r\n📍Size: S, M, L, XL\r\n\r\n📍Xuất xứ: Việt Nam', 17, 'S,M,L', 'ĐEN, TRẮNG', 5, 2, '2024-12-09 10:10:36'),
+(163, 'Sơ mi ngắn tay trơn hiệu ứng FSTB023', 750000, 6, 1, 'Sơ mi ngắn tay trơn hiệu ứng FSTB023-2.png', 'Sơ mi ngắn tay trơn hiệu ứng FSTB023.png', 'Sơ mi ngắn tay trơn hiệu ứng FSTB023-3.png', 'Mùa hè chắc chắn không thể thiếu áo sơ mi ngắn tay để luôn đảm bảo mát mẻ mà vẫn lịch sự. Với chất liệu Bamboo mát mịn, thấm hút tốt, áo sơ mi ngắn tay trơn giúp anh em không phải lo lắng về vấn đề nóng bí, khó chịu.', 23, 'L, XL,M,S', 'TRẮNG, XANH RÊU', 5, 6, '2024-12-09 10:23:14'),
+(164, 'MŨ LEN BOY EAGLE', 160000, 3, 9, 'BOY-EAGLE-BEANIE-KIDS-BLACK.png', 'BOY-EAGLE-BEANIE-KIDS-BLACK-2.png', 'BOY-EAGLE-BEANIE-KIDS-BLACK-3.png', '', 8, 'ONE SIZE', 'ĐEN', 10, 1, '2024-12-09 10:29:18'),
+(165, 'Quần jeans basic FABJ003', 670000, 6, 3, 'Quần jeans basic FABJ003-1.png', 'Quần jeans basic FABJ003-2.png', 'Quần jeans basic FABJ003.png', '📍Tên sản phẩm: Quần Jeans nam TORANO dáng basic FABJ003\r\n\r\n📍 Chất liệu: Jeans dày dặn, siêu bền, không phai màu\r\n\r\n📍Màu sắc: Xanh da trời nhạt, Darknavy, Xanh da trời đậm\r\n\r\n📍Phom dáng: basic hơi ôm\r\n\r\n📍Size: 29-30-31-32-33\r\n\r\n📍Xuất xứ: Việt Nam', 24, 'S,M,XL', 'XANH DA TRỜI, XANH DA TRỜI ĐẬM', 10, 0, '2024-12-09 10:33:16'),
+(166, 'chân váy dáng suông nữ dd', 800000, 4, 4, 'Screenshot 2024-12-09 104921.png', 'Screenshot 2024-12-09 104941.png', 'Screenshot 2024-12-09 104958.png', '- Tên sản phẩm:  Chân Váy Dáng Suông Nữ DD\r\n\r\n- Độ tuổi: > 13 tuổi\r\n\r\n- Phù hợp: Mặc đi làm, đi học, đi chơi.\r\n\r\n- Chất liệu: Vải kaki\r\n\r\n- Màu sắc: Đen/Trắng \r\n\r\n- Họa tiết: Trơn\r\n\r\n- Xuất xứ: Tự thiết kế và sản xuất bởi FM Style tại Việt Nam ', 14, 'S,M,L', 'ĐEN, TRẮNG', 5, 3, '2024-12-09 10:50:37'),
+(167, 'yếm kaki trẻ em váy 1 túi', 500000, 5, 13, 'yếm kaki trẻ em váy 1 túi-1.png', 'yếm kaki trẻ em váy 1 túi-2.png', 'yếm kaki trẻ em váy 1 túi-3.png', '- Tên sản phẩm: Yếm kaki Trẻ Em Váy 1 Túi\r\n\r\n- Độ tuổi: < 10 tuổi\r\n\r\n- Phù hợp: Mặc đi học, đi chơi, ở nhà.\r\n\r\n- Chất liệu: Vải kaki\r\n\r\n- Màu sắc: Đỏ Cam/ Xanh/ Be\r\n\r\n- Họa tiết: trơn\r\n\r\n- Xuất xứ: Tự thiết kế và sản xuất bởi FM Style tại Việt Nam ', 10, '1-10', 'XANH, ĐỎ CAM, TRẮNG', 10, 0, '2024-12-09 10:54:22'),
+(168, 'Urbas Love+ 24 - Oyster White', 2000000, 2, 20, 'Pro_ALP2402_5-1.jpg', 'Pro_ALP2402_1-1.png', 'Pro_ALP2402_6-1.jpg', '', 5, '37,38,39,42,43,45', 'TRẮNG XÁM', 20, 1, '2024-12-09 11:01:16'),
+(169, 'Kính gọng kim loại Basic mắt vuông bo góc chân bọc nhựa', 500000, 3, 10, '20241209_lhSH6gCYeb.jpeg', '20241209_lhSH6gCYeb.jpeg', '20241209_lhSH6gCYeb.jpeg', '\r\nKính gọng kim loại Basic mắt vuông bo góc chân bọc nhựa', 17, 'ONE SIZE', 'ĐEN', 0, 4, '2024-12-09 11:05:18'),
+(170, 'Dép kín mũi Retro 1 màu khoét cạnh đế cao', 50000, 3, 26, '20241205_MDhurockcY.jpeg', '20241205_q4tDaapxhk.jpeg', '20241205_q4tDaapxhk.jpeg', '', 19, 'ONE SIZE', 'ĐEN, TRẮNG', 0, 1, '2024-12-09 11:16:46'),
+(171, 'Túi đeo vải lông xù Basic 1 màu 36x40', 300000, 3, 17, '20241207_qud8IkAmgA.jpeg', '20241207_qud8IkAmgA.jpeg', '20241207_qud8IkAmgA.jpeg', '', 18, 'ONE SIZE', 'ĐEN', 5, 1, '2024-12-09 11:18:16'),
+(172, ' Túi đeo gấu bông Sanrio family Cinnamoroll Kuromi cosplay little friend face', 130000, 3, 24, '20241119_A5hYV5ru.jpeg', '20241119_aNQ9O0PrSn.jpeg', '20241119_b7TEvAbvfN.jpeg', '', 21, 'ONE SIZE', 'TÍM, XANH', 5, 2, '2024-12-09 11:20:17'),
+(173, 'Túi đeo chéo da lộn hình bầu dục nổi đồng màu dây xích', 200000, 3, 24, '20241114_3NPUkoJx.jpg', '20241114_geoizVB4.jpg', '20241114_oGl5B7qx.jpg', '', 26, 'ONE SIZE', 'ĐEN, BE', 5, 0, '2024-12-09 11:21:59'),
+(176, 'LEVIs', 1800000, 2, 9, '00.png', '00.png', '00.png', 'Được thành lập năm 1873, Levi’s® được thế giới biết đến & ngợi khen bởi những sản phẩm jeans đạt chuẩn mực trong thiết kế.', 13, 'ONE SIZE', 'TRẮNG', 10, 0, '2024-12-09 11:25:18');
 
 -- --------------------------------------------------------
 
@@ -438,7 +395,7 @@ CREATE TABLE `subcategories` (
 
 INSERT INTO `subcategories` (`subcategory_id`, `subcategory_name`, `category_id`) VALUES
 (1, 'Áo sơ mi', 6),
-(2, 'Áo thun', 6),
+(2, 'Áo thun nam', 6),
 (3, 'Quần jeans', 6),
 (4, 'Váy đầm', 4),
 (5, 'Áo thun nữ', 4),
@@ -462,8 +419,8 @@ INSERT INTO `subcategories` (`subcategory_id`, `subcategory_name`, `category_id`
 (23, 'Váy công sở', 4),
 (24, 'Túi xách nữ', 4),
 (25, 'Túi xách nam', 6),
-(26, 'Mũ lưỡi trai', 3),
-(27, 'Kính râm', 3),
+(26, 'Dép', 3),
+(27, 'Khăn choàng', 3),
 (28, 'Đồng hồ nam', 2),
 (29, 'Đồng hồ nữ', 2),
 (30, 'Giày sandal', 6);
@@ -494,10 +451,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `password`, `phonenumber`, `name`, `email`, `reset_token`, `roles`, `address1`, `address2`, `google_auth_secret`, `2fa_enabled`) VALUES
-(83, '07af039d5d731bd8c6b7f70788fbb26d', '4e390db6b97e8776b7261eee8229dc1c', '0793897147', 'Nguyễn Hoàng Hải', 'hoanghai07077@gmail.com', '914bc960cd223e1ab159cc88a3f72bc0be21cda74bc31e2378c6a2ee010104f0f12833033894022eceb0a7d50c2884814220', 'admin', 'Tân Hương 2', 'Tân Phú, TP. HCM', NULL, 0),
-(84, '4e390db6b97e8776b7261eee8229dc1c', '4e390db6b97e8776b7261eee8229dc1c', '0707777777', 'hoàng hải', 'tophvn17@gmail.com', NULL, 'user', NULL, NULL, NULL, 0),
-(88, '633e839ad7980d0276d2aea8ca20fbe8', '61a93ad1d116d3f8c209af896c9d168a', NULL, 'Fashion HPL', 'hplfashionvn@gmail.com', NULL, 'user', NULL, NULL, NULL, 0),
-(89, 'f6ecdf559167bdd5200cfbe71fff384a', 'c465557daac4e914a52df277b83dc419', NULL, 'One Kiss', 'hoanghaitoph@gmail.com', NULL, 'user', NULL, NULL, NULL, 0);
+(83, '07af039d5d731bd8c6b7f70788fbb26d', '4e390db6b97e8776b7261eee8229dc1c', '0793897147', 'Nguyễn Hoàng Hải', 'hoanghai07077@gmail.com', NULL, 'admin', 'ok', 'Tân Phú, TP. HCM', NULL, NULL),
+(88, '633e839ad7980d0276d2aea8ca20fbe8', '4e390db6b97e8776b7261eee8229dc1c', '8707765578', 'Fashion HPL', 'hplfashionvn@gmail.com', NULL, 'user', '62 tân hương', '', '45FXED32ZNBK5N26', 1);
 
 --
 -- Indexes for dumped tables
@@ -616,13 +571,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `bills`
 --
 ALTER TABLE `bills`
-  MODIFY `bill_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `bill_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- AUTO_INCREMENT for table `bill_items`
 --
 ALTER TABLE `bill_items`
-  MODIFY `bill_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
+  MODIFY `bill_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=139;
 
 --
 -- AUTO_INCREMENT for table `brands`
@@ -634,13 +589,13 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `cart_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT for table `cart_item`
 --
 ALTER TABLE `cart_item`
-  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
+  MODIFY `cart_item_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=136;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -652,37 +607,37 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `contacts`
 --
 ALTER TABLE `contacts`
-  MODIFY `contacts_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `contacts_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 
 --
 -- AUTO_INCREMENT for table `login_history`
 --
 ALTER TABLE `login_history`
-  MODIFY `history_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `history_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
 
 --
 -- AUTO_INCREMENT for table `order`
 --
 ALTER TABLE `order`
-  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
+  MODIFY `order_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
 
 --
 -- AUTO_INCREMENT for table `order_detail`
 --
 ALTER TABLE `order_detail`
-  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=208;
+  MODIFY `order_detail_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=212;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `product_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
+  MODIFY `product_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=177;
 
 --
 -- AUTO_INCREMENT for table `subcategories`
@@ -694,7 +649,7 @@ ALTER TABLE `subcategories`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=90;
+  MODIFY `user_id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
 
 --
 -- Constraints for dumped tables

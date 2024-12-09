@@ -1,29 +1,39 @@
 <?php
 include('../config/database.php');
 session_start();
-$product_id = $_GET['id'] ?? 0;
-$query = "SELECT * FROM products WHERE product_id = $product_id";
+
+// Lấy ID sản phẩm từ URL, nếu không có thì gán giá trị mặc định là 0
+$product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($product_id <= 0) {
+    exit("ID sản phẩm không hợp lệ.");
+}
+
+// lấy thông tin sản phẩm,danh mục, hãng
+$query = "SELECT products.*, categories.category_name, brands.brand_name FROM products 
+LEFT JOIN categories ON products.category_id = categories.category_id LEFT JOIN brands ON products.brand_id = brands.brand_id 
+WHERE products.product_id = $product_id";
+
 $result = Database::query($query);
 if ($result->num_rows === 0) {
-    exit;
+    exit("Không tìm thấy sản phẩm.");
 }
 
 $product = $result->fetch_assoc();
 Database::query("UPDATE products SET view_count = view_count + 1 WHERE product_id = $product_id");
+$user_id = isset($_SESSION['user']['user_id']) ? $_SESSION['user']['user_id'] : 0;
 
-$user_id = $_SESSION['user']['user_id'] ?? 0;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user_id === 0) {
-        echo "<script>alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!');</script>";
+        $_SESSION['message'] = 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!';
+        $_SESSION['message_type'] = 'danger';
     } else {
-        $quantity = intval($_POST['quantity'] ?? 1);
-        $size = $_POST['size'] ?? '';
-        $color = $_POST['color'] ?? '';
-        // Tính giá sau khi giảm giá
-        $discount = $product['discount'] ?? 0;
+        $quantity = intval(isset($_POST['quantity']) ? $_POST['quantity'] : 1);
+        $size = isset($_POST['size']) ? $_POST['size'] : '';
+        $color = isset($_POST['color']) ? $_POST['color'] : '';
+        $discount = isset($product['discount']) ? $product['discount'] : 0;
         $discounted_price = $product['price'] * (1 - $discount / 100);
         $size = !empty($size) ? reset($size) : '';
-        // Kiểm tra xem người dùng đã có giỏ hàng chưa
+        // Kiểm tra xem giỏ hàng của người dùng đã tồn tại
         $result = Database::query("SELECT cart_id FROM cart WHERE user_id = $user_id");
         if ($result->num_rows === 0) {
             Database::query("INSERT INTO cart (user_id) VALUES ($user_id)");
@@ -32,19 +42,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $cart_id = $result->fetch_assoc()['cart_id'];
         }
-        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng 
         $result = Database::query("SELECT * FROM cart_item WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
         if ($result->num_rows > 0) {
             Database::query("UPDATE cart_item SET quantity = quantity + $quantity WHERE cart_id = $cart_id AND product_id = $product_id AND size = '$size' AND color = '$color'");
         } else {
             Database::query("INSERT INTO cart_item (cart_id, product_id, quantity, size, color, price) VALUES ($cart_id, $product_id, $quantity, '$size', '$color', $discounted_price)");
         }
-        echo "<script>alert('Sản phẩm đã được thêm vào giỏ hàng!');</script>";
+        $_SESSION['message'] = 'Sản phẩm đã được thêm vào giỏ hàng!';
+        $_SESSION['message_type'] = 'success';
     }
 }
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
+    <?php include('../includes/notification.php'); ?>
     <div class="container-fluid py-5">
         <div class="row px-xl-5">
             <div class="col-lg-5 pb-5">
@@ -94,13 +104,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <small class="pt-1">(10 Reviews)</small>
                 </div>
+
                 <h3 class="font-weight-semi-bold mb-4">
                     <?php 
                     $discount = $product['discount'] ?? 0;
-                    $discounted_price = $product['price'] * (1-$discount/100);
+                    $discounted_price = $product['price'] * (1 - $discount / 100);
                     ?>
                     <span class="text-danger"><?= number_format($discounted_price) ?> VNĐ</span>
-                    <?php if ($discount>0): ?>
+                    <?php if ($discount > 0): ?>
                         <span class="text-muted ml-2"><del><?= number_format($product['price']) ?> VNĐ</del></span>
                     <?php endif; ?>
                 </h3>
@@ -108,10 +119,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <form method="POST" id="addToCartForm">
                 <?php
-                // Biến product chứa thông tin sản phẩm hiện tại
                 $product_id = $product['product_id'];
                 $sizeString = Database::query("SELECT size FROM products WHERE product_id = $product_id")->fetch_assoc()['size'];
-                // Tách chuỗi thành mảng
                 $sizes = !empty($sizeString) ? array_map('trim', explode(',', $sizeString)) : [];
                 ?>
                 <div class="d-flex mb-3">
@@ -176,27 +185,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
 
-        <!-- Thông tin theo tab -->
-        <div class="row px-xl-5">
-            <div class="col">
-                <div class="nav nav-tabs justify-content-center border-secondary mb-4">
-                    <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Mô tả</a>
-                    <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-2">Thông tin</a>
-                    <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Đánh giá</a>
+    <!-- Thông tin theo tab -->
+    <div class="row px-xl-5">
+        <div class="col">
+            <div class="nav nav-tabs justify-content-center border-secondary mb-4">
+                <a class="nav-item nav-link active" data-toggle="tab" href="#tab-pane-1">Mô tả</a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-2">Thông tin</a>
+                <a class="nav-item nav-link" data-toggle="tab" href="#tab-pane-3">Đánh giá</a>
+            </div>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="tab-pane-1">
+                    <h4 class="mb-3">Mô tả sản phẩm</h4>
+                    <p><?= $product['description'] ?></p>
                 </div>
-                <div class="tab-content">
-                    <div class="tab-pane fade show active" id="tab-pane-1">
-                        <h4 class="mb-3">Mô tả sản phẩm</h4>
-                        <p><?= $product['description'] ?></p>
-                    </div>
-                    <div class="tab-pane fade" id="tab-pane-2">
-                        <h4 class="mb-3">Chính sách đổi trả</h4>
-                        <p>Xin lưu ý, tất cả các mặt hàng giảm giá được mua từ ngày 8 tháng 11 đến ngày 1 tháng 1 chỉ được ĐỔI TRẢ.</p>
-                    </div>
-                    <div class="tab-pane fade" id="tab-pane-3">
+                <div class="tab-pane fade" id="tab-pane-2">
+                    <h4 class="mb-3">Thông tin sản phẩm</h4>
+                    <p><strong>Hãng:</strong> <?= $product['brand_name'] ?></p>
+                    <p><strong>Danh mục:</strong> <?= $product['category_name'] ?></p>
+                    <p><strong>Số lượt xem:</strong> <?= $product['view_count'] ?></p>
+                </div>
+                <div class="tab-pane fade" id="tab-pane-3">
                     <h4 class="mb-3">Đánh giá</h4>
                     <p>Chưa có đánh giá nào</p>
-                </div>
                 </div>
             </div>
         </div>
@@ -209,11 +219,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="row px-xl-5">
             <?php
-            $sql = Database::query("SELECT products.*,categories.category_name FROM products JOIN categories ON products.category_id = categories.category_id ORDER BY RAND() LIMIT 4");
+            $sql = Database::query("SELECT products.*, categories.category_name FROM products JOIN categories ON products.category_id = categories.category_id ORDER BY RAND() LIMIT 4");
             while ($row = $sql->fetch_array()) {
-                $product = $row; 
+                $product = $row;
                 include('product_item.php');
-            }?>
+            }
+            ?>
         </div>
     </div>
 
@@ -233,21 +244,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 quantity.value = parseInt(quantity.value) - 1;
             }
         }
-    </script>
-    <script>
-    // JavaScript để thay đổi hình ảnh trong carousel khi chọn màu sắc
-    document.querySelectorAll('input[name="color"]').forEach(function(colorRadio) {
-        colorRadio.addEventListener('change', function() {
-            var selectedImage = document.getElementById(this.getAttribute('data-image'));
-            
-            // Ẩn tất cả các ảnh
-            document.querySelectorAll('.carousel-item').forEach(function(item) {
-                item.classList.remove('active');
+
+        // JavaScript để thay đổi hình ảnh trong carousel khi chọn màu sắc
+        document.querySelectorAll('input[name="color"]').forEach(function(colorRadio) {
+            colorRadio.addEventListener('change', function() {
+                var selectedImage = document.getElementById(this.getAttribute('data-image'));
+                
+                // Ẩn tất cả các ảnh
+                document.querySelectorAll('.carousel-item').forEach(function(item) {
+                    item.classList.remove('active');
+                });
+                // Hiển thị ảnh tương ứng với màu đã chọn
+                selectedImage.classList.add('active');
             });
-            // Hiển thị ảnh tương ứng với màu đã chọn
-            selectedImage.classList.add('active');
         });
-    });
-</script>
+    </script>
 </body>
 </html>

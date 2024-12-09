@@ -12,18 +12,17 @@ if (isset($_GET['query'])) {
         $searchResults = $result->fetch_all(MYSQLI_ASSOC);
     }
 }
-// add vào yêu thích
+// Thêm sản phẩm vào yêu thích
 if (isset($_POST['add_to_favorites'])) {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
-        echo "<script type='text/javascript'>
-                alert('Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.');
-        </script>";
+        $_SESSION['message'] = 'Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.';
+        $_SESSION['message_type'] = 'danger'; 
     } else {
         $product_id = $_POST['product_id'];
         $user_id = $_SESSION['user']['user_id'];
         Database::addToFavorites($user_id, $product_id);
-        header("Location: " . $_SERVER['REQUEST_URI']);
-        exit();
+        $_SESSION['message'] = 'Sản phẩm đã được thêm vào yêu thích!';
+        $_SESSION['message_type'] = 'success'; 
     }
 }
 ?>
@@ -41,7 +40,7 @@ if (isset($_POST['add_to_favorites'])) {
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
-
+    <?php include('../includes/notification.php'); ?>
     <div class="container mt-4">
         <?php if (count($searchResults) == 0): ?>
             <form action="search.php" method="GET" class="mb-4">

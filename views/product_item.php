@@ -1,10 +1,10 @@
 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
     <div class="card product-item border-0">
         <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-            <?php $imagePath = '../assets/img_product/' . $product['image']; ?>
+            <?php $image = '../assets/img_product/' . $product['image']; ?>
             <a href="detail.php?id=<?= $product['product_id'] ?>">
-                <?php $imagePath = '../assets/img_product/' . $product['image']; ?>
-                <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="">
+                <?php $image = '../assets/img_product/' . $product['image']; ?>
+                <img class="img-fluid w-100 fixed-img" src="<?= $image ?>" alt="">
             </a>
             <?php if ($product['discount'] >0): ?>
                 <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
@@ -17,7 +17,7 @@
             <div class="d-flex justify-content-center">
                 <?php 
                 $discount = $product['discount']; 
-                $discounted_price = $product['price'] * (1 - $discount / 100);
+                $discounted_price = $product['price'] * (1 - $discount/100);
                 ?>
                 <h6 class="text-danger"><?= number_format($discounted_price) ?> VNĐ</h6>
                 <?php if ($discount > 0): ?>

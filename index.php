@@ -2,40 +2,38 @@
 include('config/database.php');
 session_start();
 
-// add vào yêu thích
+// Thêm sản phẩm vào yêu thích
 if (isset($_POST['add_to_favorites'])) {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
-        echo "<script type='text/javascript'>
-                alert('Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.');
-        </script>";
+        // Thiết lập thông báo lỗi trong session
+        $_SESSION['message'] = 'Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.';
+        $_SESSION['message_type'] = 'danger'; 
     } else {
         $product_id = $_POST['product_id'];
         $user_id = $_SESSION['user']['user_id'];
         Database::addToFavorites($user_id, $product_id);
-        header("Location: " . $_SERVER['REQUEST_URI']);
-        exit();
+        $_SESSION['message'] = 'Sản phẩm đã được thêm vào yêu thích!';
+        $_SESSION['message_type'] = 'success'; 
     }
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>TRANG CHỦ - HPL FASHION</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="img/logo/HPL-logo.png" rel="icon">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
     <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
-    <style>
-
-
-    </style>
 </head>
 
 <body>
     <?php include 'includes/header.php'; ?>
+    <?php include('includes/notification.php'); ?>
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
             <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
@@ -93,7 +91,8 @@ if (isset($_POST['add_to_favorites'])) {
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
             <?php
-            $sql = Database::query("SELECT categories.*, COUNT(products.product_id) AS product_count FROM categories LEFT JOIN products ON categories.category_id = products.category_id GROUP BY categories.category_id");
+            $sql = Database::query("SELECT categories.*, COUNT(products.product_id) AS product_count FROM categories LEFT JOIN products ON 
+            categories.category_id = products.category_id GROUP BY categories.category_id");
             while ($category = $sql->fetch_array()) {?>
                 <div class="col-lg-4 col-md-6 pb-1">
                     <div class="cat-item d-flex flex-column border mb-4" style="padding: 30px;">
@@ -110,64 +109,61 @@ if (isset($_POST['add_to_favorites'])) {
         </div>
     </div>
 
-
     <!-- Sản phẩm -->
     <div class="container-fluid pt-5">
         <div class="text-center mb-4">
             <h2 class="section-title px-5"><span class="px-2">SẢN PHẨM MỚI</span></h2>
         </div>
         <div class="row px-xl-5 pb-3">
-        <?php
-            $result = Database::query("SELECT * FROM products LIMIT 8");
-            if ($result && $result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    $imagePath = 'assets/img_product/' . $row['image'];
-                    $discount = $row['discount'] ?? 0;
-                    $discounted_price = $row['price'] * (1 - $discount / 100);
-                    ?>
-                    <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                            <a href="views/detail.php?id=<?= $row['product_id']; ?>">
-                                <img class="img-fluid w-100" src="<?= $imagePath ?>" alt="<?= $row['product_name']; ?>">
-                            </a>
-                                <?php if ($discount > 0): ?>
-                                    <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
-                                        -<?= $discount ?>%
-                                    </div>
-                                <?php endif; ?>
+    <?php
+    $result = Database::query("SELECT * FROM products ORDER BY created_at DESC LIMIT 8");
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $image = 'assets/img_product/' . $row['image'];
+            $discount = $row['discount'] ?? 0;
+            $discounted_price = $row['price'] * (1 - $discount / 100);
+            ?>
+            <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                <div class="card product-item border-0 mb-4">
+                    <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                        <a href="views/detail.php?id=<?= $row['product_id']; ?>">
+                            <img class="img-fluid w-100 fixed-img" src="<?= $image ?>" alt="">
+                        </a>
+                        <?php if ($discount > 0): ?>
+                            <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
+                                -<?= $discount ?>%
                             </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3" style="font-weight: bold;"><?= $row['product_name']; ?></h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6 class="text-danger"><?= number_format($discounted_price, 0, ',', '.') ?> VNĐ</h6>
-                                    <?php if ($discount > 0): ?>
-                                        <h6 class="text-muted ml-2"><del><?= number_format($row['price'], 0, ',', '.') ?> VNĐ</del></h6>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="views/detail.php?id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
-                                    <i class="fas fa-eye text-primary mr-1"></i><span class="fw-bold">CHI TIẾT</span>
-                                </a>
-                                <form method="POST" action="" class="d-flex align-items-center">
-                                    <input type="hidden" name="product_id" value="<?= $row['product_id']; ?>">
-                                    <button type="submit" name="add_to_favorites" class="btn btn-sm text-dark p-0 bg-white">
-                                        <i class="fas fa-heart text-primary mr-1"></i><span class="fw-bold">YÊU THÍCH</span>
-                                    </button>
-                                </form>
-                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                        <h6 class="text-truncate mb-3" style="font-weight: bold;"><?= $row['product_name']; ?></h6>
+                        <div class="d-flex justify-content-center">
+                            <h6 class="text-danger"><?= number_format($discounted_price, 0, ',', '.') ?> VNĐ</h6>
+                            <?php if ($discount > 0): ?>
+                                <h6 class="text-muted ml-2"><del><?= number_format($row['price'], 0, ',', '.') ?> VNĐ</del></h6>
+                            <?php endif; ?>
                         </div>
                     </div>
-                    <?php
-                }
-            } else {
-                echo '<p class="text-center">Không có sản phẩm nào.</p>';
-            }
-            ?>
-        </div>
-
-
+                    <div class="card-footer d-flex justify-content-between bg-light border">
+                        <a href="views/detail.php?id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
+                            <i class="fas fa-eye text-primary mr-1"></i><span class="fw-bold">CHI TIẾT</span>
+                        </a>
+                        <form method="POST" action="" class="d-flex align-items-center">
+                            <input type="hidden" name="product_id" value="<?= $row['product_id']; ?>">
+                            <button type="submit" name="add_to_favorites" class="btn btn-sm text-dark p-0 bg-white">
+                                <i class="fas fa-heart text-primary mr-1"></i><span class="fw-bold">YÊU THÍCH</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <?php
+        }
+    } else {
+        echo '<p class="text-center">Không có sản phẩm nào.</p>';
+    }
+    ?>
+</div>
         <div class="px-1 py-5 mx-auto row justify-content-center">
             <div class="card1 full-width pl-4 pl-md-5 pr-3">
                 <div class="row">
@@ -187,25 +183,78 @@ if (isset($_POST['add_to_favorites'])) {
                 <div class="row px-3">
                     <div class="col-md-12">
                         <div class="blocks row d-flex">
-                            <div class="d-flex flex-column">
-                                <img class="fit-image img-block" src="img/Nike.jpg">
-                                <small class="text-center">Nike</small>
-                            </div>
-                            <div class="d-flex flex-column">
-                                <img class="fit-image img-block" src="img/Adidas.jpg">
-                                <small class="text-center">Adidas</small>
-                            </div>
-                            <div class="d-flex flex-column">
-                                <img class="fit-image img-block" src="img/Puma.jpg">
-                                <small class="text-center">Puma</small>
-                            </div>
+                        <div class="d-flex flex-column">
+                            <img class="fit-image img-block" src="img/balo.jpg">
+                            <small class="text-center">Balo Trẻ Em</small>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <img class="fit-image img-block" src="img/vay.jpg">
+                            <small class="text-center">Váy Nữ</small>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <img class="fit-image img-block" src="img/ao-khoac-nam.jpg">
+                            <small class="text-center">Áo Khóa Nam</small>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <div class="container-fluid pt-5">
+        <div class="text-center mb-4">
+            <h2 class="section-title px-5"><span class="px-2">SẢN PHẨM HOT</span></h2>
+        </div>
+        <div class="row px-xl-5 pb-3">
+        <?php
+        $result = Database::query("SELECT * FROM products ORDER BY view_count DESC LIMIT 4");
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $image = 'assets/img_product/' . $row['image'];
+                $discount = $row['discount'] ?? 0;
+                $discounted_price = $row['price'] * (1 - $discount / 100);
+                ?>
+                <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
+                    <div class="card product-item border-0 mb-4">
+                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                            <a href="views/detail.php?id=<?= $row['product_id']; ?>">
+                                <img class="img-fluid w-100" src="<?= $image ?>" alt="">
+                            </a>
+                            <?php if ($discount > 0): ?>
+                                <div class="discount-badge position-absolute top-0 right-0 bg-danger text-white p-2" style="font-size: 14px; font-weight: bold; border-radius: 50%;">
+                                    -<?= $discount ?>%
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                            <h6 class="text-truncate mb-3" style="font-weight: bold;"><?= $row['product_name']; ?></h6>
+                            <div class="d-flex justify-content-center">
+                                <h6 class="text-danger"><?= number_format($discounted_price, 0, ',', '.') ?> VNĐ</h6>
+                                <?php if ($discount > 0): ?>
+                                    <h6 class="text-muted ml-2"><del><?= number_format($row['price'], 0, ',', '.') ?> VNĐ</del></h6>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="card-footer d-flex justify-content-between bg-light border">
+                            <a href="views/detail.php?id=<?= $row['product_id']; ?>" class="btn btn-sm text-dark p-0">
+                                <i class="fas fa-eye text-primary mr-1"></i><span class="fw-bold">CHI TIẾT</span>
+                            </a>
+                            <form method="POST" action="" class="d-flex align-items-center">
+                                <input type="hidden" name="product_id" value="<?= $row['product_id']; ?>">
+                                <button type="submit" name="add_to_favorites" class="btn btn-sm text-dark p-0 bg-white">
+                                    <i class="fas fa-heart text-primary mr-1"></i><span class="fw-bold">YÊU THÍCH</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <?php
+            }
+        } else {
+            echo '<p class="text-center">Không có sản phẩm nào.</p>';
+        }
+        ?>
 
-
+        
         
         <!-- <div class="text-center mb-4">
             <a href="views/shop.php" class="btn btn-primary">Xem thêm</a>
@@ -219,7 +268,6 @@ if (isset($_POST['add_to_favorites'])) {
         <!-- <img class="img-fluid" src="img/banner_coll/banner-1.jpg" alt="Banner" style="width: 100%; height: auto;">         -->
     </div>
 
-    <?php include 'includes/chatbot.php'; ?>
     <?php include 'includes/footer.php'; ?>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>

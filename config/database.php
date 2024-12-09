@@ -5,10 +5,8 @@ class Database {
     private static $password = "";
     private static $dbname = "shopthoitrang";
     private static $conn = null;
-
-    // Tạo kết nối
     private static function connect() {
-        if (self::$conn === null) {
+    if (self::$conn === null) {
             self::$conn = new mysqli(self::$servername, self::$username, self::$password, self::$dbname);
             if (self::$conn->connect_error) {
                 die("Kết nối thất bại: " . self::$conn->connect_error);

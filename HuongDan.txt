@@ -1,0 +1,8 @@
+Apache: 80
+MySQL
+Nginx: 8080
+
+Tên CSDL: shopthoitrang
+File Connect Database: config/database.php
+
+Trang chủ: http://localhost:8080/ShopThoiTrang/

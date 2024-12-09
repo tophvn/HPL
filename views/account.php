@@ -12,21 +12,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_address'])) {
     $address2 = $_POST['address2'];
     $phonenumber = $_POST['phonenumber'];
     if (!preg_match('/^[0-9]{1,12}$/', $phonenumber)) {
-        echo "<script>alert('Số điện thoại chỉ được chứa số và không được quá 12 số.');</script>";
+        $_SESSION['message'] = 'Số điện thoại chỉ được chứa số và không được quá 12 số.';
+        $_SESSION['message_type'] = 'danger';  
     } else {
-        // Kiểm tra số điện thoại có trùng không
         $result = Database::query("SELECT * FROM users WHERE phonenumber = '$phonenumber' AND user_id != $user_id");
         if ($result->num_rows > 0) {
-            echo "<script>alert('Số điện thoại này đã được sử dụng bởi tài khoản khác!');</script>";
+            $_SESSION['message'] = 'Số điện thoại này đã được sử dụng bởi tài khoản khác!';
+            $_SESSION['message_type'] = 'danger';  
         } else {
             Database::query("UPDATE users SET address1 = '$address1', address2 = '$address2', phonenumber = '$phonenumber' WHERE user_id = $user_id");
-            // Cập nhật session để lưu trạng thái tab
+            $_SESSION['message'] = 'Thông tin của bạn đã được cập nhật thành công.';
+            $_SESSION['message_type'] = 'success';  
             $_SESSION['active_tab'] = 'address';
-            header("Location: account.php");
-            exit();
         }
     }
+    header("Location: account.php");
+    exit();
 }
+
 
 $result = Database::query("SELECT * FROM users WHERE user_id = $user_id");
 $user = $result->fetch_assoc();
@@ -66,7 +69,6 @@ if (isset($_POST['disable_2fa'])) {
 //     }
 // }
 
-// Lấy thông tin người dùng
 $result = Database::query("SELECT * FROM users WHERE user_id = $user_id");
 $user = $result->fetch_assoc();
 ?>
@@ -84,6 +86,7 @@ $user = $result->fetch_assoc();
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
+    <?php include('../includes/notification.php'); ?>
     <div class="container">
         <h2 class="text-center">TÀI KHOẢN</h2>
         <div class="row">

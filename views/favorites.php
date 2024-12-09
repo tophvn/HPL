@@ -1,22 +1,30 @@
 <?php
 include('../config/database.php');
 session_start();
+
+// Kiểm tra xem người dùng đã đăng nhập chưa
 if (!isset($_SESSION['user'])) {
-header("Location: ../index.php");
-exit();
+    header("Location: ../index.php");
+    exit();
 }
 
 $user_id = $_SESSION['user']['user_id'];
-// xóa sản phẩm
+
+// Xóa sản phẩm yêu thích
 if (isset($_POST['product_id'])) {
     $product_id = intval($_POST['product_id']); // Chuyển đổi ID sản phẩm thành int
     $sql = "DELETE FROM favorites WHERE user_id = $user_id AND product_id = $product_id";
     if (Database::query($sql)) {
-        header("Location: favorites.php");
-        exit();
+        // Thiết lập thông báo thành công vào session
+        $_SESSION['message'] = 'Sản phẩm đã được xóa khỏi danh sách yêu thích!';
+        $_SESSION['message_type'] = 'success'; 
     } else {
-        echo "Xóa sản phẩm thất bại.";
+        // Thiết lập thông báo lỗi vào session
+        $_SESSION['message'] = 'Xóa sản phẩm thất bại.';
+        $_SESSION['message_type'] = 'danger'; 
     }
+    header("Location: favorites.php");
+    exit();
 }
 
 $sql = "SELECT products.product_id, products.product_name AS name, products.description, products.price, products.image 
@@ -45,6 +53,7 @@ if ($result->num_rows > 0) {
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
+    <?php include('../includes/notification.php'); ?>
     <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">DANH SÁCH YÊU THÍCH</h1>

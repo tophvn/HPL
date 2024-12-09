@@ -2,10 +2,10 @@
 include('../../config/database.php');
 include('../../config/config.php'); 
 // Kiểm tra nếu có mã xác nhận từ URL (token)
-if (!isset($_GET['token'])) {
-    echo "Mã xác nhận không hợp lệ.";
-    exit();
-}
+// if (!isset($_GET['token'])) {
+//     echo "Mã xác nhận không hợp lệ.";
+//     exit();
+// }
 
 $token = $_GET['token'];
 $query = "SELECT * FROM users WHERE reset_token = '$token'";

@@ -27,8 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,11 +36,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Quên Mật Khẩu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    <link rel="stylesheet" href="<?php echo BASE_URL; ?>css/css-login-register.css">
+    <link rel="stylesheet" href="../../css/css-login-register.css">
 </head>
 <body>
     <div class="site-wrap d-md-flex align-items-stretch">
-        <div class="bg-img" style="background-image: url('<?php echo BASE_URL; ?>img/auth-background/back-reset.jpg')"></div>
+        <div class="bg-img" style="background-image: url('../../img/auth-background/back-reset.jpg')"></div>
         <div class="form-wrap">
             <div class="form-inner">
                 <h1 class="title">Quên Mật Khẩu</h1>
@@ -74,9 +72,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
-    <a href="<?php echo BASE_URL; ?>index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
+    <a href="../../index.php" class="btn" style="position: fixed; bottom: 20px; right: 20px; display: inline-flex; align-items: center; background-color: white; border: none; border-radius: 50%; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); width: 50px; height: 50px; justify-content: center; z-index: 1000;">
         <i class="uil uil-estate" style="font-size: 1.5rem; color: #007bff;"></i>
     </a>
-    <script src="<?php echo BASE_URL; ?>js/custom.js"></script>
+    <script src="../../js/custom.js"></script>
 </body>
 </html>

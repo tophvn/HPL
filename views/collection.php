@@ -11,18 +11,18 @@ if (!$category) {
 }
 $category_name = $category['category_name']; 
 $product_query = Database::query("SELECT * FROM products WHERE category_id = $category_id");
-// add vào yêu thích
+// Thêm sản phẩm vào yêu thích
 if (isset($_POST['add_to_favorites'])) {
     if (!isset($_SESSION['user']) || !isset($_SESSION['user']['user_id'])) {
-        echo "<script type='text/javascript'>
-                alert('Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.');
-        </script>";
+        // Thiết lập thông báo lỗi trong session
+        $_SESSION['message'] = 'Vui lòng đăng nhập để thêm sản phẩm vào yêu thích.';
+        $_SESSION['message_type'] = 'danger'; 
     } else {
         $product_id = $_POST['product_id'];
         $user_id = $_SESSION['user']['user_id'];
         Database::addToFavorites($user_id, $product_id);
-        header("Location: " . $_SERVER['REQUEST_URI']);
-        exit();
+        $_SESSION['message'] = 'Sản phẩm đã được thêm vào yêu thích!';
+        $_SESSION['message_type'] = 'success'; 
     }
 }
 ?>
@@ -39,6 +39,7 @@ if (isset($_POST['add_to_favorites'])) {
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
+    <?php include('../includes/notification.php'); ?>
     <div class="container-fluid pt-5">
         <h2 class="text-center mb-4">Danh Mục: <?= $category_name ?></h2>
         <div class="row px-xl-5 pb-3">
