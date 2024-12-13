@@ -30,8 +30,9 @@ if (isset($_GET['code'])) {
         // Lấy thông tin người dùng
         $email = $google_account_info->email;
         $google_user_id = $google_account_info->id;
-        $username_md5 = md5($email); // Mã hóa email để làm username
-        $result = Database::query("SELECT * FROM users WHERE email = '$email'");        
+        $username_md5 = md5($email);
+        $result = Database::query("SELECT * FROM users WHERE email = '$email'"); 
+        //thêm người dùng mới nếu chưa tồn tại       
         if ($result->num_rows == 0) {
             $name = $google_account_info->name;
             $defaultPassword = md5(uniqid());

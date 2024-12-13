@@ -211,7 +211,7 @@ if (isset($_POST['add_to_favorites'])) {
             while ($row = $result->fetch_assoc()) {
                 $image = 'assets/img_product/' . $row['image'];
                 $discount = $row['discount'] ?? 0;
-                $discounted_price = $row['price'] * (1 - $discount / 100);
+                $discounted_price = $row['price'] * (1 - $discount/100);
                 ?>
                 <div class="col-lg-3 col-md-6 col-sm-12 pb-1">
                     <div class="card product-item border-0 mb-4">

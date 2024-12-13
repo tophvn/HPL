@@ -16,7 +16,7 @@ $secret = $user['google_auth_secret'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $code = $_POST['code'] ?? '';
-    if ($ga->verifyCode($secret, $code, 2)) {
+    if ($ga->verifyCode($secret, $code, 1)) {
         // Mã đúng, lưu thông tin vào session
         $_SESSION['user'] = [
             'user_id' => $user['user_id'],

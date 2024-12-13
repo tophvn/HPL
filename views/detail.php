@@ -2,7 +2,7 @@
 include('../config/database.php');
 session_start();
 
-// Lấy ID sản phẩm từ URL, nếu không có thì gán giá trị mặc định là 0
+// Lấy ID sản phẩm từ URL
 $product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if ($product_id <= 0) {
     exit("ID sản phẩm không hợp lệ.");
@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $size = isset($_POST['size']) ? $_POST['size'] : '';
         $color = isset($_POST['color']) ? $_POST['color'] : '';
         $discount = isset($product['discount']) ? $product['discount'] : 0;
-        $discounted_price = $product['price'] * (1 - $discount / 100);
+        $discounted_price = $product['price'] * (1 - $discount /100);
         $size = !empty($size) ? reset($size) : '';
         // Kiểm tra xem giỏ hàng của người dùng đã tồn tại
         $result = Database::query("SELECT cart_id FROM cart WHERE user_id = $user_id");

@@ -1,7 +1,8 @@
 <?php
 include('../config/database.php');
 session_start();
-if (!isset($_SESSION['user'])) { header("Location: auth/login.php");
+if (!isset($_SESSION['user'])) { 
+    header("Location: auth/login.php");
 exit();
 }
 
@@ -30,10 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_address'])) {
     exit();
 }
 
-
 $result = Database::query("SELECT * FROM users WHERE user_id = $user_id");
 $user = $result->fetch_assoc();
-
 require_once '../GoogleAuthenticator/PHPGangsta/GoogleAuthenticator.php';
 $ga = new PHPGangsta_GoogleAuthenticator();
 
@@ -177,7 +176,7 @@ $user = $result->fetch_assoc();
                         <div class="card-body">
                             <h4 class="card-title text-success">Quét mã QR dưới đây:</h4>
                             <img src="<?php echo $_SESSION['qrCodeUrl']; ?>" alt="QR Code" class="img-fluid mb-3">
-                            <p><strong>Mã bí mật:</strong> <?php echo $_SESSION['secret']; ?></p>
+                            <!-- <p><strong>Mã bí mật:</strong> <?php echo $_SESSION['secret']; ?></p> -->
                         </div>
                     </div>
                 <?php endif; ?>
